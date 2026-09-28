@@ -126,7 +126,7 @@ Determine whether the document or text is genuinely related to commercial proper
   You MUST return:
   {
     "is_insurance_document": false,
-    "rejection_reason": "Bro, this document/text is not related to commercial property insurance or an underwriting proposal. Please upload a genuine commercial proposal or policy schedule."
+    "rejection_reason": "The uploaded content does not appear to be a commercial insurance proposal, policy schedule, or underwriting document. Please provide a genuine commercial insurance proposal or RFQ."
   }
 - If it IS genuinely related to commercial insurance, an RFQ, or business property underwriting, set "is_insurance_document": true, and extract the real entities present in the document. Do NOT invent fake company names or fake numbers if they are not in the document.
 
@@ -213,7 +213,7 @@ ${fileName ? `\nDocument filename: ${fileName}` : ''}`;
         is_valid_proposal: false,
         error:
           parsed.rejection_reason ||
-          'Bro, this document/text is not related to commercial property insurance or an underwriting proposal. Please upload a genuine commercial proposal or policy schedule.',
+          'The uploaded document or text is not recognized as a valid commercial property insurance proposal or underwriting schedule. Please provide a valid commercial proposal.',
         meta: { model: modelName, latency_ms: latency, cost_usd: cost, is_mocked: false },
       };
     }
@@ -286,7 +286,7 @@ Check if the following business description is a real, legitimate commercial ent
 "${businessDescription}"
 
 If the text is gibberish, spam, keyboard smash (e.g. "asdfghjkl", "qwerty"), random words, completely unrelated content (e.g. food recipe, poetry, casual chat), or contains no recognizable business activity:
-Set "is_valid_occupancy": false and set "rejection_reason": "Bro, this isn't related to an insurable business or commercial property."
+Set "is_valid_occupancy": false and set "rejection_reason": "The provided business description does not correspond to an insurable commercial enterprise, manufacturing operation, or trade occupancy."
 
 STEP 2: CLASSIFICATION (only if is_valid_occupancy is true)
 Review the candidate IIB Schedule 3 occupancies retrieved from tariff records:
@@ -353,7 +353,7 @@ Return ONLY valid JSON matching this schema:
       return {
         success: false,
         is_valid_occupancy: false,
-        error: parsed.rejection_reason || "Bro, this isn't related to an insurable business description.",
+        error: parsed.rejection_reason || "The provided business description does not correspond to an insurable commercial enterprise or occupancy.",
         meta: { model: modelName, latency_ms: latency, cost_usd: cost, is_mocked: false }
       };
     }
