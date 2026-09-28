@@ -11,6 +11,7 @@ import {
   Plus,
   Search,
   Shield,
+  Trash2,
   User,
   X,
 } from 'lucide-react';
@@ -19,7 +20,7 @@ import { Header } from '@/components/layout/Header';
 import { formatINR } from '@/lib/calculator';
 
 export default function ClientsPage() {
-  const { clients, quotes, addClient, canManageClients } = useWorkspace();
+  const { clients, quotes, addClient, deleteClient, canManageClients } = useWorkspace();
 
   const [search, setSearch] = useState('');
   const [isNewClientModalOpen, setIsNewClientModalOpen] = useState(false);
@@ -140,12 +141,28 @@ export default function ClientsPage() {
                     </span>
                   </div>
 
-                  <Link
-                    href={`/clients/${client.id}`}
-                    className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold text-xs transition-colors"
-                  >
-                    View CRM File
-                  </Link>
+                  <div className="flex items-center gap-1.5">
+                    {canManageClients && (
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (confirm(`Delete client record for ${client.client_name}?`)) {
+                            deleteClient(client.id);
+                          }
+                        }}
+                        className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                        title="Delete Client"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                    <Link
+                      href={`/clients/${client.id}`}
+                      className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-semibold text-xs transition-colors"
+                    >
+                      View CRM File
+                    </Link>
+                  </div>
                 </div>
               </div>
             );
@@ -181,7 +198,7 @@ export default function ClientsPage() {
                   onChange={(e) =>
                     setNewClientData({ ...newClientData, client_name: e.target.value })
                   }
-                  placeholder="e.g. Krishna & Company"
+                  placeholder="e.g. Acme Industries Ltd"
                   className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
               </div>

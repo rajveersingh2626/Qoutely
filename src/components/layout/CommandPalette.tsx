@@ -121,7 +121,7 @@ export const CommandPalette: React.FC = () => {
                   onClick={() => navigateTo('/upload')}
                   className="w-full flex items-center gap-3 px-3 py-2 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors text-left"
                 >
-                  <Upload className="w-4 h-4 text-indigo-600" />
+                  <Upload className="w-4 h-4 text-blue-600" />
                   <span>Upload Proposal (PDF / OCR)</span>
                 </button>
 

@@ -23,16 +23,18 @@ import { AIAnalysisResult } from '@/types/database';
 
 export default function AIAnalysisPage() {
   const [inputText, setInputText] = useState(
-    `Client: Krishna & Company\nLocation: Pul Pehladpur, Near Lal Kuan Sunday Bazar, New Delhi - 110044\nTrade: Trading and storage of food products of Nestle, Bajaj Almond Oil, and cosmetic products. Godown premises. No coir waste or caddies stored. Electrical equipment tested and certified. Sum insured Rs. 50 Lakhs for stocks.`
+    `Client: Acme Industries Ltd\nLocation: Plot 101, Industrial Corridor Phase II, MIDC, Mumbai, Maharashtra 400093\nTrade: Precision CNC metal machining, tool stamping, component fabrication and parts assembly workshop. Electrical equipment tested and certified. Sum insured Rs. 5.38 Crores.`
   );
   const [analysisResult, setAnalysisResult] = useState<AIAnalysisResult>(() =>
     analyzeProposalAI({
-      business_name: 'Krishna & Company',
-      business_description: 'Trading and storage of food products of Nestle, Bajaj Almond Oil, and cosmetics.',
-      raw_text: inputText,
-      sum_insured: 5000000,
-      stocks_si: 5000000,
-      gst: '07ALMPA9603N1ZS',
+      business_name: 'Acme Industries Ltd',
+      business_description: 'Precision CNC metal machining, tool stamping, component fabrication and parts assembly workshop.',
+      raw_text: `Client: Acme Industries Ltd\nLocation: Plot 101, Industrial Corridor Phase II, MIDC, Mumbai, Maharashtra 400093\nTrade: Precision CNC metal machining, tool stamping, component fabrication and parts assembly workshop. Electrical equipment tested and certified. Sum insured Rs. 5.38 Crores.`,
+      sum_insured: 53800000,
+      stocks_si: 12800000,
+      building_si: 15000000,
+      pm_si: 26000000,
+      gst: '27AAACA1234A1Z5',
     })
   );
 
@@ -71,7 +73,7 @@ export default function AIAnalysisPage() {
       <div className="p-6 md:p-8 max-w-7xl mx-auto w-full space-y-6">
         {/* Compliance Guarantees Card */}
         <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-card">
-          <div className="flex items-center gap-2.5 text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 mb-2">
+          <div className="flex items-center gap-2.5 text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-2">
             <Shield className="w-4 h-4" />
             <span>Deterministic Guardrails Enforcement</span>
           </div>
@@ -136,12 +138,12 @@ export default function AIAnalysisPage() {
                 <button
                   onClick={() =>
                     setInputText(
-                      `Client: Krishna & Company\nLocation: Pul Pehladpur, Near Lal Kuan Sunday Bazar, New Delhi - 110044\nTrade: Trading and storage of food products of Nestle, Bajaj Almond Oil, and cosmetic products. Godown premises. No coir waste or caddies stored. Electrical equipment tested and certified. Sum insured Rs. 50 Lakhs for stocks.`
+                      `Client: Acme Industries Ltd\nLocation: Plot 101, Industrial Corridor Phase II, MIDC, Mumbai, Maharashtra 400093\nTrade: Precision CNC metal machining, tool stamping, component fabrication and parts assembly workshop. Electrical equipment tested and certified. Sum insured Rs. 5.38 Crores.`
                     )
                   }
                   className="text-[11px] text-emerald-600 dark:text-emerald-400 hover:underline"
                 >
-                  Reset Krishna Sample
+                  Reset Acme Sample
                 </button>
               </div>
 
@@ -157,7 +159,7 @@ export default function AIAnalysisPage() {
             <button
               onClick={handleRunAnalysis}
               disabled={isRunning}
-              className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs shadow-sm flex items-center justify-center gap-2 transition-all"
+              className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-sm flex items-center justify-center gap-2 transition-all cursor-pointer"
             >
               {isRunning ? (
                 <RefreshCw className="w-4 h-4 animate-spin" />

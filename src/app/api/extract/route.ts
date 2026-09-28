@@ -3,14 +3,21 @@ import { z } from 'zod';
 import { extractProposal } from '@/lib/ai';
 import { getAuthenticatedUser, unauthorizedResponse } from '@/lib/api-auth';
 
-const ExtractRequestBodySchema = z.object({
-  content: z.string().min(5, 'Content must contain at least 5 characters for underwriting extraction.'),
-  workspace_id: z.string().optional(),
-  user_id: z.string().optional(),
-});
+const ExtractRequestBodySchema = z
+  .object({
+    content: z.string().optional(),
+    base64: z.string().optional(),
+    mimeType: z.string().optional(),
+    fileName: z.string().optional(),
+    workspace_id: z.string().optional(),
+    user_id: z.string().optional(),
+  })
+  .refine((data) => (data.content && data.content.length >= 3) || (data.base64 && data.base64.length > 10), {
+    message: 'Either content (min 3 chars) or base64 file data must be provided for underwriting extraction.',
+  });
 
 export async function POST(req: NextRequest) {
-  // Auth guard — validates Supabase session
+  // Auth guard — validates Supabase session (with demo fallback)
   const auth = await getAuthenticatedUser(req);
   if (!auth) return unauthorizedResponse();
 
@@ -33,7 +40,16 @@ export async function POST(req: NextRequest) {
     const user_id = parseResult.data.user_id || auth.user.id;
 
     // Scoped execution with Software 1.0 boundary enforcement
-    const result = await extractProposal(parseResult.data.content, workspace_id, user_id);
+    const result = await extractProposal(
+      {
+        content: parseResult.data.content,
+        base64: parseResult.data.base64,
+        mimeType: parseResult.data.mimeType,
+        fileName: parseResult.data.fileName,
+      },
+      workspace_id,
+      user_id
+    );
     return NextResponse.json(result);
   } catch (err: any) {
     return NextResponse.json(

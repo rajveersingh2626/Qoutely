@@ -35,7 +35,7 @@ export const Header: React.FC<HeaderProps> = ({ title, subtitle, breadcrumbs }) 
     {
       id: '1',
       title: 'Quote Slip Generated',
-      desc: 'Krishna & Company (₹50L) approved with Category I warranty.',
+      desc: 'Acme Industries Ltd (₹5.38 Cr) approved with Category 2 discount.',
       time: '10m ago',
       unread: true,
     },
@@ -108,10 +108,10 @@ export const Header: React.FC<HeaderProps> = ({ title, subtitle, breadcrumbs }) 
         {/* AI Assistant Button */}
         <button
           onClick={() => setIsAiDrawerOpen(true)}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900 border border-indigo-200 dark:border-indigo-800 text-xs font-medium transition-all shadow-2xs"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 border border-blue-200 dark:border-blue-800 text-xs font-medium transition-all shadow-2xs"
           title="Open AI Underwriting Copilot"
         >
-          <Sparkles className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+          <Sparkles className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
           <span className="hidden sm:inline">AI Copilot</span>
         </button>
 

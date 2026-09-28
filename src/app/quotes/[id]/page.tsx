@@ -197,7 +197,7 @@ export default function QuoteDetailPage({ params }: { params: Promise<{ id: stri
             <div className="grid grid-cols-12 p-3 bg-slate-50/50 dark:bg-slate-800/40">
               <div className="col-span-4 font-semibold text-slate-500">GST NUMBER</div>
               <div className="col-span-8 font-mono text-slate-900 dark:text-white font-bold">
-                {quote.client_gst || '07AAACK1234F1Z5'}
+                {quote.client_gst || '27AAACA1234A1Z5'}
               </div>
             </div>
 
@@ -356,7 +356,7 @@ export default function QuoteDetailPage({ params }: { params: Promise<{ id: stri
               </div>
 
               <div className="relative">
-                <span className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-indigo-500" />
+                <span className="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-blue-500" />
                 <p className="font-semibold text-slate-800 dark:text-slate-200">AI Proposal Ingestion</p>
                 <p className="text-[10px] text-slate-400">Gemini 2.5 Flash extracted SI breakdown</p>
               </div>

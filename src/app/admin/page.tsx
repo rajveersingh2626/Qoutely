@@ -175,7 +175,7 @@ export default function PlatformSuperAdminPage() {
           <div className="p-5 rounded-3xl bg-slate-900 border border-slate-800 relative overflow-hidden">
             <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
               <span>Total Commercial Risk</span>
-              <DollarSign className="w-4 h-4 text-indigo-400" />
+              <DollarSign className="w-4 h-4 text-blue-400" />
             </div>
             <div className="text-3xl font-extrabold text-white tracking-tight font-mono">
               ₹{(totalSumInsuredAllTenants / 10000000).toFixed(2)} Cr
@@ -463,7 +463,7 @@ export default function PlatformSuperAdminPage() {
                   <span className="font-bold text-emerald-400">14/14 Tests Passing</span>
                 </div>
                 <div className="flex items-center justify-between p-3 rounded-xl bg-slate-950 border border-slate-800">
-                  <span className="text-slate-400">Benchmark Drift (Krishna & Co)</span>
+                  <span className="text-slate-400">Benchmark Drift (Acme Industries)</span>
                   <span className="font-bold text-emerald-400">0.0000% Delta</span>
                 </div>
                 <div className="flex items-center justify-between p-3 rounded-xl bg-slate-950 border border-slate-800">

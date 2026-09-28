@@ -214,7 +214,7 @@ ON CONFLICT (workspace_id, user_id) DO NOTHING;
 
 -- Clients
 INSERT INTO public.clients (id, workspace_id, client_name, gst, address, district, state, industry, notes, assigned_to, total_quotes, total_sum_insured) VALUES
-('client-krishna-01', 'ws-capital-01', 'Krishna & Company (Tool Makers)', '07AAACK1234F1Z5', 'Plot 42, Sector 8, IMT Manesar, Gurugram, Haryana 122051', 'Gurugram', 'Haryana', 'Precision CNC Machining & Metal Fabrication', 'Key commercial account. High-value plant & machinery with automated fire hydrant and sprinkler setup.', 'user-004', 1, 53800000),
+('client-acme-01', 'ws-capital-01', 'Acme Industries Ltd', '27AAACA1234A1Z5', 'Plot 101, Industrial Corridor Phase II, MIDC, Mumbai, Maharashtra 400093', 'Mumbai Suburban', 'Maharashtra', 'Precision CNC Machining & Metal Fabrication', 'Key commercial account. High-value plant & machinery with automated fire hydrant and sprinkler setup.', 'user-004', 1, 53800000),
 ('client-shivaji-02', 'ws-capital-01', 'Shivaji Agro Industries Pvt Ltd', '27AALCS9821R1Z9', 'MIDC Industrial Estate, Waluj, Chhatrapati Sambhajinagar, Maharashtra 431136', 'Aurangabad', 'Maharashtra', 'Agro-processing & Confectionery Manufacturing', 'Expansion project underway with new warehouse facility.', 'user-004', 1, 120000000)
 ON CONFLICT (id) DO NOTHING;
 
@@ -225,17 +225,17 @@ INSERT INTO public.quotes (
   premium, gst_amount, total_premium, policy_rate, status, ai_confidence, insurer_name, version,
   calculation_breakdown
 ) VALUES (
-  'quote-krishna-001',
+  'quote-acme-001',
   'ws-capital-01',
-  'QTL-DEL-2026-0042',
-  'client-krishna-01',
-  'Krishna & Company (Tool Makers)',
-  '07AAACK1234F1Z5',
+  'QTL-BOM-2026-0042',
+  'client-acme-01',
+  'Acme Industries Ltd',
+  '27AAACA1234A1Z5',
   'user-004',
   'Arjun Kapoor',
   '1023',
   'Engineering Workshops (Metal & Steel Works, CNC Stamping & Machining)',
-  'Zone 4',
+  'Zone 3',
   53800000,
   '{"building": 15000000, "plant_machinery": 26000000, "stocks": 12800000, "furniture_fixtures": 0, "others": 0, "total": 53800000}'::jsonb,
   33033,
@@ -244,14 +244,14 @@ INSERT INTO public.quotes (
   0.614,
   'approved',
   0.96,
-  'ICICI LOMBARD GENERAL INSURANCE',
+  'NATIONAL INSURANCE COMPANY',
   1,
-  '{"occupancy_code": "1023", "category": 1, "product_type": "BLUS", "eq_zone": "Zone 4", "net_premium": 33033, "gst_amount": 5946, "total_premium": 38979}'::jsonb
+  '{"occupancy_code": "1023", "category": 1, "product_type": "BLUS", "eq_zone": "Zone 3", "net_premium": 33033, "gst_amount": 5946, "total_premium": 38979}'::jsonb
 ) ON CONFLICT (id) DO NOTHING;
 
 -- Audit Logs
 INSERT INTO public.audit_logs (id, workspace_id, user_id, user_name, user_email, action, resource_type, resource_id, details) VALUES
-('audit-001', 'ws-capital-01', 'user-004', 'Arjun Kapoor', 'arjun.k@capitalinsurance.co.in', 'quote.created', 'quote', 'quote-krishna-001', '{"quote_number": "QTL-DEL-2026-0042", "client": "Krishna & Company"}'::jsonb),
-('audit-002', 'ws-capital-01', 'user-004', 'Arjun Kapoor', 'arjun.k@capitalinsurance.co.in', 'quote.pdf_downloaded', 'quote', 'quote-krishna-001', '{"file_name": "Quote Slip-KRISHNA & COMPANY.pdf"}'::jsonb),
+('audit-001', 'ws-capital-01', 'user-004', 'Arjun Kapoor', 'arjun.k@capitalinsurance.co.in', 'quote.created', 'quote', 'quote-acme-001', '{"quote_number": "QTL-BOM-2026-0042", "client": "Acme Industries Ltd"}'::jsonb),
+('audit-002', 'ws-capital-01', 'user-004', 'Arjun Kapoor', 'arjun.k@capitalinsurance.co.in', 'quote.pdf_downloaded', 'quote', 'quote-acme-001', '{"file_name": "Quote_Slip_Acme_Industries.pdf"}'::jsonb),
 ('audit-003', 'ws-capital-01', 'user-002', 'Rajesh Singhania', 'owner@capitalinsurance.co.in', 'member.invited', 'member', 'user-006', '{"email": "rohan.auditor@capitalinsurance.co.in", "role": "viewer"}'::jsonb)
 ON CONFLICT (id) DO NOTHING;

@@ -86,7 +86,7 @@ export function analyzeProposalAI(input: ProposalInputData): AIAnalysisResult {
       }
     }
 
-    // Specialized domain rules (Krishna & Co / Food / Edible Oil / Category 1 storage)
+    // Specialized domain rules (Packaged Food / Edible Oil / Category 1 storage)
     if (
       (combinedText.includes('food') || combinedText.includes('nestle') || combinedText.includes('edible') || combinedText.includes('oil') || combinedText.includes('almond') || combinedText.includes('cosmetic')) &&
       occ.code === '4002'

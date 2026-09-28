@@ -73,7 +73,7 @@ export default function WorkspaceTeamSettingsPage() {
       role: 'underwriter',
       title: 'Underwriter',
       description: 'Risk assessment: execute proposal OCR, run IIB tariff calculations, and generate statutory PDF quote slips.',
-      badgeColor: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20'
+      badgeColor: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20'
     },
     {
       role: 'viewer',

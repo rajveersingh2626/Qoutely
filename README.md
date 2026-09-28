@@ -32,7 +32,7 @@ Quotely is built from the ground up for multi-brokerage tenancy:
 | 5 | `/quotes/new` | **3-Column Underwriting Studio** | Left: Risk details & SI breakdown; Center: AI classification & hazard flags; Right: Real-time tariff calculation engine & PDF export |
 | 6 | `/upload` | **Proposal Ingestion** | Drag-and-drop OCR pipeline (PDF, DOCX, XLSX, Images), timeline parser, and split-screen verification |
 | 7 | `/ai-analysis` | **AI Underwriting Studio** | JSON-structured reasoning, keyword extraction, occupancy confidence rings, hazard checks, and missing info queries |
-| 8 | `/quotes/[id]` | **Quote Slip Preview** | High-fidelity broker quote slip (includes Krishna & Company Fire Policy benchmark) with printable PDF generation |
+| 8 | `/quotes/[id]` | **Quote Slip Preview** | High-fidelity broker quote slip (includes Acme Industries Ltd Fire Policy benchmark) with printable PDF generation |
 | 9 | `/quotes` | **Quote Ledger** | Filterable quote repository with status badges, versioning, duplication, and instant quote drawer |
 | 10 | `/clients` | **Client CRM** | Complete broker client list with active policies, GST details, risk profiles, and assigned broker reps |
 | 11 | `/clients/[id]` | **Client Profile 360** | Comprehensive history, claims ratio, linked quotes, uploaded tenders, and broker notes |
@@ -64,16 +64,16 @@ Quotely adheres strictly to the rule: **AI extracts and classifies; deterministi
    - Kutcha construction loadings
    - Statutory GST (18%) and Stamp Duty
 
-### Krishna & Company Fire Insurance Benchmark
-The system contains a pre-configured, audited quote slip benchmark matching `Quote Slip-KRISHNA & COMPANY-Fire Insurance Policy.pdf`:
-- **Client**: Krishna & Company
+### Acme Industries Ltd Benchmark Quote Slip
+The system contains a pre-configured, audited quote slip benchmark matching `Quote_Slip_Acme_Industries_Fire_Policy.pdf`:
+- **Client**: Acme Industries Ltd
 - **Occupancy**: Code 1023 (Engineering Workshop / Metalworking)
 - **Total Sum Insured**: ₹5,38,00,000 (₹5.38 Cr)
 - **Breakdown**:
   - Building (Superstructure & Plinth): ₹1,50,00,000
   - Plant & Machinery: ₹2,60,00,000
   - Stocks & Raw Materials: ₹1,28,00,000
-- **Earthquake Zone**: Zone IV (Delhi / NCR)
+- **Earthquake Zone**: Zone III (Maharashtra)
 
 ---
 

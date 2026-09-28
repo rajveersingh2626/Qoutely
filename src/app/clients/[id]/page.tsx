@@ -81,7 +81,7 @@ export default function ClientProfilePage({ params }: { params: Promise<{ id: st
   ];
 
   const uploadedDocs = [
-    { name: 'Proposal_Form_Krishna_Signed.pdf', size: '2.4 MB', date: 'Yesterday', type: 'PDF' },
+    { name: 'Proposal_Form_Acme_Signed.pdf', size: '2.4 MB', date: 'Yesterday', type: 'PDF' },
     { name: 'Fire_NOC_Gurugram_FireDept.pdf', size: '1.1 MB', date: '12 Jan 2026', type: 'PDF' },
     { name: 'Substation_AMC_Certificate_2026.pdf', size: '840 KB', date: '04 Feb 2026', type: 'PDF' },
     { name: 'BalanceSheet_FY25_PlantAssets.xlsx', size: '3.6 MB', date: '18 Feb 2026', type: 'Excel' }

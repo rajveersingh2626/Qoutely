@@ -80,7 +80,7 @@ export default function LoginPage() {
         {/* Left Side: Brand & Value Proposition */}
         <div className="p-8 md:p-12 bg-gradient-to-br from-emerald-900 via-slate-900 to-slate-950 text-white flex flex-col justify-between relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
 
           <div>
             <div className="flex items-center gap-3 mb-6">

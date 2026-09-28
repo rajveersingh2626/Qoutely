@@ -63,7 +63,7 @@ export default function MarketingLandingPage() {
     },
     {
       q: 'Can we generate branded quote slips and PDFs for our clients?',
-      a: 'Yes. Quotely produces professional, high-resolution PDF quote slips formatted according to Indian brokerage standards (e.g. reproducing benchmark quotes like Krishna & Company Fire Policies), complete with your brokerage logo, GST details, peril breakdowns, and statutory warranties.'
+      a: 'Yes. Quotely produces professional, high-resolution PDF quote slips formatted according to Indian brokerage standards (e.g. reproducing benchmark quotes like Acme Industries Fire Policies), complete with your brokerage logo, GST details, peril breakdowns, and statutory warranties.'
     },
     {
       q: 'Can team members have different permission levels?',
@@ -80,7 +80,7 @@ export default function MarketingLandingPage() {
       {/* Background Decorative Grids & Glow */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-gradient-to-b from-emerald-500/15 via-teal-500/5 to-transparent blur-[120px] rounded-full" />
-        <div className="absolute top-[40%] right-[-10%] w-[600px] h-[600px] bg-indigo-500/10 blur-[140px] rounded-full" />
+        <div className="absolute top-[40%] right-[-10%] w-[600px] h-[600px] bg-blue-500/10 blur-[140px] rounded-full" />
         <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b15_1px,transparent_1px),linear-gradient(to_bottom,#1e293b15_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
       </div>
 
@@ -192,7 +192,7 @@ export default function MarketingLandingPage() {
                   <div className="w-3 h-3 rounded-full bg-red-500/80" />
                   <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
                   <div className="w-3 h-3 rounded-full bg-green-500/80" />
-                  <span className="text-xs text-slate-400 font-mono ml-2">quotely-underwriting-os / Krishna & Co (₹5.38 Cr)</span>
+                  <span className="text-xs text-slate-400 font-mono ml-2">quotely-underwriting-os / Acme Industries (₹5.38 Cr)</span>
                 </div>
                 <div className="text-xs font-medium text-emerald-400 flex items-center gap-1.5 bg-emerald-500/10 px-2 py-0.5 rounded">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
@@ -242,7 +242,7 @@ export default function MarketingLandingPage() {
 
                   <div className="p-3 bg-slate-900/70 border border-slate-800 rounded-xl flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-indigo-500/20 text-indigo-400 flex items-center justify-center">
+                      <div className="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center">
                         <Sparkles className="w-4 h-4" />
                       </div>
                       <div>
@@ -251,7 +251,7 @@ export default function MarketingLandingPage() {
                       </div>
                     </div>
                     <Link
-                      href="/app/quotes/quote-krishna-001"
+                      href="/app/quotes/quote-acme-001"
                       className="text-xs font-medium text-emerald-400 hover:text-emerald-300 underline"
                     >
                       View Live Quote Slip &rarr;
@@ -360,8 +360,8 @@ export default function MarketingLandingPage() {
                       <div>• EQ & STFI Perils: Enabled</div>
                     </div>
                   </div>
-                  <div className="bg-slate-950/70 p-4 rounded-xl border border-indigo-500/20">
-                    <div className="text-xs font-bold text-indigo-400 uppercase mb-2">Column 2: AI Reasoning</div>
+                  <div className="bg-slate-950/70 p-4 rounded-xl border border-blue-500/20">
+                    <div className="text-xs font-bold text-blue-400 uppercase mb-2">Column 2: AI Reasoning</div>
                     <div className="text-xs text-slate-400 space-y-1.5">
                       <div>• Code 1023 (Engineering Workshop)</div>
                       <div>• Confidence Ring: 96% Match</div>
@@ -408,16 +408,16 @@ export default function MarketingLandingPage() {
                     <h3 className="text-lg font-bold text-white">IRDAI-Ready Quote Slip Export</h3>
                     <p className="text-xs text-slate-400">High-fidelity printable PDFs with brokerage branding, perils schedule, and warranties.</p>
                   </div>
-                  <Link href="/app/quotes/quote-krishna-001" className="text-xs text-emerald-400 font-semibold flex items-center gap-1 hover:underline">
-                    View Krishna Slip <ChevronRight className="w-3.5 h-3.5" />
+                  <Link href="/app/quotes/quote-acme-001" className="text-xs text-emerald-400 font-semibold flex items-center gap-1 hover:underline">
+                    View Acme Slip <ChevronRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>
                 <div className="p-4 bg-slate-950/60 rounded-xl border border-slate-800 flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <FileCheck className="w-8 h-8 text-emerald-400" />
                     <div>
-                      <div className="text-sm font-bold text-white">Quote Slip — Krishna & Company (Fire Policy)</div>
-                      <div className="text-xs text-slate-400">Generated for Gurugram facility • ₹5.38 Cr Sum Insured</div>
+                      <div className="text-sm font-bold text-white">Quote Slip — Acme Industries Ltd (Fire Policy)</div>
+                      <div className="text-xs text-slate-400">Generated for Mumbai facility • ₹5.38 Cr Sum Insured</div>
                     </div>
                   </div>
                   <span className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
@@ -469,7 +469,7 @@ export default function MarketingLandingPage() {
 
             {/* Step 2 */}
             <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 relative group hover:border-emerald-500/50 transition-all">
-              <div className="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center font-bold text-base mb-4 border border-indigo-500/20">
+              <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center font-bold text-base mb-4 border border-blue-500/20">
                 2
               </div>
               <h3 className="text-base font-bold text-white mb-2">AI Understands Business</h3>

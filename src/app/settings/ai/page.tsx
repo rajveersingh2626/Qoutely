@@ -204,7 +204,7 @@ export default function AIHealthPage() {
           <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
             <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-2">
               <span className="text-xs font-semibold uppercase tracking-wider">Tokens Processed</span>
-              <Database className="w-4 h-4 text-indigo-500" />
+              <Database className="w-4 h-4 text-blue-500" />
             </div>
             <div className="text-2xl font-extrabold text-slate-900 dark:text-white">
               {((data?.stats?.total_input_tokens || 12450) + (data?.stats?.total_output_tokens || 3820)).toLocaleString()}

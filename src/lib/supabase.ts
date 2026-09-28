@@ -21,7 +21,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export const SEED_PROFILES: Profile[] = [
   {
-    id: 'user-001',
+    id: '10000000-0000-0000-0000-000000000001',
     name: 'Vikramaditya Sharma',
     email: 'superadmin@quotely.ai',
     phone: '+91 98110 99881',
@@ -29,7 +29,7 @@ export const SEED_PROFILES: Profile[] = [
     created_at: '2024-01-01T10:00:00Z',
   },
   {
-    id: 'user-002',
+    id: '10000000-0000-0000-0000-000000000002',
     name: 'Rajesh Singhania',
     email: 'owner@capitalinsurance.co.in',
     phone: '+91 98200 44551',
@@ -37,7 +37,7 @@ export const SEED_PROFILES: Profile[] = [
     created_at: '2024-01-10T10:00:00Z',
   },
   {
-    id: 'user-003',
+    id: '10000000-0000-0000-0000-000000000003',
     name: 'Priya Malhotra',
     email: 'priya@capitalinsurance.co.in',
     phone: '+91 98711 23456',
@@ -45,7 +45,7 @@ export const SEED_PROFILES: Profile[] = [
     created_at: '2024-01-15T11:30:00Z',
   },
   {
-    id: 'user-004',
+    id: '10000000-0000-0000-0000-000000000004',
     name: 'Arjun Kapoor',
     email: 'arjun.k@capitalinsurance.co.in',
     phone: '+91 99100 87654',
@@ -53,7 +53,7 @@ export const SEED_PROFILES: Profile[] = [
     created_at: '2024-02-01T09:15:00Z',
   },
   {
-    id: 'user-005',
+    id: '10000000-0000-0000-0000-000000000005',
     name: 'Sneha Verma',
     email: 'sneha.v@capitalinsurance.co.in',
     phone: '+91 98102 34567',
@@ -61,7 +61,7 @@ export const SEED_PROFILES: Profile[] = [
     created_at: '2024-02-10T14:20:00Z',
   },
   {
-    id: 'user-006',
+    id: '10000000-0000-0000-0000-000000000006',
     name: 'Rohan Gupta (Auditor)',
     email: 'rohan.auditor@capitalinsurance.co.in',
     phone: '+91 97111 65432',
@@ -72,7 +72,7 @@ export const SEED_PROFILES: Profile[] = [
 
 export const SEED_WORKSPACES: Workspace[] = [
   {
-    id: 'ws-capital-01',
+    id: '00000000-0000-0000-0000-000000000001',
     name: 'Capital Insurance Brokers Pvt Ltd',
     slug: 'capital-insurance',
     logo_url: '/logo-shield.svg',
@@ -80,7 +80,7 @@ export const SEED_WORKSPACES: Workspace[] = [
     address: '706, 7th Floor, B-09-ITL-Twin-Tower, Netaji Subhash Place, Ring Road, Pitampura, New Delhi 110034',
     phone: '011-45631850',
     email: 'contact@capitalinsurance.co.in',
-    owner_id: 'user-002',
+    owner_id: '10000000-0000-0000-0000-000000000002',
     default_rules: {
       default_discretionary_discount: 10,
       default_brokerage_share: 15,
@@ -92,7 +92,7 @@ export const SEED_WORKSPACES: Workspace[] = [
     created_at: '2024-01-10T10:00:00Z',
   },
   {
-    id: 'ws-apex-02',
+    id: '00000000-0000-0000-0000-000000000002',
     name: 'Apex Risk Advisors LLP',
     slug: 'apex-risk',
     logo_url: '/logo-shield.svg',
@@ -100,7 +100,7 @@ export const SEED_WORKSPACES: Workspace[] = [
     address: 'One BKC, 12th Floor, G-Block, Bandra Kurla Complex, Mumbai 400051',
     phone: '022-68994400',
     email: 'underwriting@apexrisk.in',
-    owner_id: 'user-002',
+    owner_id: '10000000-0000-0000-0000-000000000002',
     default_rules: {
       default_discretionary_discount: 12.5,
       default_brokerage_share: 17.5,
@@ -115,43 +115,43 @@ export const SEED_WORKSPACES: Workspace[] = [
 
 export const SEED_WORKSPACE_MEMBERS: WorkspaceMember[] = [
   {
-    workspace_id: 'ws-capital-01',
-    user_id: 'user-001',
+    workspace_id: '00000000-0000-0000-0000-000000000001',
+    user_id: '10000000-0000-0000-0000-000000000001',
     role: 'super_admin',
     status: 'active',
     joined_at: '2024-01-10T10:00:00Z',
   },
   {
-    workspace_id: 'ws-capital-01',
-    user_id: 'user-002',
+    workspace_id: '00000000-0000-0000-0000-000000000001',
+    user_id: '10000000-0000-0000-0000-000000000002',
     role: 'brokerage_owner',
     status: 'active',
     joined_at: '2024-01-10T10:00:00Z',
   },
   {
-    workspace_id: 'ws-capital-01',
-    user_id: 'user-003',
+    workspace_id: '00000000-0000-0000-0000-000000000001',
+    user_id: '10000000-0000-0000-0000-000000000003',
     role: 'admin',
     status: 'active',
     joined_at: '2024-01-15T11:30:00Z',
   },
   {
-    workspace_id: 'ws-capital-01',
-    user_id: 'user-004',
+    workspace_id: '00000000-0000-0000-0000-000000000001',
+    user_id: '10000000-0000-0000-0000-000000000004',
     role: 'underwriter',
     status: 'active',
     joined_at: '2024-02-01T09:15:00Z',
   },
   {
-    workspace_id: 'ws-capital-01',
-    user_id: 'user-005',
+    workspace_id: '00000000-0000-0000-0000-000000000001',
+    user_id: '10000000-0000-0000-0000-000000000005',
     role: 'sales_executive',
     status: 'active',
     joined_at: '2024-02-10T14:20:00Z',
   },
   {
-    workspace_id: 'ws-capital-01',
-    user_id: 'user-006',
+    workspace_id: '00000000-0000-0000-0000-000000000001',
+    user_id: '10000000-0000-0000-0000-000000000006',
     role: 'viewer',
     status: 'active',
     joined_at: '2024-02-15T16:00:00Z',
@@ -160,19 +160,19 @@ export const SEED_WORKSPACE_MEMBERS: WorkspaceMember[] = [
 
 export const SEED_CLIENTS: Client[] = [
   {
-    id: 'client-krishna-01',
+    id: 'client-acme-01',
     workspace_id: 'ws-capital-01',
-    client_name: 'Krishna & Company',
-    gst: '07ALMPA9603N1ZS',
-    address: 'Khasra No-309/2, Measuring 400 Sq. Yds. Pul Pehladpur, Near Lal Kuan Sunday Bazar, New Delhi - 110044',
-    district: 'South East Delhi',
-    state: 'Delhi',
-    industry: 'FMCG Trading & Warehousing',
-    notes: 'Primary stocks of Nestle food products, Bajaj Almond Oil & general cosmetics. Hypothecated to Bank of India. 0 claim ratio for past 3 years.',
+    client_name: 'Acme Industries Ltd',
+    gst: '27AAACA1234A1Z5',
+    address: 'Plot 101, Industrial Corridor Phase II, MIDC, Mumbai, Maharashtra 400093',
+    district: 'Mumbai Suburban',
+    state: 'Maharashtra',
+    industry: 'Precision Tooling & Manufacturing',
+    notes: 'Precision CNC machining, tooling, and component assembly workshop. 0 claim ratio for past 3 years.',
     assigned_to: 'user-005',
     created_at: '2024-02-15T10:00:00Z',
     total_quotes: 2,
-    total_sum_insured: 50000000,
+    total_sum_insured: 53800000,
   },
   {
     id: 'client-shivaji-02',
@@ -208,12 +208,12 @@ export const SEED_CLIENTS: Client[] = [
 
 export const SEED_QUOTES: Quote[] = [
   {
-    id: 'quote-krishna-001',
-    quote_number: 'QTL-DEL-2026-0042',
+    id: 'quote-acme-001',
+    quote_number: 'QTL-BOM-2026-0042',
     workspace_id: 'ws-capital-01',
-    client_id: 'client-krishna-01',
-    client_name: 'Krishna & Company',
-    client_gst: '07ALMPA9603N1ZS',
+    client_id: 'client-acme-01',
+    client_name: 'Acme Industries Ltd',
+    client_gst: '27AAACA1234A1Z5',
     created_by: 'user-004',
     creator_name: 'Arjun Kapoor',
     occupation_code: '4002',
@@ -369,8 +369,8 @@ export const SEED_AUDIT_LOGS: AuditLog[] = [
     user_email: 'arjun.k@capitalinsurance.co.in',
     action: 'quote.created',
     resource_type: 'quote',
-    resource_id: 'quote-krishna-001',
-    details: { quote_number: 'QTL-DEL-2026-0042', client: 'Krishna & Company' },
+    resource_id: 'quote-acme-001',
+    details: { quote_number: 'QTL-BOM-2026-0042', client: 'Acme Industries Ltd' },
     timestamp: '2026-03-24T11:00:00Z',
   },
   {
@@ -381,8 +381,8 @@ export const SEED_AUDIT_LOGS: AuditLog[] = [
     user_email: 'arjun.k@capitalinsurance.co.in',
     action: 'quote.pdf_downloaded',
     resource_type: 'quote',
-    resource_id: 'quote-krishna-001',
-    details: { file_name: 'Quote Slip-KRISHNA & COMPANY-Fire Insurance Policy.pdf' },
+    resource_id: 'quote-acme-001',
+    details: { file_name: 'Quote_Slip_Acme_Industries_Fire_Policy.pdf' },
     timestamp: '2026-03-24T11:32:00Z',
   },
   {

@@ -109,7 +109,7 @@ export const Sidebar: React.FC = () => {
     super_admin: 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border-blue-200',
     brokerage_owner: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border-emerald-200',
     admin: 'bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300 border-sky-200',
-    underwriter: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 border-indigo-200',
+    underwriter: 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 border-blue-200',
     sales_executive: 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 border-amber-200',
     viewer: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-slate-200',
   };
@@ -348,7 +348,7 @@ export const Sidebar: React.FC = () => {
         <div className="px-3 pb-2 mt-auto">
           <button
             onClick={() => setIsAiDrawerOpen(!isAiDrawerOpen)}
-            className="w-full p-2.5 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/40 dark:to-indigo-950/40 border border-blue-200/70 dark:border-blue-800/50 flex items-center justify-between text-left group hover:shadow-sm transition-all"
+            className="w-full p-2.5 rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-950/40 dark:to-blue-900/40 border border-blue-200/70 dark:border-blue-800/50 flex items-center justify-between text-left group hover:shadow-sm transition-all"
           >
             <div className="flex items-center gap-2.5">
               <div className="w-7 h-7 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-sm">

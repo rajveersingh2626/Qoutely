@@ -45,15 +45,15 @@ export default function NewQuotePage() {
 
   // LEFT COLUMN: Proposal Form State
   const [selectedClientId, setSelectedClientId] = useState<string>('custom');
-  const [clientName, setClientName] = useState('Krishna & Company');
-  const [clientGst, setClientGst] = useState('07ALMPA9603N1ZS');
+  const [clientName, setClientName] = useState('Acme Industries Ltd');
+  const [clientGst, setClientGst] = useState('27AAACA1234A1Z5');
   const [clientAddress, setClientAddress] = useState(
-    'Khasra No-309/2, Measuring 400 Sq. Yds. Pul Pehladpur, Near Lal Kuan Sunday Bazar, New Delhi - 110044'
+    'Plot 101, Industrial Corridor Phase II, MIDC, Mumbai, Maharashtra 400093'
   );
-  const [stateName, setStateName] = useState('Delhi');
-  const [districtName, setDistrictName] = useState('South East Delhi');
+  const [stateName, setStateName] = useState('Maharashtra');
+  const [districtName, setDistrictName] = useState('Mumbai Suburban');
   const [businessDescription, setBusinessDescription] = useState(
-    'Trading and storage of food products of Nestle, Bajaj Almond Oil, cosmetic products and other similar type of packaged products related to insured trade.'
+    'Precision CNC metal machining, tool stamping, component fabrication and parts assembly workshop. Electrical equipment tested and certified.'
   );
 
   // Sum Insured Breakdown
@@ -186,31 +186,31 @@ export default function NewQuotePage() {
     eqToggle,
   ]);
 
-  // Load Preset Proposal (Krishna & Company)
-  const loadKrishnaSample = () => {
-    setClientName('Krishna & Company');
-    setClientGst('07ALMPA9603N1ZS');
+  // Load Preset Proposal (Acme Industries Ltd)
+  const loadAcmeSample = () => {
+    setClientName('Acme Industries Ltd');
+    setClientGst('27AAACA1234A1Z5');
     setClientAddress(
-      'Khasra No-309/2, Measuring 400 Sq. Yds. Pul Pehladpur, Near Lal Kuan Sunday Bazar, New Delhi - 110044'
+      'Plot 101, Industrial Corridor Phase II, MIDC, Mumbai, Maharashtra 400093'
     );
-    setStateName('Delhi');
-    setDistrictName('South East Delhi');
+    setStateName('Maharashtra');
+    setDistrictName('Mumbai Suburban');
     setBusinessDescription(
-      'Trading and storage of food products of Nestle, Bajaj Almond Oil, cosmetic products and other similar type of products related to insured trade.'
+      'Precision CNC metal machining, tool stamping, component fabrication and parts assembly workshop. Electrical equipment tested and certified.'
     );
     setSumInsured({
-      building: 0,
-      plant_machinery: 0,
+      building: 15000000,
+      plant_machinery: 26000000,
       furniture_fixtures: 0,
-      stocks: 5000000,
+      stocks: 12800000,
       others: 0,
-      total: 5000000,
+      total: 53800000,
     });
-    setOccupancyCode('4002');
+    setOccupancyCode('1023');
     setProductType('BSUS');
-    setEqZone('Zone 2');
-    setTerrorismToggle(false);
-    setFloaterToggle(true);
+    setEqZone('Zone 3');
+    setTerrorismToggle(true);
+    setFloaterToggle(false);
     setFeatures({
       fire_hydrant_sprinkler: true,
       electrical_installations: true,
@@ -297,11 +297,11 @@ export default function NewQuotePage() {
 
         <div className="flex items-center gap-2">
           <button
-            onClick={loadKrishnaSample}
+            onClick={loadAcmeSample}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold transition-colors"
           >
             <Zap className="w-3.5 h-3.5 text-amber-500" />
-            <span>Load Krishna & Co. Sample Proposal</span>
+            <span>Load Acme Sample Proposal</span>
           </button>
         </div>
       </div>
@@ -624,7 +624,7 @@ export default function NewQuotePage() {
         <div className="lg:col-span-4 border-r border-slate-200/80 dark:border-slate-800 p-5 overflow-y-auto bg-slate-50/50 dark:bg-slate-900/50 space-y-5">
           <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
             <div>
-              <h3 className="text-xs font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5" />
                 2. AI Underwriting Analysis
               </h3>
@@ -633,9 +633,9 @@ export default function NewQuotePage() {
               </p>
             </div>
             {isAiAnalyzing ? (
-              <RefreshCw className="w-4 h-4 text-indigo-500 animate-spin" />
+              <RefreshCw className="w-4 h-4 text-blue-500 animate-spin" />
             ) : (
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300">
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
                 AIFT Compliant
               </span>
             )}
@@ -715,7 +715,7 @@ export default function NewQuotePage() {
                   (kw, i) => (
                     <span
                       key={i}
-                      className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60"
+                      className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60"
                     >
                       {kw}
                     </span>

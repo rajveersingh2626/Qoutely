@@ -55,7 +55,7 @@ export default function DashboardPage() {
   // Occupancy breakdown
   const occupancyBreakdown = [
     { label: 'Storage & Godowns (4002)', count: 14, percent: 38, color: 'bg-emerald-500' },
-    { label: 'Manufacturing & Plants (2044/2060)', count: 11, percent: 30, color: 'bg-indigo-500' },
+    { label: 'Manufacturing & Plants (2044/2060)', count: 11, percent: 30, color: 'bg-teal-500' },
     { label: 'Offices & Commercial (1007)', count: 7, percent: 19, color: 'bg-blue-500' },
     { label: 'Hospitality & Retail (1011/1017)', count: 5, percent: 13, color: 'bg-amber-500' },
   ];
@@ -173,7 +173,7 @@ export default function DashboardPage() {
           <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-card card-hover">
             <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-3">
               <span className="text-xs font-semibold">Total Premium (Current Month)</span>
-              <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
                 <Shield className="w-4 h-4" />
               </div>
             </div>

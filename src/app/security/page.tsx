@@ -88,7 +88,7 @@ export default function SecurityPage() {
 
           {/* 3. Role-Based Permissions (RBAC) */}
           <div className="p-8 rounded-3xl bg-slate-900 border border-slate-800">
-            <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center mb-6 border border-indigo-500/20">
+            <div className="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-400 flex items-center justify-center mb-6 border border-blue-500/20">
               <Users className="w-6 h-6" />
             </div>
             <h2 className="text-xl font-bold text-white mb-3">Granular Role-Based Permissions</h2>
@@ -96,9 +96,9 @@ export default function SecurityPage() {
               Manage team access with 5 distinct enterprise roles, preventing unauthorized rate tampering or quote modifications.
             </p>
             <ul className="space-y-2 text-xs text-slate-300">
-              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-indigo-400" /> Owner, Admin, Underwriter, Sales, Viewer</li>
-              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-indigo-400" /> Sales cannot access unassigned client files</li>
-              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-indigo-400" /> Audit trail logged upon any permission change</li>
+              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-400" /> Owner, Admin, Underwriter, Sales, Viewer</li>
+              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-400" /> Sales cannot access unassigned client files</li>
+              <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-blue-400" /> Audit trail logged upon any permission change</li>
             </ul>
           </div>
 

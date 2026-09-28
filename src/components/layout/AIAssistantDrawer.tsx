@@ -43,7 +43,7 @@ export const AIAssistantDrawer: React.FC = () => {
   ]);
 
   const quickQuestions = [
-    'Explain why occupancy 4002 was selected for Krishna & Co.',
+    'Explain why occupancy 1023 was selected for Acme Industries.',
     'What feature discounts apply for fire hydrants and electrical maintenance?',
     'Which EQ zone applies to Delhi NCR and what is the loading?',
     'What is the Category I Storage warranty for godowns?',
@@ -70,12 +70,12 @@ export const AIAssistantDrawer: React.FC = () => {
 
       const qLower = query.toLowerCase();
 
-      if (qLower.includes('4002') || qLower.includes('krishna')) {
-        reply = `Occupancy Code 4002 ("Storage of Category I hazardous Goods (Godowns & Silos)") was assigned because Krishna & Company stores packaged food products (Nestle) and edible cosmetics (Bajaj Almond Oil). Under AIFT 2001 Section VI, non-combustible packaged goods in sealed containers qualify for Category I storage subject to the mandatory warranty prohibiting goods from Categories II & III, coir waste, or caddies.`;
+      if (qLower.includes('1023') || qLower.includes('acme')) {
+        reply = `Occupancy Code 1023 ("Engineering Workshops - Metalworking with cold work / machining") was assigned because Acme Industries Ltd operates precision CNC metal machining, tool stamping, component fabrication and parts assembly. Under AIFT 2001 Section IV (Industrial Risks), cold metalworking processes with certified electrical installations qualify for standard industrial loss costs under Category 2.`;
         citation = {
           doc: 'IIB Loss Cost Schedule 3 & AIFT 2001',
-          section: 'Section VI - Storage Risks',
-          pageOrRule: 'Code 4002 / Category 1 Rating',
+          section: 'Section IV - Industrial Manufacturing',
+          pageOrRule: 'Code 1023 / Category 2 Rating',
         };
       } else if (qLower.includes('hydrant') || qLower.includes('discount') || qLower.includes('feature')) {
         reply = `Under the broker calculation rules:\n1. Operational Fire Hydrant / Sprinkler / Smoke Detector system: -10% discount on base flexa rate.\n2. Electrical Installations maintained to Indian Electricity Rules 1956: -10% discount.\n3. Plinth level >= 1.5 ft with storm drainage: -10% discount.\n4. 24x7 Security & CCTV: -10% discount.\n5. Past 3-year claim ratio <= 70%: -20% discount.\nNote: For Category 1 & 2 risks, total cumulative discount is capped at -50%.`;
@@ -126,13 +126,13 @@ export const AIAssistantDrawer: React.FC = () => {
       {/* Drawer Header */}
       <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/40">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-sm">
+          <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-sm">
             <Sparkles className="w-4 h-4" />
           </div>
           <div>
             <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
               Tariff AI Assistant
-              <span className="text-[10px] bg-indigo-100 dark:bg-indigo-950 text-indigo-700 dark:text-indigo-300 font-semibold px-1.5 py-0.5 rounded-full">
+              <span className="text-[10px] bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-semibold px-1.5 py-0.5 rounded-full">
                 Strict Rules
               </span>
             </h3>
@@ -168,8 +168,8 @@ export const AIAssistantDrawer: React.FC = () => {
               <div className="whitespace-pre-line">{m.text}</div>
 
               {m.citation && (
-                <div className="mt-2.5 pt-2 border-t border-slate-200 dark:border-slate-700/80 flex items-start gap-1.5 text-[10px] text-indigo-700 dark:text-indigo-300 font-medium">
-                  <BookOpen className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-indigo-500" />
+                <div className="mt-2.5 pt-2 border-t border-slate-200 dark:border-slate-700/80 flex items-start gap-1.5 text-[10px] text-blue-700 dark:text-blue-300 font-medium">
+                  <BookOpen className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-blue-500" />
                   <div>
                     <span className="font-semibold">{m.citation.doc}:</span>{' '}
                     <span>{m.citation.section}</span>
@@ -220,11 +220,11 @@ export const AIAssistantDrawer: React.FC = () => {
             placeholder="Ask about codes, clauses, discounts, EQ zones..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            className="flex-1 px-3 py-2 text-xs rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="flex-1 px-3 py-2 text-xs rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
             type="submit"
-            className="p-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white transition-colors flex-shrink-0"
+            className="p-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white transition-colors flex-shrink-0"
           >
             <Send className="w-4 h-4" />
           </button>

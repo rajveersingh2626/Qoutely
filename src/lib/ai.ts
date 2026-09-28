@@ -76,16 +76,32 @@ function getGeminiClient(): { client: GoogleGenAI | null; hasKey: boolean } {
   return { client: new GoogleGenAI({ apiKey }), hasKey: true };
 }
 
+export interface ExtractInputPayload {
+  content?: string;
+  base64?: string;
+  mimeType?: string;
+  fileName?: string;
+}
+
 /**
  * Endpoint 1: Extract Proposal Entities
  */
-export async function extractProposal(rawText: string, workspaceId?: string, userId?: string) {
+export async function extractProposal(
+  input: string | ExtractInputPayload,
+  workspaceId?: string,
+  userId?: string
+) {
   const startTime = Date.now();
   const { client, hasKey } = getGeminiClient();
   const modelName = 'gemini-2.5-flash';
 
+  const rawText = typeof input === 'string' ? input : (input.content || '');
+  const base64 = typeof input === 'object' ? input.base64 : undefined;
+  const mimeType = typeof input === 'object' ? input.mimeType : undefined;
+  const fileName = typeof input === 'object' ? input.fileName : undefined;
+
   const prompt = `You are Quotely's senior commercial insurance underwriter for India.
-Extract all relevant underwriting fields from the proposal or quote document below.
+Extract all relevant underwriting fields from the proposal or quote document provided.
 Return ONLY valid JSON matching this schema:
 {
   "client_name": string,
@@ -116,24 +132,35 @@ Return ONLY valid JSON matching this schema:
   "hazard_flags": string[],
   "missing_fields": string[]
 }
-
-Document content:
-${rawText}`;
+${rawText ? `\nDocument content / excerpt:\n${rawText}` : ''}
+${fileName ? `\nDocument filename: ${fileName}` : ''}`;
 
   if (hasKey && client) {
     try {
+      const contents: any[] = [];
+      if (base64 && mimeType) {
+        const cleanBase64 = base64.replace(/^data:[^;]+;base64,/, '');
+        contents.push({
+          inlineData: {
+            data: cleanBase64,
+            mimeType: mimeType,
+          },
+        });
+      }
+      contents.push(prompt);
+
       const response = await client.models.generateContent({
         model: modelName,
-        contents: prompt,
+        contents: contents.length === 1 ? contents[0] : contents,
         config: {
-          responseMimeType: 'application/json'
-        }
+          responseMimeType: 'application/json',
+        },
       });
 
       const responseText = response.text || '{}';
       const parsed = JSON.parse(responseText);
       const latency = Date.now() - startTime;
-      const inputTokens = Math.round(prompt.length / 4);
+      const inputTokens = Math.max(50, Math.round(prompt.length / 4) + (base64 ? 300 : 0));
       const outputTokens = Math.round(responseText.length / 4);
       const cost = calculateAICost(inputTokens, outputTokens);
 
@@ -146,7 +173,7 @@ ${rawText}`;
         output_tokens: outputTokens,
         cost_usd: cost,
         latency_ms: latency,
-        is_mocked: false
+        is_mocked: false,
       });
 
       // Karpathy Software 2.0 / 1.0 Boundary Clamp
@@ -156,7 +183,7 @@ ${rawText}`;
         success: true,
         data: clampedResult.data,
         software_boundary: clampedResult.software_boundary,
-        meta: { model: modelName, latency_ms: latency, cost_usd: cost, is_mocked: false }
+        meta: { model: modelName, latency_ms: latency, cost_usd: cost, is_mocked: false },
       };
     } catch (err: any) {
       console.warn('Gemini API call failed, falling back to deterministic parser:', err);
@@ -165,27 +192,27 @@ ${rawText}`;
 
   // Deterministic Fallback if no API key is provided
   const latency = Date.now() - startTime;
-  const isKrishna = rawText.toLowerCase().includes('krishna') || rawText.includes('5,38,00,000');
+  const isAcme = rawText.toLowerCase().includes('acme') || rawText.includes('5,38,00,000');
   
   const fallbackData = {
-    client_name: isKrishna ? 'Krishna & Company' : 'Industrial Client Pvt Ltd',
-    gst_number: isKrishna ? '07AAACK1234F1Z5' : '27AAACI5678B1Z2',
-    address: isKrishna ? 'Plot 42, Sector 8, IMT Manesar' : 'Industrial Area Phase 2',
-    district: isKrishna ? 'Gurugram' : 'Mumbai',
-    state: isKrishna ? 'Haryana' : 'Maharashtra',
-    business_description: isKrishna ? 'Precision CNC metal machining, tool stamping, component fabrication and parts assembly workshop' : rawText.slice(0, 200),
+    client_name: isAcme ? 'Acme Industries Ltd' : 'Industrial Client Pvt Ltd',
+    gst_number: isAcme ? '27AAACA1234A1Z5' : '27AAACI5678B1Z2',
+    address: isAcme ? 'Plot 101, Industrial Corridor Phase II, MIDC' : 'Industrial Area Phase 2',
+    district: isAcme ? 'Mumbai Suburban' : 'Mumbai',
+    state: isAcme ? 'Maharashtra' : 'Maharashtra',
+    business_description: isAcme ? 'Precision CNC metal machining, tool stamping, component fabrication and parts assembly workshop' : rawText.slice(0, 200),
     construction_type: 'Class A' as const,
     policy_duration_months: 12,
-    previous_insurer: 'ICICI Lombard GIC',
+    previous_insurer: 'National Insurance Co',
     claim_history_last_3_years: false,
     claim_ratio_percent: 0,
     sum_insured: {
-      building: isKrishna ? 15000000 : 20000000,
-      plant_and_machinery: isKrishna ? 26000000 : 30000000,
-      stocks: isKrishna ? 12800000 : 15000000,
+      building: isAcme ? 15000000 : 20000000,
+      plant_and_machinery: isAcme ? 26000000 : 30000000,
+      stocks: isAcme ? 12800000 : 15000000,
       furniture_and_fixtures: 0,
       other: 0,
-      total: isKrishna ? 53800000 : 65000000
+      total: isAcme ? 53800000 : 65000000
     },
     perils_required: {
       fire_flexa: true,
@@ -193,8 +220,8 @@ ${rawText}`;
       earthquake: true,
       terrorism: true
     },
-    occupancy_code: isKrishna ? '1023' : null,
-    hazard_flags: isKrishna ? ['Heavy cutting oils and solvents present on shop floor', 'High value CNC controllers susceptible to electrical surges'] : ['Industrial electrical switchgear'],
+    occupancy_code: isAcme ? '1023' : null,
+    hazard_flags: isAcme ? ['Heavy cutting oils and solvents present on shop floor', 'High value CNC controllers susceptible to electrical surges'] : ['Industrial electrical switchgear'],
     missing_fields: []
   };
 

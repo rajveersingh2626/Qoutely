@@ -18,6 +18,7 @@ import {
   Plus,
   Search,
   Shield,
+  Trash2,
   X,
 } from 'lucide-react';
 import { useWorkspace } from '@/context/WorkspaceContext';
@@ -27,7 +28,7 @@ import { downloadQuoteSlipPDF } from '@/lib/pdf-generator';
 import { Quote } from '@/types/database';
 
 export default function QuoteHistoryPage() {
-  const { quotes, currentWorkspace, duplicateQuote } = useWorkspace();
+  const { quotes, currentWorkspace, duplicateQuote, deleteQuote } = useWorkspace();
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -195,6 +196,18 @@ export default function QuoteHistoryPage() {
                           title="Download Quote Slip PDF"
                         >
                           <Download className="w-4 h-4" />
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            if (confirm(`Revoke and delete quote ${q.quote_number}?`)) {
+                              deleteQuote(q.id);
+                            }
+                          }}
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+                          title="Delete Quote"
+                        >
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </td>
