@@ -1,0 +1,5446 @@
+[
+  {
+    "code": "1002",
+    "section": "III",
+    "description": "Places of worships",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.14,
+    "stfi_rate": 0.15,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.15,
+    "loss_cost": 0.12,
+    "keywords": [
+      "places",
+      "worships"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section III"
+  },
+  {
+    "code": "1003",
+    "section": "III",
+    "description": "Libraries",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.21,
+    "stfi_rate": 0.15,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.15,
+    "loss_cost": 0.21,
+    "keywords": [
+      "libraries"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section III"
+  },
+  {
+    "code": "1004",
+    "section": "III",
+    "description": "Museums",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.25,
+    "stfi_rate": 0.15,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.15,
+    "loss_cost": 0.23,
+    "keywords": [
+      "museums"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section III"
+  },
+  {
+    "code": "1005",
+    "section": "III",
+    "description": "Schools / Colleges",
+    "category": 1,
+    "category_tag": "Education",
+    "flexa_rate": 0.22,
+    "stfi_rate": 0.15,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.15,
+    "loss_cost": 0.2,
+    "keywords": [
+      "colleges",
+      "schools"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section III"
+  },
+  {
+    "code": "1006",
+    "section": "III",
+    "description": "Hospitals including X-ray and other Diagnostic clinics",
+    "category": 3,
+    "category_tag": "Healthcare",
+    "flexa_rate": 0.28,
+    "stfi_rate": 0.15,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.15,
+    "loss_cost": 0.23,
+    "keywords": [
+      "diagnostic",
+      "x-ray",
+      "including",
+      "clinics",
+      "hospitals"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section III"
+  },
+  {
+    "code": "1007",
+    "section": "III",
+    "description": "Office premises / Meeting Rooms",
+    "category": 1,
+    "category_tag": "Office",
+    "flexa_rate": 0.3,
+    "stfi_rate": 0.15,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.15,
+    "loss_cost": 0.25,
+    "keywords": [
+      "office",
+      "rooms",
+      "meeting",
+      "premises"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section III"
+  },
+  {
+    "code": "1008",
+    "section": "III",
+    "description": "Auditoriums / Planetarium",
+    "category": 3,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.27,
+    "stfi_rate": 0.15,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.15,
+    "loss_cost": 0.28,
+    "keywords": [
+      "planetarium",
+      "auditoriums"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section III"
+  },
+  {
+    "code": "1009",
+    "section": "III",
+    "description": "Mess Houses / Clubs",
+    "category": 1,
+    "category_tag": "Hospitality",
+    "flexa_rate": 0.22,
+    "stfi_rate": 0.15,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.15,
+    "loss_cost": 0.21,
+    "keywords": [
+      "clubs",
+      "houses",
+      "mess"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section III"
+  },
+  {
+    "code": "1010",
+    "section": "III",
+    "description": "Marriage Halls",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.2,
+    "stfi_rate": 0.15,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.15,
+    "loss_cost": 0.18,
+    "keywords": [
+      "marriage",
+      "halls"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section III"
+  },
+  {
+    "code": "1011",
+    "section": "III",
+    "description": "Showrooms and display centres where goods are kept for display and no sales are carried out",
+    "category": 1,
+    "category_tag": "Retail",
+    "flexa_rate": 0.34,
+    "stfi_rate": 0.15,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.15,
+    "loss_cost": 0.28,
+    "keywords": [
+      "sales",
+      "showrooms",
+      "display",
+      "centres",
+      "kept",
+      "carried",
+      "goods"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section III"
+  },
+  {
+    "code": "1012",
+    "section": "III",
+    "description": "Educational and Research Institutes imparting training in various crafts",
+    "category": 1,
+    "category_tag": "Education",
+    "flexa_rate": 0.24,
+    "stfi_rate": 0.15,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.15,
+    "loss_cost": 0.24,
+    "keywords": [
+      "imparting",
+      "various",
+      "educational",
+      "crafts",
+      "training",
+      "institutes",
+      "research"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section III"
+  },
+  {
+    "code": "1013",
+    "section": "III",
+    "description": "Lodging / Boarding Houses",
+    "category": 1,
+    "category_tag": "Hospitality",
+    "flexa_rate": 0.2,
+    "stfi_rate": 0.15,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.15,
+    "loss_cost": 0.19,
+    "keywords": [
+      "lodging",
+      "boarding",
+      "houses"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section III"
+  },
+  {
+    "code": "1014",
+    "section": "III",
+    "description": "Cycle Shed",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.22,
+    "stfi_rate": 0.15,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.15,
+    "loss_cost": 0.22,
+    "keywords": [
+      "cycle",
+      "shed"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section III"
+  },
+  {
+    "code": "1015",
+    "section": "III",
+    "description": "Dish Antenna",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.23,
+    "stfi_rate": 0.15,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.15,
+    "loss_cost": 0.23,
+    "keywords": [
+      "antenna",
+      "dish"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section III"
+  },
+  {
+    "code": "1016",
+    "section": "III",
+    "description": "Indoor stadiums, health Club, Gymnasium and Swimming Pool",
+    "category": 4,
+    "category_tag": "Hospitality",
+    "flexa_rate": 0.1,
+    "stfi_rate": 0.15,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.15,
+    "loss_cost": 0.08,
+    "keywords": [
+      "gymnasium",
+      "indoor",
+      "club",
+      "pool",
+      "health",
+      "swimming",
+      "stadiums"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section III"
+  },
+  {
+    "code": "1017",
+    "section": "III",
+    "description": "Cafes, Restaurants, Hotels, Confectioner and Sweet meat sellers, Health Resorts",
+    "category": 2,
+    "category_tag": "Hospitality",
+    "flexa_rate": 0.3,
+    "stfi_rate": 0.15,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.15,
+    "loss_cost": 0.25,
+    "keywords": [
+      "cafes",
+      "sellers",
+      "sweet",
+      "confectioner",
+      "restaurants",
+      "health",
+      "hotels",
+      "resorts"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section III"
+  },
+  {
+    "code": "1018",
+    "section": "III",
+    "description": "Laundries / Dry Cleaning",
+    "category": 2,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.56,
+    "stfi_rate": 0.15,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.15,
+    "loss_cost": 0.51,
+    "keywords": [
+      "cleaning",
+      "laundries"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section III"
+  },
+  {
+    "code": "1019",
+    "section": "III",
+    "description": "Battery Charging Service Stations",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.15,
+    "stfi_rate": 0.15,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.15,
+    "loss_cost": 0.96,
+    "keywords": [
+      "service",
+      "charging",
+      "stations",
+      "battery"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section III"
+  },
+  {
+    "code": "1020",
+    "section": "III",
+    "description": "Amusement Parks",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.75,
+    "stfi_rate": 0.15,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.15,
+    "loss_cost": 0.78,
+    "keywords": [
+      "amusement",
+      "parks"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section III"
+  },
+  {
+    "code": "1021",
+    "section": "III",
+    "description": "Hoarding, Neon signs",
+    "category": 4,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.19,
+    "stfi_rate": 0.15,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.15,
+    "loss_cost": 0.99,
+    "keywords": [
+      "signs",
+      "neon",
+      "hoarding"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section III"
+  },
+  {
+    "code": "1022",
+    "section": "III",
+    "description": "Sports Galleries, Outdoor Stadiums",
+    "category": 3,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.24,
+    "stfi_rate": 0.15,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.15,
+    "loss_cost": 1.43,
+    "keywords": [
+      "outdoor",
+      "galleries",
+      "sports",
+      "stadiums"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section III"
+  },
+  {
+    "code": "1023",
+    "section": "III",
+    "description": "Shops dealing in goods otherwise not provided for",
+    "category": 2,
+    "category_tag": "Retail",
+    "flexa_rate": 0.79,
+    "stfi_rate": 0.15,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.15,
+    "loss_cost": 0.66,
+    "keywords": [
+      "otherwise",
+      "provided",
+      "shops",
+      "dealing",
+      "goods"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section III"
+  },
+  {
+    "code": "1024",
+    "section": "III",
+    "description": "Shops dealing in hazardous goods",
+    "category": 3,
+    "category_tag": "Retail",
+    "flexa_rate": 0.91,
+    "stfi_rate": 0.15,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.15,
+    "loss_cost": 0.84,
+    "keywords": [
+      "goods",
+      "hazardous",
+      "shops",
+      "dealing"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section III"
+  },
+  {
+    "code": "1025",
+    "section": "III",
+    "description": "Arms and Ammunition dealers",
+    "category": 1,
+    "category_tag": "Hazardous",
+    "flexa_rate": 0.85,
+    "stfi_rate": 0.15,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.15,
+    "loss_cost": 0.98,
+    "keywords": [
+      "dealers",
+      "ammunition",
+      "arms"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section III"
+  },
+  {
+    "code": "1026",
+    "section": "III",
+    "description": "Motor Vehicle showroom  including sales and  service",
+    "category": 3,
+    "category_tag": "Retail",
+    "flexa_rate": 0.56,
+    "stfi_rate": 0.15,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.15,
+    "loss_cost": 0.47,
+    "keywords": [
+      "sales",
+      "motor",
+      "including",
+      "vehicle",
+      "showroom",
+      "service"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section III"
+  },
+  {
+    "code": "1027",
+    "section": "III",
+    "description": "Fuel Station - Petrol/Diesel Kiosks [without CNG]",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.48,
+    "stfi_rate": 0.15,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.15,
+    "loss_cost": 0.53,
+    "keywords": [
+      "without",
+      "station",
+      "kiosks",
+      "petrol/diesel",
+      "fuel",
+      "cng"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section III"
+  },
+  {
+    "code": "1028",
+    "section": "III",
+    "description": "Fuel Station - Petrol/Diesel Kiosks [with CNG]",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.96,
+    "stfi_rate": 0.15,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.15,
+    "loss_cost": 1.11,
+    "keywords": [
+      "station",
+      "kiosks",
+      "petrol/diesel",
+      "fuel",
+      "cng"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section III"
+  },
+  {
+    "code": "1029",
+    "section": "III",
+    "description": "Data Processing/Call Centres/Business Process Outsourcing Centres",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.15,
+    "stfi_rate": 0.15,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.15,
+    "loss_cost": 0.14,
+    "keywords": [
+      "centres/business",
+      "outsourcing",
+      "process",
+      "centres",
+      "data",
+      "processing/call"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section III"
+  },
+  {
+    "code": "2001",
+    "section": "IV",
+    "description": "Abrasive Manufacturing",
+    "category": 2,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.82,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.697,
+    "keywords": [
+      "manufacturing",
+      "abrasive"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2002",
+    "section": "IV",
+    "description": "Aerated Water Factories",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.59,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.5015,
+    "keywords": [
+      "factories",
+      "aerated",
+      "water"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2003",
+    "section": "IV",
+    "description": "Aerial Ropeway including trolley stations",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.71,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.6035,
+    "keywords": [
+      "stations",
+      "trolley",
+      "aerial",
+      "ropeway",
+      "including"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2004",
+    "section": "IV",
+    "description": "Agarbatti Manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.98,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.683,
+    "keywords": [
+      "manufacturing",
+      "agarbatti"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2005",
+    "section": "IV",
+    "description": "Aircraft Hangers",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.98,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.833,
+    "keywords": [
+      "aircraft",
+      "hangers"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2006",
+    "section": "IV",
+    "description": "Airport Terminal Buildings [ including all facilities like Cafes, Shops etc]",
+    "category": 2,
+    "category_tag": "Retail",
+    "flexa_rate": 0.29,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.2465,
+    "keywords": [
+      "cafes",
+      "facilities",
+      "airport",
+      "like",
+      "shops",
+      "buildings",
+      "etc",
+      "including"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2008",
+    "section": "IV",
+    "description": "Aluminium, Zinc, Copper Factories",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.6,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.51,
+    "keywords": [
+      "zinc",
+      "aluminium",
+      "copper",
+      "factories"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2007",
+    "section": "IV",
+    "description": "Aluminium/ Magnesium Powder Plants",
+    "category": 4,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.06,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.901,
+    "keywords": [
+      "aluminium",
+      "magnesium",
+      "plants",
+      "powder"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2009",
+    "section": "IV",
+    "description": "Areca nut and/or Betel nut factories",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.94,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.799,
+    "keywords": [
+      "factories",
+      "betel",
+      "areca",
+      "and/or"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2010",
+    "section": "IV",
+    "description": "Asbestos Steam Packing and lagging manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.55,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.4675,
+    "keywords": [
+      "packing",
+      "asbestos",
+      "lagging",
+      "manufacturing",
+      "steam"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2011",
+    "section": "IV",
+    "description": "Atta and Cereal Grinding [Excluding Dal Mills]",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.73,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.6205,
+    "keywords": [
+      "mills",
+      "excluding",
+      "cereal",
+      "grinding",
+      "atta"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2012",
+    "section": "IV",
+    "description": "Audio/Video Cassette Manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.97,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.6745,
+    "keywords": [
+      "manufacturing",
+      "audio/video",
+      "cassette"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2212",
+    "section": "IV",
+    "description": "Automobile Filter Manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.18,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.003,
+    "keywords": [
+      "manufacturing",
+      "filter",
+      "automobile"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2013",
+    "section": "IV",
+    "description": "Automobile Manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.59,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.5015,
+    "keywords": [
+      "manufacturing",
+      "automobile"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2014",
+    "section": "IV",
+    "description": "Bakeries",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.84,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.714,
+    "keywords": [
+      "bakeries"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2015",
+    "section": "IV",
+    "description": "Basket Weavers and Cane Furniture Makers",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 3.19,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 2.7115,
+    "keywords": [
+      "weavers",
+      "cane",
+      "furniture",
+      "makers",
+      "basket"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2016",
+    "section": "IV",
+    "description": "Battery Manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.78,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.663,
+    "keywords": [
+      "manufacturing",
+      "battery"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2017",
+    "section": "IV",
+    "description": "Beedi Factories",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.18,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.003,
+    "keywords": [
+      "beedi",
+      "factories"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2018",
+    "section": "IV",
+    "description": "Biscuit Factories",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.82,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.697,
+    "keywords": [
+      "biscuit",
+      "factories"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2019",
+    "section": "IV",
+    "description": "Bituminised Paper and / or Hessian Cloth Manufacturing including Tar Felt Manufacturing",
+    "category": 4,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.64,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.394,
+    "keywords": [
+      "hessian",
+      "manufacturing",
+      "bituminised",
+      "paper",
+      "felt",
+      "including",
+      "cloth"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2020",
+    "section": "IV",
+    "description": "Book Binders, Envelope and Paper Bag Manufacturing",
+    "category": 3,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.36,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.156,
+    "keywords": [
+      "envelope",
+      "manufacturing",
+      "book",
+      "binders",
+      "paper"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2021",
+    "section": "IV",
+    "description": "Breweries",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.07,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.9095,
+    "keywords": [
+      "breweries"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2022",
+    "section": "IV",
+    "description": "Brickworks {including refractories and fire bricks}.",
+    "category": 3,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.41,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.3485,
+    "keywords": [
+      "brickworks",
+      "refractories",
+      "bricks",
+      "including",
+      "fire"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2023",
+    "section": "IV",
+    "description": "Bridges - Concrete / Steel",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.19,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.1615,
+    "keywords": [
+      "concrete",
+      "steel",
+      "bridges"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2024",
+    "section": "IV",
+    "description": "Bridges - Wooden",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.9,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.765,
+    "keywords": [
+      "wooden",
+      "bridges"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2025",
+    "section": "IV",
+    "description": "Building  in  course  of  construction",
+    "category": 4,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.22,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.187,
+    "keywords": [
+      "course",
+      "building",
+      "construction"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2026",
+    "section": "IV",
+    "description": "Cable Manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.12,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.952,
+    "keywords": [
+      "manufacturing",
+      "cable"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2027",
+    "section": "IV",
+    "description": "Camphor Manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.37,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.1645,
+    "keywords": [
+      "manufacturing",
+      "camphor"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2028",
+    "section": "IV",
+    "description": "Candle Works",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.63,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.3855,
+    "keywords": [
+      "works",
+      "candle"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2029",
+    "section": "IV",
+    "description": "Canning Factories",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.89,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.7565,
+    "keywords": [
+      "canning",
+      "factories"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2030",
+    "section": "IV",
+    "description": "Capsule Manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.79,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.6715,
+    "keywords": [
+      "manufacturing",
+      "capsule"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2031",
+    "section": "IV",
+    "description": "Carbon paper / Typewriter Ribbon Manufacturing",
+    "category": 4,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.43,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.2155,
+    "keywords": [
+      "manufacturing",
+      "typewriter",
+      "paper",
+      "ribbon",
+      "carbon"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2032",
+    "section": "IV",
+    "description": "Cardamom Factories",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.97,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.8245,
+    "keywords": [
+      "cardamom",
+      "factories"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2033",
+    "section": "IV",
+    "description": "Cardboard Box Manufacturing",
+    "category": 3,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.7,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.445,
+    "keywords": [
+      "manufacturing",
+      "cardboard"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2034",
+    "section": "IV",
+    "description": "Carpenters, Wood wool Manufacturing, Furniture Manufacturing and other wood worker shops [Excluding saw Mill]",
+    "category": 2,
+    "category_tag": "Retail",
+    "flexa_rate": 1.81,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.5385,
+    "keywords": [
+      "worker",
+      "mill",
+      "manufacturing",
+      "carpenters",
+      "wool",
+      "excluding",
+      "shops",
+      "furniture"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2035",
+    "section": "IV",
+    "description": "Carpet and Drugget Manufacturing [Cotton/jute/wool]",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 2.14,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.819,
+    "keywords": [
+      "manufacturing",
+      "carpet",
+      "cotton/jute/wool",
+      "drugget"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2036",
+    "section": "IV",
+    "description": "Carpet and Drugget Manufacturing [Others]",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.65,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.4025,
+    "keywords": [
+      "manufacturing",
+      "carpet",
+      "drugget",
+      "others"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2037",
+    "section": "IV",
+    "description": "Cashew nut Factories",
+    "category": 2,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.98,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.833,
+    "keywords": [
+      "factories",
+      "cashew"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2038",
+    "section": "IV",
+    "description": "Cattle feed Mill",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.64,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.544,
+    "keywords": [
+      "feed",
+      "mill",
+      "cattle"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2039",
+    "section": "IV",
+    "description": "Celluloid Goods Manufacturing",
+    "category": 1,
+    "category_tag": "Hazardous",
+    "flexa_rate": 7.86,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 6.681,
+    "keywords": [
+      "manufacturing",
+      "goods",
+      "celluloid"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2040",
+    "section": "IV",
+    "description": "Cement / asbestos/concrete products Manufacturing",
+    "category": 2,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.46,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.391,
+    "keywords": [
+      "manufacturing",
+      "products",
+      "asbestos/concrete",
+      "cement"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2041",
+    "section": "IV",
+    "description": "Cement Factories",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.61,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.5185,
+    "keywords": [
+      "factories",
+      "cement"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2042",
+    "section": "IV",
+    "description": "Ceramic Factories and Crockery and Stoneware pipe Manufacturing/Clay Works.",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.94,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.799,
+    "keywords": [
+      "ceramic",
+      "works",
+      "factories",
+      "manufacturing/clay",
+      "crockery",
+      "pipe",
+      "stoneware"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2043",
+    "section": "IV",
+    "description": "Chemical Manufacturing (Using materials  with Flash Point below 32*C), Bulk Drug Manufacturing",
+    "category": 4,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.67,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.4195,
+    "keywords": [
+      "flash",
+      "manufacturing",
+      "below",
+      "bulk",
+      "materials",
+      "chemical",
+      "drug",
+      "32*c"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2044",
+    "section": "IV",
+    "description": "Chemical Manufacturing (Others), Pharmaceuticals,  Toiletry products",
+    "category": 4,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.21,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.0285,
+    "keywords": [
+      "toiletry",
+      "others",
+      "manufacturing",
+      "pharmaceuticals",
+      "products",
+      "chemical"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2045",
+    "section": "IV",
+    "description": "Cigar and Cigarette Manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.74,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.629,
+    "keywords": [
+      "manufacturing",
+      "cigar",
+      "cigarette"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2046",
+    "section": "IV",
+    "description": "Cigarette Filter Manufacturing(Using Solvents with flash Point below 32*C)",
+    "category": 1,
+    "category_tag": "Hazardous",
+    "flexa_rate": 3.05,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 2.5925,
+    "keywords": [
+      "flash",
+      "solvents",
+      "filter",
+      "below",
+      "manufacturing(using",
+      "32*c",
+      "cigarette",
+      "point"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2047",
+    "section": "IV",
+    "description": "Cigarette Filter Manufacturing (Others)",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.27,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.0795,
+    "keywords": [
+      "manufacturing",
+      "filter",
+      "cigarette",
+      "others"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2048",
+    "section": "IV",
+    "description": "Cinema Film Production Studios",
+    "category": 2,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 3.17,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 2.6945,
+    "keywords": [
+      "studios",
+      "cinema",
+      "production",
+      "film"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2049",
+    "section": "IV",
+    "description": "Cinematography Film Editing, Laboratory and Sound recording rooms where Film Processing is carried out",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.64,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.544,
+    "keywords": [
+      "laboratory",
+      "processing",
+      "cinematography",
+      "editing",
+      "sound",
+      "rooms",
+      "film",
+      "carried"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2050",
+    "section": "IV",
+    "description": "Cinematography Film Editing, Laboratory and Sound recording rooms without Film Processing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.55,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.4675,
+    "keywords": [
+      "laboratory",
+      "processing",
+      "cinematography",
+      "editing",
+      "sound",
+      "rooms",
+      "film",
+      "without"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2051",
+    "section": "IV",
+    "description": "Cinema Theatres [For single screen]",
+    "category": 2,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.44,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.374,
+    "keywords": [
+      "for",
+      "cinema",
+      "theatres",
+      "single",
+      "screen"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2052",
+    "section": "IV",
+    "description": "Circus, Touring Drama Troupes and Touring Cinema Theatres",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 5.29,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 4.4965,
+    "keywords": [
+      "circus",
+      "cinema",
+      "drama",
+      "theatres",
+      "touring",
+      "troupes"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2053",
+    "section": "IV",
+    "description": "Cloth Proessing units situated  outside  the compound  of Textile  mills  and cloth processing   units   which are  not  owned  by the  textile  mills but are  situated  within  the   textile  mills   complex/compound.",
+    "category": 4,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.32,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.122,
+    "keywords": [
+      "units",
+      "textile",
+      "processing",
+      "proessing",
+      "mills",
+      "outside",
+      "complex/compound",
+      "compound"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2054",
+    "section": "IV",
+    "description": "Coal/cake/Charcoal ball and briquettes Manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.49,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.2665,
+    "keywords": [
+      "briquettes",
+      "coal/cake/charcoal",
+      "ball",
+      "manufacturing"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2055",
+    "section": "IV",
+    "description": "Coal Processing Plants",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.67,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.5695,
+    "keywords": [
+      "coal",
+      "processing",
+      "plants"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2056",
+    "section": "IV",
+    "description": "Coffee Curing, Roasting / Grinding",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.57,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.4845,
+    "keywords": [
+      "roasting",
+      "grinding",
+      "coffee",
+      "curing"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2057",
+    "section": "IV",
+    "description": "Coir Factories",
+    "category": 2,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 2.48,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 2.108,
+    "keywords": [
+      "factories",
+      "coir"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2058",
+    "section": "IV",
+    "description": "Collieries - Underground Machinery and pit head gear and Dragline Machine used in Collieries",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.28,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.088,
+    "keywords": [
+      "gear",
+      "head",
+      "machinery",
+      "dragline",
+      "used",
+      "machine",
+      "collieries",
+      "underground"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2059",
+    "section": "IV",
+    "description": "Condensed Milk Factories, Milk Pasteurising Plants and Dairies",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.52,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.442,
+    "keywords": [
+      "factories",
+      "milk",
+      "pasteurising",
+      "dairies",
+      "plants",
+      "condensed"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2060",
+    "section": "IV",
+    "description": "Confectionery Manufacturing Plants/Sugar Candy Manufacturing Plants/Sweet Meat Manufacturing Plants",
+    "category": 3,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.98,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.833,
+    "keywords": [
+      "plants/sweet",
+      "confectionery",
+      "plants/sugar",
+      "manufacturing",
+      "candy",
+      "plants",
+      "meat"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2209",
+    "section": "IV",
+    "description": "Contractors Plant and Machinery anywhere in India (at specified locations)",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.88,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.748,
+    "keywords": [
+      "plant",
+      "india",
+      "contractors",
+      "anywhere",
+      "specified",
+      "machinery",
+      "locations"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2061",
+    "section": "IV",
+    "description": "Contractors Plant and Machinery - At one location only",
+    "category": 2,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.77,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.6545,
+    "keywords": [
+      "plant",
+      "only",
+      "contractors",
+      "machinery",
+      "location"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2062",
+    "section": "IV",
+    "description": "Cork Products Manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 2.36,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 2.006,
+    "keywords": [
+      "manufacturing",
+      "products",
+      "cork"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2063",
+    "section": "IV",
+    "description": "Cotton Gin and Press Houses",
+    "category": 3,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 2.15,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.8275,
+    "keywords": [
+      "houses",
+      "cotton",
+      "press"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2064",
+    "section": "IV",
+    "description": "Cotton Seed cleaning / Delinting  Factory",
+    "category": 4,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 2.39,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 2.0315,
+    "keywords": [
+      "factory",
+      "delinting",
+      "cotton",
+      "cleaning",
+      "seed"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2065",
+    "section": "IV",
+    "description": "Dehydration Factories",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.74,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.629,
+    "keywords": [
+      "dehydration",
+      "factories"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2066",
+    "section": "IV",
+    "description": "Detergent Manufacturing with Sulphonation Plant",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.44,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.224,
+    "keywords": [
+      "manufacturing",
+      "plant",
+      "detergent",
+      "sulphonation"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2067",
+    "section": "IV",
+    "description": "Detergent Manufacturing (Others)",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.12,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.952,
+    "keywords": [
+      "manufacturing",
+      "detergent",
+      "others"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2231",
+    "section": "IV",
+    "description": "Disposable Diaper manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.18,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.003,
+    "keywords": [
+      "manufacturing",
+      "diaper",
+      "disposable"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2068",
+    "section": "IV",
+    "description": "Distilleries",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.83,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.7055,
+    "keywords": [
+      "distilleries"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2069",
+    "section": "IV",
+    "description": "Duplicating.stencil paper Manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.16,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.986,
+    "keywords": [
+      "manufacturing",
+      "duplicating.stencil",
+      "paper"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2070",
+    "section": "IV",
+    "description": "Electric  Generation Stations - Hydro Power  Stations",
+    "category": 3,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.54,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.459,
+    "keywords": [
+      "generation",
+      "stations",
+      "power",
+      "electric",
+      "hydro"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2071",
+    "section": "IV",
+    "description": "Electric Lamp/T.V. Picture Tube Manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.06,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.901,
+    "keywords": [
+      "tube",
+      "lamp/t.v",
+      "manufacturing",
+      "picture",
+      "electric"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2072",
+    "section": "IV",
+    "description": "Electronic Goods Manufacturing/Assembly",
+    "category": 3,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.0,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.85,
+    "keywords": [
+      "electronic",
+      "manufacturing/assembly",
+      "goods"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2074",
+    "section": "IV",
+    "description": "Enamel-ware factories",
+    "category": 4,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.01,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.8585,
+    "keywords": [
+      "factories",
+      "enamel-ware"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2221",
+    "section": "IV",
+    "description": "Electric Generation Stations- Biomass Power Stations",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.66,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.561,
+    "keywords": [
+      "generation",
+      "biomass",
+      "stations",
+      "power",
+      "electric",
+      "stations-"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2210",
+    "section": "IV",
+    "description": "Electric Generation Stations- Others",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.62,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.527,
+    "keywords": [
+      "generation",
+      "electric",
+      "stations-",
+      "others"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2218",
+    "section": "IV",
+    "description": "Electric Generation Stations- Solar Power Stations",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.62,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.527,
+    "keywords": [
+      "generation",
+      "stations",
+      "power",
+      "solar",
+      "electric",
+      "stations-"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2217",
+    "section": "IV",
+    "description": "Electric Generation Stations- Thermal Power Stations",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.39,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.3315,
+    "keywords": [
+      "generation",
+      "stations",
+      "power",
+      "thermal",
+      "electric",
+      "stations-"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2219",
+    "section": "IV",
+    "description": "Electric Generation Stations- Windmill",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.72,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.612,
+    "keywords": [
+      "generation",
+      "electric",
+      "stations-",
+      "windmill"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2073",
+    "section": "IV",
+    "description": "Electronic Software Parks/Electronic Software Development Units",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.19,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.1615,
+    "keywords": [
+      "electronic",
+      "parks/electronic",
+      "units",
+      "software",
+      "development"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2075",
+    "section": "IV",
+    "description": "Engineering Workshop-Structural Steel Fabricators, Sheet Metal fabricators",
+    "category": 2,
+    "category_tag": "Retail",
+    "flexa_rate": 0.38,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.323,
+    "keywords": [
+      "sheet",
+      "engineering",
+      "fabricators",
+      "metal",
+      "workshop-structural",
+      "steel"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2076",
+    "section": "IV",
+    "description": "Engineering Workshop [Others], Motor Vehicle Garages",
+    "category": 1,
+    "category_tag": "Retail",
+    "flexa_rate": 0.65,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.5525,
+    "keywords": [
+      "engineering",
+      "others",
+      "workshop",
+      "garages",
+      "motor",
+      "vehicle"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2227",
+    "section": "IV",
+    "description": "Engineering Workshop- Clock/Watch Manufacturing",
+    "category": 1,
+    "category_tag": "Retail",
+    "flexa_rate": 1.63,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.3855,
+    "keywords": [
+      "manufacturing",
+      "engineering",
+      "clock/watch",
+      "workshop-"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2222",
+    "section": "IV",
+    "description": "Engineering Workshop- Steel Plants",
+    "category": 1,
+    "category_tag": "Retail",
+    "flexa_rate": 0.44,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.374,
+    "keywords": [
+      "engineering",
+      "steel",
+      "plants",
+      "workshop-"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2224",
+    "section": "IV",
+    "description": "Engineering Workshop-Pipe Extruding, Stamping, Pressing, Forging Mills, Metal smelting, Foundries, Galvanising works",
+    "category": 4,
+    "category_tag": "Retail",
+    "flexa_rate": 0.44,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.374,
+    "keywords": [
+      "engineering",
+      "mills",
+      "galvanising",
+      "extruding",
+      "workshop-pipe",
+      "foundries",
+      "works",
+      "smelting"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2225",
+    "section": "IV",
+    "description": "Engineering Workshop-Metal Extraction, Ore processing (other than Aluminium, Copper, Zinc), Plant processing Raw sand into silica",
+    "category": 1,
+    "category_tag": "Retail",
+    "flexa_rate": 0.79,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.6715,
+    "keywords": [
+      "zinc",
+      "engineering",
+      "processing",
+      "aluminium",
+      "plant",
+      "silica",
+      "sand",
+      "extraction"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2077",
+    "section": "IV",
+    "description": "Exhibitions, Fetes, Mandaps",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 2.58,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 2.193,
+    "keywords": [
+      "mandaps",
+      "fetes",
+      "exhibitions"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2078",
+    "section": "IV",
+    "description": "Explosives / Blasting Factories",
+    "category": 1,
+    "category_tag": "Hazardous",
+    "flexa_rate": 2.07,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.7595,
+    "keywords": [
+      "blasting",
+      "factories",
+      "explosives"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2079",
+    "section": "IV",
+    "description": "Fertiliser Manufacturing [other than those rateable under Petrochemical Tariff]",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.36,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.156,
+    "keywords": [
+      "petrochemical",
+      "those",
+      "manufacturing",
+      "tariff",
+      "rateable",
+      "fertiliser",
+      "than"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2080",
+    "section": "IV",
+    "description": "Filter and wax paper Manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 2.39,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 2.0315,
+    "keywords": [
+      "manufacturing",
+      "filter",
+      "paper"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2081",
+    "section": "IV",
+    "description": "Fireworks Manufacturing",
+    "category": 1,
+    "category_tag": "Hazardous",
+    "flexa_rate": 2.4,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 2.04,
+    "keywords": [
+      "fireworks",
+      "manufacturing"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2082",
+    "section": "IV",
+    "description": "Flax / Hemp Mills",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.15,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.9775,
+    "keywords": [
+      "mills",
+      "flax",
+      "hemp"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2083",
+    "section": "IV",
+    "description": "Flour Mills",
+    "category": 2,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.33,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.1305,
+    "keywords": [
+      "flour",
+      "mills"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2084",
+    "section": "IV",
+    "description": "Foamed Plastics Manufacturing and / or converting plants",
+    "category": 3,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 3.2,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 2.72,
+    "keywords": [
+      "manufacturing",
+      "foamed",
+      "converting",
+      "plants",
+      "plastics"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2085",
+    "section": "IV",
+    "description": "Foam Rubber Manufacturing",
+    "category": 3,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 2.98,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 2.533,
+    "keywords": [
+      "manufacturing",
+      "rubber",
+      "foam"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2086",
+    "section": "IV",
+    "description": "French Polish Manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 2.8,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 2.38,
+    "keywords": [
+      "manufacturing",
+      "french",
+      "polish"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2087",
+    "section": "IV",
+    "description": "Fruit and vegetable drying/dehydrating factories",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.96,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.816,
+    "keywords": [
+      "fruit",
+      "drying/dehydrating",
+      "factories",
+      "vegetable"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2088",
+    "section": "IV",
+    "description": "Fruit products and Condiment Factories (including fruit pulp making)",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.74,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.629,
+    "keywords": [
+      "pulp",
+      "factories",
+      "products",
+      "including",
+      "making",
+      "condiment",
+      "fruit"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2089",
+    "section": "IV",
+    "description": "Garment Makers, Topee, Hats and the like makers",
+    "category": 2,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.12,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.952,
+    "keywords": [
+      "hats",
+      "garment",
+      "like",
+      "makers",
+      "topee"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2090",
+    "section": "IV",
+    "description": "Ghee Factories including vegetable Ghee mfg.",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.03,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.8755,
+    "keywords": [
+      "ghee",
+      "vegetable",
+      "factories",
+      "mfg",
+      "including"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2091",
+    "section": "IV",
+    "description": "Glass Fibre Manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.92,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.782,
+    "keywords": [
+      "manufacturing",
+      "fibre",
+      "glass"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2092",
+    "section": "IV",
+    "description": "Glass wool Manufacturing",
+    "category": 4,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.43,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.2155,
+    "keywords": [
+      "manufacturing",
+      "wool",
+      "glass"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2093",
+    "section": "IV",
+    "description": "Glass Manufacturing/Automobile Glass Manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.1,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.935,
+    "keywords": [
+      "manufacturing",
+      "glass",
+      "manufacturing/automobile"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2094",
+    "section": "IV",
+    "description": "Gold thread factories / Gilding factories",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.74,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.629,
+    "keywords": [
+      "gilding",
+      "factories",
+      "gold",
+      "thread"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2098",
+    "section": "IV",
+    "description": "Grain/seeds disintegrating/crushing/ Decorticating factories/ Dal mills.",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.04,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.884,
+    "keywords": [
+      "mills",
+      "factories",
+      "disintegrating/crushing",
+      "grain/seeds",
+      "decorticating"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2096",
+    "section": "IV",
+    "description": "Granite Factories (Others)",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.28,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.238,
+    "keywords": [
+      "factories",
+      "granite",
+      "others"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2095",
+    "section": "IV",
+    "description": "Granite Factories using inflammable solvents",
+    "category": 1,
+    "category_tag": "Hazardous",
+    "flexa_rate": 0.66,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.561,
+    "keywords": [
+      "factories",
+      "granite",
+      "solvents",
+      "inflammable"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2097",
+    "section": "IV",
+    "description": "Graphite electrode Manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.13,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.9605,
+    "keywords": [
+      "manufacturing",
+      "graphite",
+      "electrode"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2099",
+    "section": "IV",
+    "description": "Grease / Wax Manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.72,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.462,
+    "keywords": [
+      "manufacturing",
+      "grease"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2100",
+    "section": "IV",
+    "description": "Green Houses/ Algae/ Spirulina and the like",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.11,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.9435,
+    "keywords": [
+      "spirulina",
+      "green",
+      "like",
+      "algae",
+      "houses"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2101",
+    "section": "IV",
+    "description": "Gum/Glue/Gelatine Manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.13,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.9605,
+    "keywords": [
+      "manufacturing",
+      "gum/glue/gelatine"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2102",
+    "section": "IV",
+    "description": "Gypsum board manufacturer",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.84,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.714,
+    "keywords": [
+      "board",
+      "manufacturer",
+      "gypsum"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2103",
+    "section": "IV",
+    "description": "Hoisery,lace, Embroidery/Thread factories",
+    "category": 2,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.33,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.1305,
+    "keywords": [
+      "hoisery,lace",
+      "factories",
+      "embroidery/thread"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2104",
+    "section": "IV",
+    "description": "Ice candy and Ice cream Manufacturing",
+    "category": 2,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.71,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.6035,
+    "keywords": [
+      "manufacturing",
+      "candy",
+      "cream"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2105",
+    "section": "IV",
+    "description": "Ice factories",
+    "category": 4,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.61,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.5185,
+    "keywords": [
+      "factories"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2106",
+    "section": "IV",
+    "description": "Incandescent Gas mantle Manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.42,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.207,
+    "keywords": [
+      "manufacturing",
+      "incandescent",
+      "mantle"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2107",
+    "section": "IV",
+    "description": "Industrial Diamonds Manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.59,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.5015,
+    "keywords": [
+      "diamonds",
+      "industrial",
+      "manufacturing"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2108",
+    "section": "IV",
+    "description": "Industrial Gas Manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.6,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.36,
+    "keywords": [
+      "manufacturing",
+      "industrial"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2109",
+    "section": "IV",
+    "description": "Ink (excluding printing ink) Manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.1,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.935,
+    "keywords": [
+      "manufacturing",
+      "excluding",
+      "printing",
+      "ink"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2110",
+    "section": "IV",
+    "description": "Jaggery Manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.82,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.697,
+    "keywords": [
+      "manufacturing",
+      "jaggery"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2111",
+    "section": "IV",
+    "description": "Jute Mills",
+    "category": 4,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 3.1,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 2.635,
+    "keywords": [
+      "jute",
+      "mills"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2112",
+    "section": "IV",
+    "description": "Katha Manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.62,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.377,
+    "keywords": [
+      "manufacturing",
+      "katha"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2113",
+    "section": "IV",
+    "description": "Khandsari Sugar Manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.93,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.7905,
+    "keywords": [
+      "manufacturing",
+      "khandsari",
+      "sugar"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2114",
+    "section": "IV",
+    "description": "Lac or Shellac Factories",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.19,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.0115,
+    "keywords": [
+      "shellac",
+      "factories"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2115",
+    "section": "IV",
+    "description": "Leather Cloth Factories",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 2.38,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 2.023,
+    "keywords": [
+      "leather",
+      "factories",
+      "cloth"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2116",
+    "section": "IV",
+    "description": "Leather Goods Manufacturing ( incl. boot/shoe)",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.31,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.1135,
+    "keywords": [
+      "incl",
+      "manufacturing",
+      "leather",
+      "boot/shoe",
+      "goods"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2117",
+    "section": "IV",
+    "description": "Lime Kiln",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.6,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.51,
+    "keywords": [
+      "lime",
+      "kiln"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2119",
+    "section": "IV",
+    "description": "Liquified Gas Bottling/ Recovery Plants",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.8,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.68,
+    "keywords": [
+      "recovery",
+      "liquified",
+      "bottling",
+      "plants"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2118",
+    "section": "IV",
+    "description": "Lithographic presses",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.06,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.901,
+    "keywords": [
+      "presses",
+      "lithographic"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2120",
+    "section": "IV",
+    "description": "Malt Extraction Plants",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.82,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.697,
+    "keywords": [
+      "extraction",
+      "malt",
+      "plants"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2121",
+    "section": "IV",
+    "description": "Man-made Fibre Manufacturing (using Cellulose)",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.43,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.3655,
+    "keywords": [
+      "manufacturing",
+      "man-made",
+      "cellulose",
+      "fibre"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2122",
+    "section": "IV",
+    "description": "Man-made Fibre Manufacturing Plant (Others)",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.62,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.527,
+    "keywords": [
+      "others",
+      "manufacturing",
+      "plant",
+      "fibre",
+      "man-made"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2123",
+    "section": "IV",
+    "description": "Manure Blending works",
+    "category": 4,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.84,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.714,
+    "keywords": [
+      "works",
+      "blending",
+      "manure"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2124",
+    "section": "IV",
+    "description": "Match Factories",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 2.85,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 2.4225,
+    "keywords": [
+      "match",
+      "factories"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2125",
+    "section": "IV",
+    "description": "Mattress and Pillow making",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 3.55,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 3.0175,
+    "keywords": [
+      "making",
+      "pillow",
+      "mattress"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2128",
+    "section": "IV",
+    "description": "Metal/Tin printers",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.81,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.5385,
+    "keywords": [
+      "printers",
+      "metal/tin"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2127",
+    "section": "IV",
+    "description": "Metallising Works (others)",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.87,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.7395,
+    "keywords": [
+      "works",
+      "metallising",
+      "others"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2126",
+    "section": "IV",
+    "description": "Metallizing works ( involving metals only)",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.52,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.442,
+    "keywords": [
+      "involving",
+      "metallizing",
+      "works",
+      "only",
+      "metals"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2129",
+    "section": "IV",
+    "description": "Mica Products Manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.9,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.765,
+    "keywords": [
+      "manufacturing",
+      "products",
+      "mica"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2130",
+    "section": "IV",
+    "description": "Mineral Oil blending and processing",
+    "category": 2,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.66,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.561,
+    "keywords": [
+      "mineral",
+      "blending",
+      "processing"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2131",
+    "section": "IV",
+    "description": "Mosaic Factories",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.71,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.6035,
+    "keywords": [
+      "mosaic",
+      "factories"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2229",
+    "section": "IV",
+    "description": "Multiplex Theatre Complexes",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.69,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.5865,
+    "keywords": [
+      "complexes",
+      "theatre",
+      "multiplex"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2132",
+    "section": "IV",
+    "description": "Mushroom Growing Premises (Excluding Crops)",
+    "category": 3,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.68,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.578,
+    "keywords": [
+      "growing",
+      "crops",
+      "excluding",
+      "premises",
+      "mushroom"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2133",
+    "section": "IV",
+    "description": "Nitro Cellulose Manufacturing- Industrial Grade",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 11.12,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 9.452,
+    "keywords": [
+      "industrial",
+      "grade",
+      "cellulose",
+      "nitro",
+      "manufacturing-"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2134",
+    "section": "IV",
+    "description": "Non-woven fabric Manufacturing",
+    "category": 4,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 2.17,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.8445,
+    "keywords": [
+      "manufacturing",
+      "non-woven",
+      "fabric"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2139",
+    "section": "IV",
+    "description": "Oil and Leather Cloth Factories",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.83,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.5555,
+    "keywords": [
+      "leather",
+      "factories",
+      "cloth"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2136",
+    "section": "IV",
+    "description": "Oil Distillation Plants (essential)",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.44,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.224,
+    "keywords": [
+      "essential",
+      "distillation",
+      "plants"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2135",
+    "section": "IV",
+    "description": "Oil Extraction",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.66,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.411,
+    "keywords": [
+      "extraction"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2137",
+    "section": "IV",
+    "description": "Oil Mills refining ( Veg/Animal)",
+    "category": 4,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.19,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.0115,
+    "keywords": [
+      "veg/animal",
+      "refining",
+      "mills"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2138",
+    "section": "IV",
+    "description": "Oil Mills (Vegetable)",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.11,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.9435,
+    "keywords": [
+      "mills",
+      "vegetable"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2140",
+    "section": "IV",
+    "description": "Paint factories (Water based)",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.99,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.8415,
+    "keywords": [
+      "based",
+      "paint",
+      "factories",
+      "water"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2141",
+    "section": "IV",
+    "description": "Paint (others) & Varnish Factories",
+    "category": 3,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 2.18,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.853,
+    "keywords": [
+      "paint",
+      "factories",
+      "varnish",
+      "others"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2142",
+    "section": "IV",
+    "description": "Paints - Nitrocellulose based",
+    "category": 4,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 2.65,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 2.2525,
+    "keywords": [
+      "based",
+      "nitrocellulose",
+      "paints"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2143",
+    "section": "IV",
+    "description": "Pan Masala making",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.91,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.7735,
+    "keywords": [
+      "making",
+      "masala"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2144",
+    "section": "IV",
+    "description": "Paper and Cardboard Mills (including Lamination)",
+    "category": 4,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.25,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.0625,
+    "keywords": [
+      "mills",
+      "cardboard",
+      "paper",
+      "including",
+      "lamination"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2145",
+    "section": "IV",
+    "description": "Particle Board Manufacturing",
+    "category": 2,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 2.18,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.853,
+    "keywords": [
+      "manufacturing",
+      "board",
+      "particle"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2146",
+    "section": "IV",
+    "description": "Pencil Manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.49,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.2665,
+    "keywords": [
+      "manufacturing",
+      "pencil"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2147",
+    "section": "IV",
+    "description": "Petroleum Coke Calcination",
+    "category": 1,
+    "category_tag": "Hazardous",
+    "flexa_rate": 0.93,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.7905,
+    "keywords": [
+      "petroleum",
+      "coke",
+      "calcination"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2148",
+    "section": "IV",
+    "description": "Plastic Goods Manufacturing(excluding Foam Plastics)/I. Using Plastic raw materials having calorific value upto 15000 btu/lb Polytetrafluoroethylene, polyvinylidene chloride/fluoride, Phenol/Urea-formaldehyde, Silicones",
+    "category": 3,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.94,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.649,
+    "keywords": [
+      "silicones",
+      "having",
+      "btu/lb",
+      "polytetrafluoroethylene",
+      "plastic",
+      "chloride/fluoride",
+      "value",
+      "materials"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2149",
+    "section": "IV",
+    "description": "Plywood / Wood veneering Factories/ Laminating Factories",
+    "category": 2,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 2.87,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 2.4395,
+    "keywords": [
+      "plywood",
+      "factories",
+      "laminating",
+      "veneering",
+      "wood"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2150",
+    "section": "IV",
+    "description": "Polyester Film Manufacturing / BOPP Film Manufacturing",
+    "category": 2,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.8,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.68,
+    "keywords": [
+      "manufacturing",
+      "bopp",
+      "polyester",
+      "film"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2151",
+    "section": "IV",
+    "description": "Port Premises including jetties and equipment thereon And other port facilities",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.36,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.306,
+    "keywords": [
+      "facilities",
+      "premises",
+      "port",
+      "jetties",
+      "equipment",
+      "thereon",
+      "including"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2152",
+    "section": "IV",
+    "description": "Poultry Farms (Excluding birds therein)",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.59,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.5015,
+    "keywords": [
+      "birds",
+      "therein",
+      "excluding",
+      "poultry",
+      "farms"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2155",
+    "section": "IV",
+    "description": "Presses for carpets, rugs and tobacco",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 2.6,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 2.21,
+    "keywords": [
+      "tobacco",
+      "rugs",
+      "carpets",
+      "presses"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2153",
+    "section": "IV",
+    "description": "Presses for coir fibres/waste/Grass/fodder/boosa/Jute",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 5.89,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 5.0065,
+    "keywords": [
+      "fibres/waste/grass/fodder/boosa/jute",
+      "coir",
+      "presses"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2154",
+    "section": "IV",
+    "description": "Presses for coir yarn / cotton/senna leaves",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 2.86,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 2.431,
+    "keywords": [
+      "cotton/senna",
+      "coir",
+      "leaves",
+      "yarn",
+      "presses"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2156",
+    "section": "IV",
+    "description": "Presses for hides and skins",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.36,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.156,
+    "keywords": [
+      "skins",
+      "hides",
+      "presses"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2157",
+    "section": "IV",
+    "description": "Printing Ink Manufacturing / Roller composition factories",
+    "category": 4,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.88,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.598,
+    "keywords": [
+      "printing",
+      "manufacturing",
+      "factories",
+      "roller",
+      "composition"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2158",
+    "section": "IV",
+    "description": "Printing Press",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.18,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.003,
+    "keywords": [
+      "printing",
+      "press"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2159",
+    "section": "IV",
+    "description": "Pulverising Plants(Metals and non-hazardous goods)",
+    "category": 1,
+    "category_tag": "Hazardous",
+    "flexa_rate": 0.47,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.3995,
+    "keywords": [
+      "plants(metals",
+      "goods",
+      "non-hazardous",
+      "pulverising"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2160",
+    "section": "IV",
+    "description": "Pulverizing Plants (Others)",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.36,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.156,
+    "keywords": [
+      "pulverizing",
+      "plants",
+      "others"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2161",
+    "section": "IV",
+    "description": "Rice Mills",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.88,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.748,
+    "keywords": [
+      "rice",
+      "mills"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2162",
+    "section": "IV",
+    "description": "Rice Polishing Units",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.01,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.8585,
+    "keywords": [
+      "units",
+      "polishing",
+      "rice"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2163",
+    "section": "IV",
+    "description": "Rope works (Plastic), Assembling of Plastic Goods such as Toys and the like",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.14,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.969,
+    "keywords": [
+      "rope",
+      "such",
+      "toys",
+      "works",
+      "plastic",
+      "assembling",
+      "like",
+      "goods"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2164",
+    "section": "IV",
+    "description": "Rope Works (others)",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.69,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.5865,
+    "keywords": [
+      "works",
+      "rope",
+      "others"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2165",
+    "section": "IV",
+    "description": "Rubber Factories",
+    "category": 4,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.88,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.598,
+    "keywords": [
+      "rubber",
+      "factories"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2166",
+    "section": "IV",
+    "description": "Rubber Goods Mfg with Spreading",
+    "category": 4,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 2.3,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.955,
+    "keywords": [
+      "spreading",
+      "rubber",
+      "goods"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2167",
+    "section": "IV",
+    "description": "Rubber Goods Manufacturing without spreading",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.29,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.0965,
+    "keywords": [
+      "spreading",
+      "manufacturing",
+      "rubber",
+      "without",
+      "goods"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2168",
+    "section": "IV",
+    "description": "Salt crushing Factories and Refineries",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.54,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.459,
+    "keywords": [
+      "refineries",
+      "factories",
+      "salt",
+      "crushing"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2169",
+    "section": "IV",
+    "description": "Saw Mills (including Timber Merchants premises where sawing is done).",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 3.07,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 2.6095,
+    "keywords": [
+      "timber",
+      "mills",
+      "done",
+      "premises",
+      "including",
+      "merchants",
+      "sawing"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2170",
+    "section": "IV",
+    "description": "Sea Food / Meat Processing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.01,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.8585,
+    "keywords": [
+      "food",
+      "processing",
+      "meat"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2171",
+    "section": "IV",
+    "description": "Silk Mills / Spun Silk Mills",
+    "category": 4,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.95,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.8075,
+    "keywords": [
+      "silk",
+      "mills",
+      "spun"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2230",
+    "section": "IV",
+    "description": "Shopping Malls (other than multiplexes)",
+    "category": 1,
+    "category_tag": "Retail",
+    "flexa_rate": 0.49,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.4165,
+    "keywords": [
+      "malls",
+      "multiplexes",
+      "than",
+      "shopping"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2172",
+    "section": "IV",
+    "description": "Snuff Manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.93,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.7905,
+    "keywords": [
+      "snuff",
+      "manufacturing"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2173",
+    "section": "IV",
+    "description": "Soap Manufacturing",
+    "category": 4,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.09,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.9265,
+    "keywords": [
+      "manufacturing",
+      "soap"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2174",
+    "section": "IV",
+    "description": "Sponge Iron Plants",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.02,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.867,
+    "keywords": [
+      "plants",
+      "sponge",
+      "iron"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2175",
+    "section": "IV",
+    "description": "Spray Painting, Powder coating",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.42,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.207,
+    "keywords": [
+      "coating",
+      "spray",
+      "painting",
+      "powder"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2176",
+    "section": "IV",
+    "description": "Stables (excluding animals)",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.69,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.5865,
+    "keywords": [
+      "stables",
+      "excluding",
+      "animals"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2177",
+    "section": "IV",
+    "description": "Starch Factories",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.71,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.6035,
+    "keywords": [
+      "starch",
+      "factories"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2178",
+    "section": "IV",
+    "description": "Stone quarries",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.27,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.2295,
+    "keywords": [
+      "stone",
+      "quarries"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2180",
+    "section": "IV",
+    "description": "Sugar factories",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.57,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.4845,
+    "keywords": [
+      "factories",
+      "sugar"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2181",
+    "section": "IV",
+    "description": "Surgical Cotton Manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 3.07,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 2.6095,
+    "keywords": [
+      "manufacturing",
+      "surgical",
+      "cotton"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2183",
+    "section": "IV",
+    "description": "Tanneries",
+    "category": 4,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.53,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.4505,
+    "keywords": [
+      "tanneries"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2184",
+    "section": "IV",
+    "description": "Tapioca factories",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.92,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.782,
+    "keywords": [
+      "tapioca",
+      "factories"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2185",
+    "section": "IV",
+    "description": "Tarpaulin and canvas proofing factories",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 2.31,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.9635,
+    "keywords": [
+      "factories",
+      "proofing",
+      "canvas",
+      "tarpaulin"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2186",
+    "section": "IV",
+    "description": "Tea blending/packing factories",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.84,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.714,
+    "keywords": [
+      "factories",
+      "blending/packing"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2187",
+    "section": "IV",
+    "description": "Tea Factories",
+    "category": 4,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.07,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.9095,
+    "keywords": [
+      "factories"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2188",
+    "section": "IV",
+    "description": "Telephone Exchanges",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.64,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.394,
+    "keywords": [
+      "telephone",
+      "exchanges"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2189",
+    "section": "IV",
+    "description": "Textile Mills - Spinning Mills",
+    "category": 3,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.16,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.986,
+    "keywords": [
+      "textile",
+      "spinning",
+      "mills"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2211",
+    "section": "IV",
+    "description": "Textile Mills- Composite Mills",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.62,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.377,
+    "keywords": [
+      "composite",
+      "textile",
+      "mills-",
+      "mills"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2190",
+    "section": "IV",
+    "description": "Tile & Pottery works",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.76,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.646,
+    "keywords": [
+      "tile",
+      "works",
+      "pottery"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2191",
+    "section": "IV",
+    "description": "Tiny sector Industries with values at risk not exceeding Rs 10 lakhs",
+    "category": 3,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.78,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.663,
+    "keywords": [
+      "industries",
+      "tiny",
+      "exceeding",
+      "sector",
+      "lakhs",
+      "risk",
+      "values"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2192",
+    "section": "IV",
+    "description": "Tissue Culture Premises (Excluding Crops)",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.83,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.7055,
+    "keywords": [
+      "culture",
+      "crops",
+      "excluding",
+      "premises",
+      "tissue"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2193",
+    "section": "IV",
+    "description": "Tobacco Curing / Redrying Factories",
+    "category": 2,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.15,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.9775,
+    "keywords": [
+      "factories",
+      "redrying",
+      "tobacco",
+      "curing"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2194",
+    "section": "IV",
+    "description": "Tobacco grinding/ crushing Manufacturing",
+    "category": 3,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.01,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.8585,
+    "keywords": [
+      "manufacturing",
+      "grinding",
+      "tobacco",
+      "crushing"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2195",
+    "section": "IV",
+    "description": "Turpentine and rosin distilleries",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 3.34,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 2.839,
+    "keywords": [
+      "rosin",
+      "distilleries",
+      "turpentine"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2197",
+    "section": "IV",
+    "description": "Tyre Retreading and Resoling factories",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.75,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.4875,
+    "keywords": [
+      "tyre",
+      "factories",
+      "retreading",
+      "resoling"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2196",
+    "section": "IV",
+    "description": "Tyres and Tubes Manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.83,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.7055,
+    "keywords": [
+      "manufacturing",
+      "tubes",
+      "tyres"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2198",
+    "section": "IV",
+    "description": "Umbrella Assembly factories",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.85,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.7225,
+    "keywords": [
+      "umbrella",
+      "assembly",
+      "factories"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2199",
+    "section": "IV",
+    "description": "Velvet Cloth Manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.66,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.411,
+    "keywords": [
+      "manufacturing",
+      "velvet",
+      "cloth"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2200",
+    "section": "IV",
+    "description": "Vermicelli factories",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.65,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.5525,
+    "keywords": [
+      "factories",
+      "vermicelli"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2201",
+    "section": "IV",
+    "description": "Weigh Bridges",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.9,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.765,
+    "keywords": [
+      "weigh",
+      "bridges"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2202",
+    "section": "IV",
+    "description": "Weaving Mills",
+    "category": 2,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.04,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.884,
+    "keywords": [
+      "weaving",
+      "mills"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2203",
+    "section": "IV",
+    "description": "Wheat Threshers",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 4.58,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 3.893,
+    "keywords": [
+      "threshers",
+      "wheat"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2204",
+    "section": "IV",
+    "description": "Wood seasoning/treatment/ impregnation",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.12,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.952,
+    "keywords": [
+      "seasoning/treatment",
+      "wood",
+      "impregnation"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2205",
+    "section": "IV",
+    "description": "Wool cleaning and pressing factories",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.18,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.003,
+    "keywords": [
+      "cleaning",
+      "factories",
+      "wool",
+      "pressing"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2206",
+    "section": "IV",
+    "description": "Woollen Mills/Fur garments & accessories",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.31,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.1135,
+    "keywords": [
+      "woollen",
+      "accessories",
+      "mills/fur",
+      "garments"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2207",
+    "section": "IV",
+    "description": "Yarn Processing",
+    "category": 4,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.19,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.0115,
+    "keywords": [
+      "processing",
+      "yarn"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2208",
+    "section": "IV",
+    "description": "Zip fasteners Manufacturing",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.3,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.105,
+    "keywords": [
+      "manufacturing",
+      "fasteners"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "2216",
+    "section": "IV",
+    "description": "Plastic Goods Manufacturing (excluding Foam Plastics)/ II. Using Plastic raw materials having calorific value of above 15000 btu/lb polyethylene, Polypropylene, Prolystyrene, Polyalphamethylstyrene, Acrylonitrilebutadiene-styrene, Polybutylene.",
+    "category": 3,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.54,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.309,
+    "keywords": [
+      "having",
+      "btu/lb",
+      "plastic",
+      "value",
+      "acrylonitrilebutadiene-styrene",
+      "polyalphamethylstyrene",
+      "polyethylene",
+      "excluding"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV"
+  },
+  {
+    "code": "3001",
+    "section": "V",
+    "description": "Analytical / Quality Control Laboratories",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.6,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.51,
+    "keywords": [
+      "quality",
+      "laboratories",
+      "control",
+      "analytical"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section V"
+  },
+  {
+    "code": "3002",
+    "section": "V",
+    "description": "Boiler House",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.41,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.3485,
+    "keywords": [
+      "house",
+      "boiler"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section V"
+  },
+  {
+    "code": "3003",
+    "section": "V",
+    "description": "Dams",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.35,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.2975,
+    "keywords": [
+      "dams"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section V"
+  },
+  {
+    "code": "3004",
+    "section": "V",
+    "description": "Effluent /Sewage Treatment Plant",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.68,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.578,
+    "keywords": [
+      "plant",
+      "effluent",
+      "treatment",
+      "sewage"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section V"
+  },
+  {
+    "code": "3005",
+    "section": "V",
+    "description": "Electric Sub-Stations, Loco sheds",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.27,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.2295,
+    "keywords": [
+      "loco",
+      "electric",
+      "sub-stations",
+      "sheds"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section V"
+  },
+  {
+    "code": "3006",
+    "section": "V",
+    "description": "Electric Transmission / Distribution Lines",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.18,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.153,
+    "keywords": [
+      "distribution",
+      "electric",
+      "transmission",
+      "lines"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section V"
+  },
+  {
+    "code": "3007",
+    "section": "V",
+    "description": "Pipe lines (carrying water only)",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.44,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.374,
+    "keywords": [
+      "lines",
+      "water",
+      "only",
+      "pipe",
+      "carrying"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section V"
+  },
+  {
+    "code": "3008",
+    "section": "V",
+    "description": "Pipe lines (others)",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.44,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.374,
+    "keywords": [
+      "pipe",
+      "lines",
+      "others"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section V"
+  },
+  {
+    "code": "3009",
+    "section": "V",
+    "description": "Pump House (Water)",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.34,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.289,
+    "keywords": [
+      "pump",
+      "house",
+      "water"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section V"
+  },
+  {
+    "code": "3010",
+    "section": "V",
+    "description": "Pump House (Others)",
+    "category": 2,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.39,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.1815,
+    "keywords": [
+      "pump",
+      "house",
+      "others"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section V"
+  },
+  {
+    "code": "3011",
+    "section": "V",
+    "description": "Railway tracks",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.78,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.663,
+    "keywords": [
+      "railway",
+      "tracks"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section V"
+  },
+  {
+    "code": "3012",
+    "section": "V",
+    "description": "Roads",
+    "category": 4,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.55,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.4675,
+    "keywords": [
+      "roads"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section V"
+  },
+  {
+    "code": "3013",
+    "section": "V",
+    "description": "Water Treatment Plants/ Water Tanks",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.15,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.1275,
+    "keywords": [
+      "tanks",
+      "treatment",
+      "water",
+      "plants"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section V"
+  },
+  {
+    "code": "3014",
+    "section": "V",
+    "description": "Wireless Transmitting Stations",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.62,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.527,
+    "keywords": [
+      "wireless",
+      "transmitting",
+      "stations"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section V"
+  },
+  {
+    "code": "3015",
+    "section": "V",
+    "description": "Compressor Houses- Compressors handling air, Inert gas and CO2",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.7,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.595,
+    "keywords": [
+      "air",
+      "compressors",
+      "handling",
+      "houses-",
+      "compressor",
+      "inert"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section V"
+  },
+  {
+    "code": "3016",
+    "section": "V",
+    "description": "Compressor Houses- Compressor (others)",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 2.01,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.7085,
+    "keywords": [
+      "compressor",
+      "houses-",
+      "others"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section V"
+  },
+  {
+    "code": "3017",
+    "section": "V",
+    "description": "Boundary Walls - Made up of Combustible Material",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.51,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.2835,
+    "keywords": [
+      "combustible",
+      "boundary",
+      "walls",
+      "material",
+      "made"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section V"
+  },
+  {
+    "code": "3018",
+    "section": "V",
+    "description": "Boundary Walls - Others",
+    "category": 3,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.68,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.578,
+    "keywords": [
+      "others",
+      "walls",
+      "boundary"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section V"
+  },
+  {
+    "code": "3019",
+    "section": "V",
+    "description": "Electric Crematoriums",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.6,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.51,
+    "keywords": [
+      "crematoriums",
+      "electric"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section V"
+  },
+  {
+    "code": "4001",
+    "section": "VI",
+    "description": "Storage of Non-hazardous goods(Godowns & Silos) subject to warranty that hazardous goods of Category I, II, III , Coir waste, Coir fibre and Caddies are not stored therein.",
+    "category": 1,
+    "category_tag": "Warehouse",
+    "flexa_rate": 0.55,
+    "stfi_rate": 0.35,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.4675,
+    "keywords": [
+      "that",
+      "hazardous",
+      "caddies",
+      "subject",
+      "therein",
+      "silos",
+      "warranty",
+      "stored"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section VI"
+  },
+  {
+    "code": "4002",
+    "section": "VI",
+    "description": "Storage of Category I hazardous Goods (Godowns & Silos) subject to warranty that goods listed in Category II, III, Coir waste, Coir fibre and Caddies are not stored therein.",
+    "category": 1,
+    "category_tag": "Warehouse",
+    "flexa_rate": 1.12,
+    "stfi_rate": 0.35,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.952,
+    "keywords": [
+      "that",
+      "hazardous",
+      "listed",
+      "caddies",
+      "therein",
+      "silos",
+      "warranty",
+      "godowns"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section VI"
+  },
+  {
+    "code": "4012",
+    "section": "VI",
+    "description": "Storage of Non-hazardous goods(open) subject to warranty that hazardous goods of Category I, II, III , Coir waste, Coir fibre and Caddies are not stored therein.",
+    "category": 2,
+    "category_tag": "Warehouse",
+    "flexa_rate": 1.94,
+    "stfi_rate": 1.5,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.649,
+    "keywords": [
+      "that",
+      "hazardous",
+      "caddies",
+      "therein",
+      "warranty",
+      "non-hazardous",
+      "stored",
+      "waste"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section VI"
+  },
+  {
+    "code": "4013",
+    "section": "VI",
+    "description": "Storage of Category I hazardous Goods(open) subject to warranty that goods listed in Category II, III, Coir waste, Coir fibre and Caddies are not stored therein.",
+    "category": 1,
+    "category_tag": "Warehouse",
+    "flexa_rate": 2.16,
+    "stfi_rate": 1.5,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.836,
+    "keywords": [
+      "that",
+      "hazardous",
+      "listed",
+      "caddies",
+      "therein",
+      "warranty",
+      "stored",
+      "waste"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section VI"
+  },
+  {
+    "code": "4003",
+    "section": "VI",
+    "description": "Storage of hazardous Goods listed in Category II(Godowns & Silos) subject to warranty that goods listed in Category III, Coir waste, Coir fibre and Caddies are not stored therein.",
+    "category": 1,
+    "category_tag": "Warehouse",
+    "flexa_rate": 2.49,
+    "stfi_rate": 0.35,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 2.1165,
+    "keywords": [
+      "that",
+      "ii(godowns",
+      "hazardous",
+      "listed",
+      "caddies",
+      "therein",
+      "silos",
+      "warranty"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section VI"
+  },
+  {
+    "code": "4014",
+    "section": "VI",
+    "description": "Storage of hazardous Goods listed in Category II(open) subject to warranty that goods listed in Category III, Coir waste, Coir fibre and Caddies are not stored therein.",
+    "category": 1,
+    "category_tag": "Warehouse",
+    "flexa_rate": 5.33,
+    "stfi_rate": 1.5,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 4.5305,
+    "keywords": [
+      "that",
+      "hazardous",
+      "listed",
+      "ii(open",
+      "caddies",
+      "therein",
+      "warranty",
+      "stored"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section VI"
+  },
+  {
+    "code": "4015",
+    "section": "VI",
+    "description": "Storage of hazardous Goods listed in Category III (open) subject to warranty that Coir waste, Coir fibre and , Caddies are not stored therein.",
+    "category": 4,
+    "category_tag": "Warehouse",
+    "flexa_rate": 5.0,
+    "stfi_rate": 1.5,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 4.25,
+    "keywords": [
+      "that",
+      "hazardous",
+      "listed",
+      "caddies",
+      "subject",
+      "therein",
+      "warranty",
+      "stored"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section VI"
+  },
+  {
+    "code": "4004",
+    "section": "VI",
+    "description": "Storage of hazardous Goods listed in Category III(Godowns & Silos) subject to warranty that Coir waste, Coir fibre and , Caddies are not stored therein.",
+    "category": 1,
+    "category_tag": "Warehouse",
+    "flexa_rate": 2.49,
+    "stfi_rate": 0.35,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 2.1165,
+    "keywords": [
+      "that",
+      "hazardous",
+      "listed",
+      "caddies",
+      "therein",
+      "iii(godowns",
+      "silos",
+      "warranty"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section VI"
+  },
+  {
+    "code": "4005",
+    "section": "VI",
+    "description": "Transporter’s godowns (Godowns & Silos)& Godowns of clearing and forwarding agents.",
+    "category": 1,
+    "category_tag": "Warehouse",
+    "flexa_rate": 0.86,
+    "stfi_rate": 0.35,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.731,
+    "keywords": [
+      "transporter’s",
+      "clearing",
+      "forwarding",
+      "silos",
+      "godowns",
+      "agents"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section VI"
+  },
+  {
+    "code": "4016",
+    "section": "VI",
+    "description": "Transporter’s godowns(open) & Godowns of clearing and forwarding agents.",
+    "category": 1,
+    "category_tag": "Warehouse",
+    "flexa_rate": 0.8,
+    "stfi_rate": 1.5,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.68,
+    "keywords": [
+      "transporter’s",
+      "clearing",
+      "forwarding",
+      "godowns(open",
+      "godowns",
+      "agents"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section VI"
+  },
+  {
+    "code": "4006",
+    "section": "VI",
+    "description": "Storage of Coir Waste(Godowns & Silos) ,Coir Fibre, Caddies",
+    "category": 1,
+    "category_tag": "Warehouse",
+    "flexa_rate": 5.12,
+    "stfi_rate": 0.35,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 4.352,
+    "keywords": [
+      "caddies",
+      "silos",
+      "waste(godowns",
+      "fibre",
+      "coir",
+      "storage"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section VI"
+  },
+  {
+    "code": "4007",
+    "section": "VI",
+    "description": "Cold Storage premises",
+    "category": 1,
+    "category_tag": "Warehouse",
+    "flexa_rate": 1.28,
+    "stfi_rate": 0.35,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.088,
+    "keywords": [
+      "cold",
+      "storage",
+      "premises"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section VI"
+  },
+  {
+    "code": "4017",
+    "section": "VI",
+    "description": "Storage of Coir Waste(open) ,Coir Fibre, Caddies",
+    "category": 1,
+    "category_tag": "Warehouse",
+    "flexa_rate": 11.86,
+    "stfi_rate": 1.5,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 10.081,
+    "keywords": [
+      "caddies",
+      "fibre",
+      "coir",
+      "storage",
+      "waste(open"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section VI"
+  },
+  {
+    "code": "4018",
+    "section": "VI",
+    "description": "Bus Terminus",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 3.12,
+    "stfi_rate": 1.5,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 2.652,
+    "keywords": [
+      "terminus"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section VI"
+  },
+  {
+    "code": "4019",
+    "section": "VI",
+    "description": "Vehicles stored in open including Tractors",
+    "category": 1,
+    "category_tag": "Retail",
+    "flexa_rate": 1.97,
+    "stfi_rate": 1.5,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.6745,
+    "keywords": [
+      "tractors",
+      "vehicles",
+      "stored",
+      "including",
+      "open"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section VI"
+  },
+  {
+    "code": "4008",
+    "section": "VII",
+    "description": "Gas Holders/ Bullets/spheres and storages for liquified gases except for Nitrogen, Carbon dioxide and inert gases",
+    "category": 1,
+    "category_tag": "Warehouse",
+    "flexa_rate": 1.9,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.615,
+    "keywords": [
+      "dioxide",
+      "nitrogen",
+      "holders",
+      "inert",
+      "storages",
+      "gases",
+      "bullets/spheres",
+      "carbon"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section VII"
+  },
+  {
+    "code": "4009",
+    "section": "VII",
+    "description": "Gas Holders/ Vessels for Nitrogen, Carbon dioxide and inert gases",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.88,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.748,
+    "keywords": [
+      "dioxide",
+      "holders",
+      "inert",
+      "gases",
+      "vessels",
+      "carbon",
+      "nitrogen"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section VII"
+  },
+  {
+    "code": "4010",
+    "section": "VII",
+    "description": "Tanks containing liquids flashing at 32 0C and below",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 1.2,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 1.02,
+    "keywords": [
+      "flashing",
+      "containing",
+      "liquids",
+      "tanks",
+      "below"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section VII"
+  },
+  {
+    "code": "4011",
+    "section": "VII",
+    "description": "Tanks (others)",
+    "category": 1,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.59,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.5015,
+    "keywords": [
+      "tanks",
+      "others"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section VII"
+  },
+  {
+    "code": "4900",
+    "section": "IV/V",
+    "description": "Silent risk",
+    "category": 2,
+    "category_tag": "Manufacturing",
+    "flexa_rate": 0.29,
+    "stfi_rate": 0.25,
+    "eq_rate": 0.0,
+    "terrorism_rate": 0.23,
+    "loss_cost": 0.2465,
+    "keywords": [
+      "risk",
+      "silent"
+    ],
+    "source_doc": "IIB Loss Cost Schedule 3 / AIFT 2001 Section IV/V"
+  }
+]

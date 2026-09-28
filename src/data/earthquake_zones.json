@@ -1,0 +1,379 @@
+{
+  "zones": [
+    {
+      "zone": "Zone V",
+      "zone_code": "Zone 1",
+      "hazard_level": "Very High Damage Risk Zone (MSK IX or greater)",
+      "base_loading_section_iii": 0.25,
+      "base_loading_section_other": 0.5,
+      "description": "Covers entire northeastern India, parts of Jammu & Kashmir, Ladakh, Himachal Pradesh, Uttarakhand, Rann of Kutch (Gujarat), parts of North Bihar, and Andaman & Nicobar Islands.",
+      "states": [
+        {
+          "state": "Assam",
+          "districts": [
+            "Guwahati (Kamrup)",
+            "Kamrup Metropolitan",
+            "Dibrugarh",
+            "Silchar (Cachar)",
+            "Jorhat",
+            "Nagaon",
+            "Tinsukia",
+            "Tezpur (Sonitpur)"
+          ]
+        },
+        {
+          "state": "Bihar",
+          "districts": [
+            "Darbhanga",
+            "Madhubani",
+            "Sitamarhi",
+            "Supaul",
+            "Araria",
+            "Kishanganj",
+            "Saharsa"
+          ]
+        },
+        {
+          "state": "Gujarat",
+          "districts": [
+            "Kutch (Bhuj, Gandhidham, Mundra, Anjar)",
+            "Parts of Jamnagar"
+          ]
+        },
+        {
+          "state": "Himachal Pradesh",
+          "districts": [
+            "Kangra",
+            "Kullu",
+            "Mandi",
+            "Chamba",
+            "Hamirpur"
+          ]
+        },
+        {
+          "state": "Jammu & Kashmir",
+          "districts": [
+            "Srinagar",
+            "Baramulla",
+            "Kupwara",
+            "Budgam",
+            "Anantnag"
+          ]
+        },
+        {
+          "state": "Uttarakhand",
+          "districts": [
+            "Chamoli",
+            "Pithoragarh",
+            "Uttarkashi",
+            "Bageshwar",
+            "Rudraprayag"
+          ]
+        },
+        {
+          "state": "Andaman & Nicobar",
+          "districts": [
+            "Port Blair (South Andaman)",
+            "North & Middle Andaman",
+            "Nicobar"
+          ]
+        },
+        {
+          "state": "Northeast States",
+          "districts": [
+            "Meghalaya (Shillong)",
+            "Tripura (Agartala)",
+            "Mizoram (Aizawl)",
+            "Manipur (Imphal)",
+            "Nagaland (Kohima)",
+            "Arunachal Pradesh (Itanagar)"
+          ]
+        }
+      ]
+    },
+    {
+      "zone": "Zone IV",
+      "zone_code": "Zone 2",
+      "hazard_level": "High Damage Risk Zone (MSK VIII)",
+      "base_loading_section_iii": 0.15,
+      "base_loading_section_other": 0.25,
+      "description": "Covers remaining parts of Jammu & Kashmir, Ladakh, Himachal Pradesh, Uttarakhand, Delhi NCR, northern parts of Uttar Pradesh, Bihar, West Bengal, parts of Gujarat and Maharashtra.",
+      "states": [
+        {
+          "state": "Delhi NCR",
+          "districts": [
+            "New Delhi",
+            "North Delhi",
+            "South Delhi",
+            "West Delhi",
+            "East Delhi",
+            "Gurugram",
+            "Faridabad",
+            "Gautam Buddha Nagar (Noida)",
+            "Ghaziabad"
+          ]
+        },
+        {
+          "state": "Haryana",
+          "districts": [
+            "Ambala",
+            "Sonipat",
+            "Panipat",
+            "Rohtak",
+            "Karnal",
+            "Panchkula",
+            "Jhajjar"
+          ]
+        },
+        {
+          "state": "Punjab",
+          "districts": [
+            "Amritsar",
+            "Ludhiana",
+            "Jalandhar",
+            "Patiala",
+            "Gurdaspur",
+            "Hoshiarpur"
+          ]
+        },
+        {
+          "state": "Uttar Pradesh",
+          "districts": [
+            "Meerut",
+            "Moradabad",
+            "Bareilly",
+            "Saharanpur",
+            "Muzaffarnagar",
+            "Bulandshahr",
+            "Gorakhpur",
+            "Bahraich",
+            "Basti"
+          ]
+        },
+        {
+          "state": "Bihar",
+          "districts": [
+            "Patna",
+            "Muzaffarpur",
+            "Vaishali",
+            "Samastipur",
+            "Begusarai",
+            "Bhagalpur",
+            "Purnia",
+            "Chhapra (Saran)"
+          ]
+        },
+        {
+          "state": "West Bengal",
+          "districts": [
+            "Kolkata",
+            "Howrah",
+            "North 24 Parganas",
+            "South 24 Parganas",
+            "Hooghly",
+            "Darjeeling",
+            "Jalpaiguri",
+            "Cooch Behar",
+            "Siliguri"
+          ]
+        },
+        {
+          "state": "Gujarat",
+          "districts": [
+            "Ahmedabad",
+            "Surat",
+            "Rajkot",
+            "Bhavnagar",
+            "Surendranagar",
+            "Morbi",
+            "Patan",
+            "Mehsana"
+          ]
+        },
+        {
+          "state": "Maharashtra",
+          "districts": [
+            "Koyna (Satara)",
+            "Ratnagiri",
+            "Kolhapur (Western belt)"
+          ]
+        }
+      ]
+    },
+    {
+      "zone": "Zone III",
+      "zone_code": "Zone 3",
+      "hazard_level": "Moderate Damage Risk Zone (MSK VII)",
+      "base_loading_section_iii": 0.1,
+      "base_loading_section_other": 0.1,
+      "description": "Covers major urban centers including Mumbai, Pune, Chennai, parts of Kerala, Goa, Lakshadweep, remaining parts of Uttar Pradesh, Gujarat, West Bengal, Maharashtra, Madhya Pradesh, Rajasthan, and Andhra Pradesh.",
+      "states": [
+        {
+          "state": "Maharashtra",
+          "districts": [
+            "Mumbai City",
+            "Mumbai Suburban",
+            "Thane",
+            "Navi Mumbai",
+            "Pune",
+            "Nashik",
+            "Aurangabad (Chhatrapati Sambhajinagar)",
+            "Solapur",
+            "Nagpur (Eastern parts)"
+          ]
+        },
+        {
+          "state": "Tamil Nadu",
+          "districts": [
+            "Chennai",
+            "Coimbatore",
+            "Chengalpattu",
+            "Kanchipuram",
+            "Thiruvallur",
+            "Vellore",
+            "Salem"
+          ]
+        },
+        {
+          "state": "Kerala",
+          "districts": [
+            "Thiruvananthapuram",
+            "Kochi (Ernakulam)",
+            "Kozhikode",
+            "Thrissur",
+            "Kollam",
+            "Kannur",
+            "Palakkad"
+          ]
+        },
+        {
+          "state": "Goa",
+          "districts": [
+            "North Goa (Panaji)",
+            "South Goa (Margao)"
+          ]
+        },
+        {
+          "state": "Rajasthan",
+          "districts": [
+            "Jaipur",
+            "Jodhpur",
+            "Ajmer",
+            "Bikaner",
+            "Alwar",
+            "Udaipur",
+            "Kota"
+          ]
+        },
+        {
+          "state": "Madhya Pradesh",
+          "districts": [
+            "Indore",
+            "Bhopal",
+            "Jabalpur",
+            "Gwalior",
+            "Ujjain",
+            "Rewa"
+          ]
+        },
+        {
+          "state": "Andhra Pradesh",
+          "districts": [
+            "Visakhapatnam",
+            "Vijayawada (NTR)",
+            "Guntur",
+            "Nellore",
+            "Tirupati",
+            "Kakinada"
+          ]
+        },
+        {
+          "state": "Karnataka",
+          "districts": [
+            "Mangalore (Dakshina Kannada)",
+            "Udupi",
+            "Karwar (Uttara Kannada)",
+            "Belagavi",
+            "Hubli-Dharwad"
+          ]
+        }
+      ]
+    },
+    {
+      "zone": "Zone II",
+      "zone_code": "Zone 4",
+      "hazard_level": "Low Damage Risk Zone (MSK VI or less)",
+      "base_loading_section_iii": 0.05,
+      "base_loading_section_other": 0.05,
+      "description": "Covers major portions of the Indian Peninsula characterized as stable continental region with lowest seismic activity.",
+      "states": [
+        {
+          "state": "Karnataka",
+          "districts": [
+            "Bengaluru Urban",
+            "Bengaluru Rural",
+            "Mysuru",
+            "Tumakuru",
+            "Shivamogga",
+            "Ballari",
+            "Davangere"
+          ]
+        },
+        {
+          "state": "Telangana",
+          "districts": [
+            "Hyderabad",
+            "Ranga Reddy",
+            "Medchal-Malkajgiri",
+            "Warangal",
+            "Nizamabad",
+            "Karimnagar",
+            "Khammam"
+          ]
+        },
+        {
+          "state": "Chhattisgarh",
+          "districts": [
+            "Raipur",
+            "Durg-Bhilai",
+            "Bilaspur",
+            "Korba",
+            "Rajnandgaon"
+          ]
+        },
+        {
+          "state": "Odisha",
+          "districts": [
+            "Bhubaneswar (Khurda)",
+            "Cuttack",
+            "Rourkela (Sundargarh)",
+            "Puri",
+            "Sambalpur",
+            "Balasore"
+          ]
+        },
+        {
+          "state": "Jharkhand",
+          "districts": [
+            "Ranchi",
+            "Jamshedpur (East Singhbhum)",
+            "Dhanbad",
+            "Bokaro",
+            "Deoghar"
+          ]
+        },
+        {
+          "state": "Tamil Nadu (Southern)",
+          "districts": [
+            "Madurai",
+            "Tiruchirappalli",
+            "Tirunelveli",
+            "Thoothukudi",
+            "Dindigul",
+            "Erode"
+          ]
+        }
+      ]
+    }
+  ]
+}

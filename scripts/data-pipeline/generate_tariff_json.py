@@ -1,0 +1,113 @@
+import json
+
+tariff_data = {
+  "clauses": [
+    {
+      "id": "agreed-bank-clause",
+      "title": "Agreed Bank Clause",
+      "category": "Standard Financial Clause",
+      "applicable_to": "All hypothecated assets (Stock, Plant & Machinery, Buildings)",
+      "description": "It is hereby declared and agreed (1) That upon any monies becoming payable under this policy the same shall be paid by the Company to the Bank and such receipt of the said Bank shall be complete discharge to the Company.",
+      "source_doc": "AIFT 2001 Section I, General Rules"
+    },
+    {
+      "id": "designation-of-property",
+      "title": "Designation of Property Clause",
+      "category": "Valuation & Description",
+      "applicable_to": "Commercial contents, plant, fixtures, stocks",
+      "description": "For the purpose of determining, where necessary, the item under which any property is insured, the insurers agree to accept the designation under which the property has been entered in the insured's books.",
+      "source_doc": "AIFT 2001 Section I, Rule 8"
+    },
+    {
+      "id": "architects-surveyors-fees",
+      "title": "Architects, Surveyors and Consulting Engineers Fees (up to 5%)",
+      "category": "Add-on / Built-in Cover",
+      "applicable_to": "Bharat Sookshma & Bharat Laghu Udyam Suraksha",
+      "description": "Cover includes fees of architects, surveyors, and consulting engineers necessarily incurred in reinstatement of property consequent upon damage, up to 5% of the admitted claim amount.",
+      "source_doc": "IRDAI Bharat Sookshma Udyam Suraksha Policy Wordings, Clause 4.1"
+    },
+    {
+      "id": "removal-of-debris",
+      "title": "Cost of Removal of Debris (up to 2%)",
+      "category": "Add-on / Built-in Cover",
+      "applicable_to": "Buildings & Contents",
+      "description": "Costs necessarily incurred by the Insured in the removal of debris from the premises of the Insured following loss or damage up to 2% of the admitted claim amount.",
+      "source_doc": "IRDAI Bharat Sookshma Udyam Suraksha Policy Wordings, Clause 4.2"
+    },
+    {
+      "id": "temporary-removal-stocks",
+      "title": "Temporary Removal of Stocks (up to 10%)",
+      "category": "Floater / Stock Extension",
+      "applicable_to": "Raw Materials & Finished Goods",
+      "description": "Covers temporary removal of stocks up to 10% of total Sum Insured to other premises for fabrication, processing, or temporary holding for a period not exceeding 60 days.",
+      "source_doc": "AIFT 2001 Endorsement 21"
+    },
+    {
+      "id": "terrorism-clause",
+      "title": "Terrorism Damage Cover Endorsement (Indian Market Pool)",
+      "category": "Peril Add-on",
+      "applicable_to": "All Commercial Occupancies",
+      "description": "Loss or damage occasioned by or through or in consequence directly or indirectly of an act of terrorism committed by a person or persons acting on behalf of or in connection with any organization.",
+      "source_doc": "Indian Market Terrorism Risk Insurance Pool (Pool Rate Schedule 2024)"
+    },
+    {
+      "id": "floater-declaration-clause",
+      "title": "Floater Clause (10% Loading)",
+      "category": "Rating Endorsement",
+      "applicable_to": "Stocks at multiple locations",
+      "description": "When stocks are stored in two or more identifiable locations within the same town/city or state, insurance may be issued on a Floater basis subject to a 10% loading on the highest applicable tariff rate.",
+      "source_doc": "AIFT 2001 Section I, Rule 11"
+    }
+  ],
+  "warranties": [
+    {
+      "code": "WARR-CAT1",
+      "name": "Category I Storage Warranty",
+      "text": "Warranted that during the currency of this policy, no hazardous goods listed under Category II, Category III, Coir waste, Coir fibre, and Caddies shall be stored or brought into the premises.",
+      "occupancy_code": "4002"
+    },
+    {
+      "code": "WARR-ELECTRICAL",
+      "name": "Electrical Equipment Warranty",
+      "text": "Warranted that all electrical installations conform to the Indian Electricity Rules, 1956, and that periodic thermal imaging or insulation resistance certification is maintained.",
+      "occupancy_code": "ALL"
+    },
+    {
+      "code": "WARR-FIRE-PROT",
+      "name": "Fire Protection Appliances Warranty",
+      "text": "Warranted that all fire fighting appliances (hydrants, hoses, portable extinguishers) are maintained in full operational order under annual maintenance contracts (AMC).",
+      "occupancy_code": "ALL"
+    }
+  ],
+  "hazard_categories": [
+    {
+      "category": 1,
+      "name": "Category 1 Hazardous Goods",
+      "rate_adjustment": -0.25,
+      "description": "Low hazard storage: Food products, cereals, pulses, packaged grains, metal ingots, canned items, electrical domestic goods, stationery without pyrotechnics."
+    },
+    {
+      "category": 2,
+      "name": "Category 2 Hazardous Goods",
+      "rate_adjustment": -0.10,
+      "description": "Moderate hazard storage: Edible oils (vegetable oil, almond oil, coconut oil in sealed tin/plastic containers), textiles, paper in reams, wood furniture, soaps."
+    },
+    {
+      "category": 3,
+      "name": "Category 3 Hazardous Goods",
+      "rate_adjustment": 0.25,
+      "description": "High hazard storage: Flammable liquids with flash point between 32°C and 65°C, paints, varnishes, tires, rubber compounds, synthetic polymers."
+    },
+    {
+      "category": 4,
+      "name": "Category 4 Hazardous Goods",
+      "rate_adjustment": 1.60,
+      "description": "Extreme hazard storage: Flammable liquids with flash point below 32°C (solvents, LPG, spirits, nitrocellulose, celluloid goods, match factories, fireworks)."
+    }
+  ]
+}
+
+with open(r"c:\Users\jasra\OneDrive\Desktop\Qoutely\src\data\tariff_rules.json", "w", encoding="utf-8") as f:
+    json.dump(tariff_data, f, indent=2, ensure_ascii=False)
+
+print("Saved src/data/tariff_rules.json")
