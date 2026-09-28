@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { summarizeProposal } from '@/lib/ai';
+import { getAuthenticatedUser, unauthorizedResponse } from '@/lib/api-auth';
 
 export async function POST(req: NextRequest) {
+  const auth = await getAuthenticatedUser(req);
+  if (!auth) return unauthorizedResponse();
+
   try {
     const body = await req.json();
-    const { proposal_data, workspace_id, user_id } = body;
+    const { proposal_data } = body;
 
     if (!proposal_data) {
       return NextResponse.json(
@@ -13,7 +17,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const result = await summarizeProposal(proposal_data, workspace_id, user_id);
+    const result = await summarizeProposal(proposal_data, auth.workspace_id, auth.user.id);
     return NextResponse.json(result);
   } catch (err: any) {
     return NextResponse.json(

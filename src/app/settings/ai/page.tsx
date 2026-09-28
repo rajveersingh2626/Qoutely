@@ -191,7 +191,7 @@ export default function AIHealthPage() {
           {/* 1. Requests Today */}
           <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
             <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-2">
-              <span className="text-xs font-semibold uppercase tracking-wider">Today's Requests</span>
+              <span className="text-xs font-semibold uppercase tracking-wider">Today&apos;s Requests</span>
               <Zap className="w-4 h-4 text-emerald-500" />
             </div>
             <div className="text-2xl font-extrabold text-slate-900 dark:text-white">

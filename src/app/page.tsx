@@ -712,7 +712,7 @@ export default function MarketingLandingPage() {
                     <Star key={i} className="w-4 h-4 fill-emerald-400" />
                   ))}
                 </div>
-                <p className="text-xs text-slate-300 italic mb-6 leading-relaxed">"{t.quote}"</p>
+                <p className="text-xs text-slate-300 italic mb-6 leading-relaxed">&ldquo;{t.quote}&rdquo;</p>
                 <div className="flex items-center gap-3 border-t border-slate-800 pt-4">
                   <div className="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center font-bold text-xs text-slate-400">
                     {t.city.slice(0, 1)}

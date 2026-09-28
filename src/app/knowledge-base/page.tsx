@@ -207,7 +207,7 @@ export default function KnowledgeBasePage() {
                 </div>
 
                 <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed mt-2 p-3 rounded-2xl bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-800/60 font-mono">
-                  "{w.text}"
+                  &ldquo;{w.text}&rdquo;
                 </p>
               </div>
             ))}

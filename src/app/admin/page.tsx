@@ -494,12 +494,12 @@ export default function PlatformSuperAdminPage() {
             </div>
 
             <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 font-mono text-xs text-slate-300 space-y-2 overflow-x-auto">
-              <div className="text-slate-500">// Example Supabase RLS Policy: Scoped Workspace Queries</div>
-              <div className="text-blue-400">CREATE POLICY <span className="text-white">"tenant_isolation_policy"</span> ON <span className="text-emerald-400">quotes</span></div>
+              <div className="text-slate-500">{"// Example Supabase RLS Policy: Scoped Workspace Queries"}</div>
+              <div className="text-blue-400">CREATE POLICY <span className="text-white">&quot;tenant_isolation_policy&quot;</span> ON <span className="text-emerald-400">quotes</span></div>
               <div>FOR ALL USING (</div>
               <div className="pl-4">
                 workspace_id = (SELECT workspace_id FROM workspace_members WHERE user_id = auth.uid())<br />
-                OR (auth.jwt() -&gt;&gt; 'role') = 'super_admin'
+                OR (auth.jwt() -&gt;&gt; &apos;role&apos;) = &apos;super_admin&apos;
               </div>
               <div>);</div>
             </div>
