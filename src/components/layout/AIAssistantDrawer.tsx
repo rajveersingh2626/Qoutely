@@ -49,9 +49,11 @@ export const AIAssistantDrawer: React.FC = () => {
     'What is the Category I Storage warranty for godowns?',
   ];
 
-  const handleSend = (textToSend?: string) => {
+  const [isThinking, setIsThinking] = useState(false);
+
+  const handleSend = async (textToSend?: string) => {
     const query = (textToSend || input).trim();
-    if (!query) return;
+    if (!query || isThinking) return;
 
     const userMsg: ChatMessage = {
       id: `u-${Date.now()}`,
@@ -62,49 +64,18 @@ export const AIAssistantDrawer: React.FC = () => {
 
     setMessages((prev) => [...prev, userMsg]);
     if (!textToSend) setInput('');
+    setIsThinking(true);
 
-    // Generate grounded response citing documents
-    setTimeout(() => {
-      let reply = '';
-      let citation: ChatMessage['citation'] = { doc: 'AIFT 2001', section: 'General Rules' };
+    try {
+      const res = await fetch('/api/ai/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query }),
+      });
 
-      const qLower = query.toLowerCase();
-
-      if (qLower.includes('1023') || qLower.includes('acme')) {
-        reply = `Occupancy Code 1023 ("Engineering Workshops - Metalworking with cold work / machining") was assigned because Acme Industries Ltd operates precision CNC metal machining, tool stamping, component fabrication and parts assembly. Under AIFT 2001 Section IV (Industrial Risks), cold metalworking processes with certified electrical installations qualify for standard industrial loss costs under Category 2.`;
-        citation = {
-          doc: 'IIB Loss Cost Schedule 3 & AIFT 2001',
-          section: 'Section IV - Industrial Manufacturing',
-          pageOrRule: 'Code 1023 / Category 2 Rating',
-        };
-      } else if (qLower.includes('hydrant') || qLower.includes('discount') || qLower.includes('feature')) {
-        reply = `Under the broker calculation rules:\n1. Operational Fire Hydrant / Sprinkler / Smoke Detector system: -10% discount on base flexa rate.\n2. Electrical Installations maintained to Indian Electricity Rules 1956: -10% discount.\n3. Plinth level >= 1.5 ft with storm drainage: -10% discount.\n4. 24x7 Security & CCTV: -10% discount.\n5. Past 3-year claim ratio <= 70%: -20% discount.\nNote: For Category 1 & 2 risks, total cumulative discount is capped at -50%.`;
-        citation = {
-          doc: 'Updated Calculator 07.02.2024',
-          section: 'Feature Discount Matrix (Rows 20-29)',
-          pageOrRule: 'Section III & IV Rating Schedule',
-        };
-      } else if (qLower.includes('eq') || qLower.includes('delhi') || qLower.includes('earthquake')) {
-        reply = `Delhi NCR (including New Delhi, Gurugram, Noida, Faridabad, Ghaziabad) falls into Zone IV (Zone 2 under TAC tariff nomenclature). Under Section III (Commercial occupancies), the standard earthquake base rate is 0.15 per mille. For Section IV/VI risks, the base EQ rate is 0.25 per mille. For Category 1 occupancies, a 25% discount applies, bringing the adjusted EQ rate to 0.1875 per mille.`;
-        citation = {
-          doc: 'eq_zoning.pdf & IS 1893',
-          section: 'Indian Seismic Zoning Map (Zone IV)',
-          pageOrRule: 'Table of Seismic Loadings',
-        };
-      } else if (qLower.includes('warranty') || qLower.includes('category i')) {
-        reply = `The Category I Warranty requires:\n"Warranted that during the currency of this policy, no hazardous goods listed under Category II, Category III, Coir waste, Coir fibre, and Caddies shall be stored or brought into the premises."\nBreach of this warranty alters the risk category from Category 1 (-25% discount) to Category 3 (+25% loading) or Category 4 (+160% loading).`;
-        citation = {
-          doc: 'AIFT 2001 Section VI',
-          section: 'Special Storage Warranties',
-          pageOrRule: 'Warranty WARR-CAT1',
-        };
-      } else {
-        reply = `Based on the Indian Fire Tariff and IIB Schedule 3, risk evaluation requires verifying the occupancy code from the 289 scheduled classifications, applying category loading (-25% to +160%), adding EQ and STFI perils, and calculating premium per thousand (per mille) of total Sum Insured.`;
-        citation = {
-          doc: 'AIFT 2001 & IIB Schedule 3',
-          section: 'General Rules & Rating Scale',
-        };
-      }
+      const data = await res.json();
+      const reply = data.reply || 'Analysis completed.';
+      const citation = data.citation || { doc: 'AIFT 2001', section: 'General Rules' };
 
       setMessages((prev) => [
         ...prev,
@@ -116,7 +87,19 @@ export const AIAssistantDrawer: React.FC = () => {
           time: 'Just now',
         },
       ]);
-    }, 600);
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `ai-${Date.now()}`,
+          sender: 'ai',
+          text: 'Unable to reach Underwriting AI copilot at this moment. Please verify network or API keys.',
+          time: 'Just now',
+        },
+      ]);
+    } finally {
+      setIsThinking(false);
+    }
   };
 
   if (!isAiDrawerOpen) return null;
@@ -186,6 +169,15 @@ export const AIAssistantDrawer: React.FC = () => {
             <span className="text-[10px] text-slate-400 mt-1 px-1">{m.time}</span>
           </div>
         ))}
+
+        {isThinking && (
+          <div className="flex flex-col items-start">
+            <div className="rounded-2xl p-3 text-xs bg-slate-100 dark:bg-slate-800 text-slate-500 rounded-bl-xs flex items-center gap-2 border border-slate-200/80 dark:border-slate-700/80">
+              <Sparkles className="w-3.5 h-3.5 text-blue-500 animate-spin" />
+              <span>Consulting AIFT 2001 & IIB Schedule 3 via Gemini 2.5 Flash...</span>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Quick Prompts */}

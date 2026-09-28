@@ -38,6 +38,9 @@ export default function UploadProposalPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  const [inputMode, setInputMode] = useState<'upload' | 'type'>('upload');
+  const [typedText, setTypedText] = useState('');
+
   const [uploadedFile, setUploadedFile] = useState<{
     name: string;
     size: string;
@@ -90,13 +93,30 @@ export default function UploadProposalPage() {
     });
 
     try {
-      // Convert file to base64
-      const base64Data = await new Promise<string>((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
+      const payload: Record<string, unknown> = {
+        fileName: file.name,
+        workspace_id: currentWorkspace.id,
+        user_id: currentUser.id,
+      };
+
+      if (file.name.endsWith('.txt') || file.type.startsWith('text/')) {
+        const textContent = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsText(file);
+        });
+        payload.content = textContent;
+      } else {
+        const base64Data = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+        payload.base64 = base64Data;
+        payload.mimeType = file.type || 'application/pdf';
+      }
 
       setCurrentStep('extraction');
 
@@ -104,13 +124,7 @@ export default function UploadProposalPage() {
       const res = await fetch('/api/extract', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          base64: base64Data,
-          mimeType: file.type || 'application/pdf',
-          fileName: file.name,
-          workspace_id: currentWorkspace.id,
-          user_id: currentUser.id,
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) {
@@ -150,7 +164,7 @@ export default function UploadProposalPage() {
         sumInsuredPM: data.sum_insured?.plant_and_machinery || 26000000,
         totalSumInsured: totalSI,
         hypothecation: 'State Bank of India',
-        riskCode: data.clamped_occupancy_code || '1023',
+        riskCode: data.clamped_occupancy_code || data.occupancy_code || '1023',
         eqZone: result.software_boundary?.eq_zone || 'Zone 3',
         pastClaimRatio: data.claim_history_last_3_years ? '>70' : '<=70',
         confidenceScore: Math.round(
@@ -241,7 +255,7 @@ export default function UploadProposalPage() {
           sumInsuredPM: data.sum_insured?.plant_and_machinery || 26000000,
           totalSumInsured: data.sum_insured?.total || 53800000,
           hypothecation: 'State Bank of India',
-          riskCode: data.clamped_occupancy_code || '1023',
+          riskCode: data.clamped_occupancy_code || data.occupancy_code || '1023',
           eqZone: result.software_boundary?.eq_zone || 'Zone 3',
           pastClaimRatio: data.claim_history_last_3_years ? '>70' : '<=70',
           confidenceScore: Math.round(
@@ -471,38 +485,119 @@ export default function UploadProposalPage() {
         {/* Upload Drop Zone & Sample Triggers */}
         {currentStep === 'idle' && (
           <div className="space-y-4">
-            <div
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-              onClick={() => fileInputRef.current?.click()}
-              className={`p-10 rounded-3xl bg-white dark:bg-slate-900 border-2 border-dashed cursor-pointer transition-all text-center flex flex-col items-center justify-center ${
-                isDragging
-                  ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/20 scale-[1.01]'
-                  : 'border-slate-300 dark:border-slate-700 hover:border-emerald-500'
-              }`}
-            >
-              <div className="w-16 h-16 rounded-3xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400 flex items-center justify-center mb-4 transition-transform group-hover:scale-110">
-                <Upload className="w-8 h-8" />
-              </div>
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">
-                Drag & drop your commercial proposal document (PDF or Images)
-              </h3>
-              <p className="text-xs text-slate-500 max-w-md mt-1 mb-4">
-                Supports proposal PDFs, scanned forms (PNG/JPG), and text schedules. Routed directly to Gemini 2.5 Flash with IIB Schedule 3 boundary clamping.
-              </p>
-
+            {/* Mode Selector: Upload File vs Direct Typing */}
+            <div className="flex items-center gap-2 p-1.5 bg-slate-200/70 dark:bg-slate-800 rounded-2xl w-fit">
               <button
                 type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  fileInputRef.current?.click();
-                }}
-                className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-md shadow-emerald-600/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                onClick={() => setInputMode('upload')}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                  inputMode === 'upload'
+                    ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
               >
-                Choose File from Local Computer
+                <Upload className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Upload Document (PDF / Images)</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setInputMode('type')}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                  inputMode === 'type'
+                    ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm'
+                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                }`}
+              >
+                <FileText className="w-3.5 h-3.5 text-blue-600" />
+                <span>Type or Paste Data Directly</span>
               </button>
             </div>
+
+            {inputMode === 'upload' ? (
+              <div
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                onClick={() => fileInputRef.current?.click()}
+                className={`p-10 rounded-3xl bg-white dark:bg-slate-900 border-2 border-dashed cursor-pointer transition-all text-center flex flex-col items-center justify-center ${
+                  isDragging
+                    ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/20 scale-[1.01]'
+                    : 'border-slate-300 dark:border-slate-700 hover:border-emerald-500'
+                }`}
+              >
+                <div className="w-16 h-16 rounded-3xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950 dark:text-emerald-400 flex items-center justify-center mb-4 transition-transform group-hover:scale-110">
+                  <Upload className="w-8 h-8" />
+                </div>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                  Drag & drop your commercial proposal document (PDF or Images)
+                </h3>
+                <p className="text-xs text-slate-500 max-w-md mt-1 mb-4">
+                  Supports proposal PDFs, scanned forms (PNG/JPG), and text schedules. Routed directly to Gemini 2.5 Flash with IIB Schedule 3 boundary clamping.
+                </p>
+
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    fileInputRef.current?.click();
+                  }}
+                  className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-md shadow-emerald-600/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  Choose File from Local Computer
+                </button>
+              </div>
+            ) : (
+              <div className="p-7 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+                <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                      <FileText className="w-4 h-4 text-blue-600" />
+                      <span>Type or Paste Proposal / Slip Details</span>
+                    </h3>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Type anything in free-form English or Hindi-English. Gemini 2.5 Flash will extract entities, clamp statutory tariffs, and generate your PDF.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setTypedText(
+                        `Insured Name: Sharma Precision Forge & Tooling Pvt Ltd\nGSTIN: 27AABCS4455E1Z8\nLocation: Plot 88, Chakan MIDC Phase 2, Pune, Maharashtra 410501\nTrade / Activity: Hot and cold metal forging, die casting, automotive components fabrication\nSum Insured:\n- Building: Rs. 2,50,00,000\n- Plant & Machinery: Rs. 6,00,00,000\n- Stocks & Raw Materials: Rs. 3,50,00,000\n- Total Sum Insured: Rs. 12,00,00,000\nEarthquake Zone: Zone 3 (Pune)\nFeatures: Fire hydrant system installed, 24/7 CCTV surveillance, boundary walls\nPrior Claims: Nil in last 3 years`
+                      )
+                    }
+                    className="text-xs font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-400 underline cursor-pointer"
+                  >
+                    Insert Example Details
+                  </button>
+                </div>
+
+                <textarea
+                  rows={8}
+                  value={typedText}
+                  onChange={(e) => setTypedText(e.target.value)}
+                  placeholder="Paste email, slip text, or type details directly...&#10;&#10;e.g.&#10;Client: Shree Ganesh Textiles Ltd&#10;Address: GIDC Industrial Estate, Surat, Gujarat&#10;Trade: Cotton spinning, synthetic yarn weaving, and fabric dyeing mill&#10;Building SI: 3 Crores, Machinery SI: 7 Crores, Stocks SI: 5 Crores&#10;EQ Zone: Zone 3&#10;Fire sprinkler installed and certified"
+                  className="w-full p-4 text-xs font-mono rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 leading-relaxed"
+                />
+
+                <div className="flex items-center justify-between pt-2">
+                  <span className="text-[11px] text-slate-400">
+                    {typedText.trim().length > 0 ? `${typedText.trim().length} characters` : 'Empty input'}
+                  </span>
+                  <button
+                    type="button"
+                    disabled={!typedText.trim() || isProcessing}
+                    onClick={() => {
+                      if (!typedText.trim()) return;
+                      handleSimulateTextExtraction('Direct_Typed_Proposal.txt', typedText);
+                    }}
+                    className="px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold text-xs shadow-md shadow-blue-600/20 flex items-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    <span>Analyze with Gemini & Generate PDF</span>
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Ingest Sample Proposal Cards */}
             <div>

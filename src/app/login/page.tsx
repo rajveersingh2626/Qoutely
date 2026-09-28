@@ -2,77 +2,47 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import {
   ArrowRight,
   CheckCircle2,
   Lock,
   Mail,
   Shield,
-  Sparkles,
-  UserCheck,
+  KeyRound,
 } from 'lucide-react';
 import { useWorkspace } from '@/context/WorkspaceContext';
-import { SEED_PROFILES } from '@/lib/supabase';
 
 export default function LoginPage() {
   const router = useRouter();
   const { switchUser } = useWorkspace();
 
-  const [email, setEmail] = useState('arjun.k@capitalinsurance.co.in');
-  const [password, setPassword] = useState('••••••••••••');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedPersona, setSelectedPersona] = useState('user-004'); // Arjun Kapoor (Underwriter)
+  const [error, setError] = useState<string | null>(null);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setTimeout(() => {
-      switchUser(selectedPersona);
-      router.push('/dashboard');
-    }, 400);
-  };
-
-  const handleSelectPersona = (profileId: string) => {
-    setSelectedPersona(profileId);
-    const p = SEED_PROFILES.find((x) => x.id === profileId);
-    if (p) {
-      setEmail(p.email);
-      switchUser(p.id);
+    setError(null);
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Authentication failed');
+      }
+      switchUser(data.user.id);
+      router.push('/app/dashboard');
+    } catch (err: any) {
+      setError(err.message || 'Login failed');
+      setIsLoading(false);
     }
   };
-
-  const personas = [
-    {
-      id: 'user-002',
-      name: 'Rajesh Singhania',
-      role: 'Brokerage Owner',
-      email: 'owner@capitalinsurance.co.in',
-      badge: 'Full Admin',
-    },
-    {
-      id: 'user-004',
-      name: 'Arjun Kapoor',
-      role: 'Underwriter',
-      email: 'arjun.k@capitalinsurance.co.in',
-      badge: 'Quotes & Analysis',
-    },
-    {
-      id: 'user-005',
-      name: 'Sneha Verma',
-      role: 'Sales Executive',
-      email: 'sneha.v@capitalinsurance.co.in',
-      badge: 'Proposals Only',
-    },
-    {
-      id: 'user-006',
-      name: 'Rohan Gupta',
-      role: 'Auditor / Viewer',
-      email: 'rohan.auditor@capitalinsurance.co.in',
-      badge: 'Read-only',
-    },
-  ];
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center p-4 bg-slate-50 dark:bg-slate-950">
@@ -111,7 +81,7 @@ export default function LoginPage() {
               <span className="text-emerald-400">Human Confidence.</span>
             </h2>
             <p className="text-xs text-slate-300 leading-relaxed mb-6">
-              Built for Indian insurance brokerages. Convert complex commercial proposals, PDFs, and RFQs into tariff-compliant quote slips in seconds.
+              Built for Indian commercial insurance brokerages. Convert complex commercial proposals, PDFs, and RFQs into tariff-compliant quote slips in seconds.
             </p>
 
             <div className="space-y-3">
@@ -141,56 +111,44 @@ export default function LoginPage() {
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white">Broker Login</h3>
-                <p className="text-xs text-slate-500">Access your brokerage workspace</p>
+                <p className="text-xs text-slate-500">Sign in to access your brokerage desk</p>
               </div>
               <span className="text-[10px] font-semibold uppercase px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-                Invite-Only
+                Secure Access
               </span>
             </div>
 
-            {/* Quick Demo Persona Switcher */}
-            <div className="mb-5 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80">
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">
-                Quick Demo Login (Select Role)
-              </p>
-              <div className="grid grid-cols-2 gap-1.5">
-                {personas.map((p) => (
-                  <button
-                    key={p.id}
-                    type="button"
-                    onClick={() => handleSelectPersona(p.id)}
-                    className={`p-2 rounded-xl text-left border transition-all ${
-                      selectedPersona === p.id
-                        ? 'bg-emerald-50 dark:bg-emerald-950/60 border-emerald-500 text-emerald-900 dark:text-emerald-200 shadow-2xs'
-                        : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-slate-300'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold truncate">{p.name}</span>
-                      <span className="text-[9px] font-medium text-emerald-600 dark:text-emerald-400">
-                        {p.badge}
-                      </span>
-                    </div>
-                    <span className="text-[10px] text-slate-400 truncate block">{p.role}</span>
-                  </button>
-                ))}
+            {/* Test Account Notification Banner */}
+            <div className="mb-5 p-3.5 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 flex items-center gap-3">
+              <KeyRound className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+              <div className="text-xs text-emerald-900 dark:text-emerald-200">
+                <span className="font-bold">Test Account Access:</span>
+                <div className="font-mono text-[11px] mt-0.5 text-emerald-800 dark:text-emerald-300">
+                  Username: <strong className="underline">test</strong> | Password: <strong className="underline">test</strong>
+                </div>
               </div>
             </div>
 
-            <form onSubmit={handleLogin} className="space-y-3.5">
+            {error && (
+              <div className="mb-4 p-3 rounded-xl bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800 text-xs text-red-700 dark:text-red-300">
+                {error}
+              </div>
+            )}
+
+            <form onSubmit={handleLogin} className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                  Email Address
+                  Username or Email
                 </label>
                 <div className="relative">
                   <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
                   <input
-                    type="email"
+                    type="text"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                    placeholder="name@brokerage.com"
+                    className="w-full pl-9 pr-3 py-2.5 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    placeholder="Enter 'test' or email"
                   />
                 </div>
               </div>
@@ -202,7 +160,7 @@ export default function LoginPage() {
                   </label>
                   <button
                     type="button"
-                    onClick={() => alert('In production, password reset instructions are emailed to verified broker addresses.')}
+                    onClick={() => alert('For testing access, please use password: test')}
                     className="text-[11px] text-emerald-600 dark:text-emerald-400 hover:underline"
                   >
                     Forgot Password?
@@ -215,7 +173,8 @@ export default function LoginPage() {
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full pl-9 pr-3 py-2.5 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    placeholder="Enter 'test'"
                   />
                 </div>
               </div>
@@ -235,7 +194,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full mt-2 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-emerald shadow-sm flex items-center justify-center gap-2 transition-all hover:scale-[1.01] active:scale-[0.99]"
+                className="w-full mt-2 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-emerald shadow-sm flex items-center justify-center gap-2 transition-all hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
               >
                 {isLoading ? (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -250,10 +209,7 @@ export default function LoginPage() {
           </div>
 
           <div className="mt-6 text-center text-xs text-slate-500 border-t border-slate-100 dark:border-slate-800 pt-4">
-            Need access for your firm?{' '}
-            <span className="text-emerald-600 dark:text-emerald-400 font-semibold cursor-pointer">
-              Contact your Brokerage Administrator
-            </span>
+            Protected by Quotely Multi-Tenant Security * IRDAI Regulatory Standard
           </div>
         </div>
       </div>

@@ -56,39 +56,63 @@ export async function middleware(request: NextRequest) {
     request,
   });
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  // 1. Check Quotely session cookie
+  const sessionCookie = request.cookies.get('quotely_session')?.value;
+  let isAuthenticated = false;
 
-  // Graceful fallback: if Supabase is not configured, allow all routes in dev mode
-  if (!supabaseUrl || !supabaseAnonKey ||
-    supabaseUrl.includes('placeholder') || supabaseAnonKey.includes('placeholder')) {
-    // Dev / demo mode: no real auth enforced — seed data is active
-    return response;
+  if (sessionCookie) {
+    try {
+      const decoded = JSON.parse(Buffer.from(sessionCookie, 'base64').toString('utf-8'));
+      if (decoded?.user?.id) {
+        isAuthenticated = true;
+      }
+    } catch {
+      isAuthenticated = false;
+    }
   }
 
-  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
-    cookies: {
-      getAll() {
-        return request.cookies.getAll();
-      },
-      setAll(cookiesToSet: { name: string; value: string; options?: CookieOptions }[]) {
-        cookiesToSet.forEach(({ name, value }) =>
-          request.cookies.set(name, value)
-        );
-        response = NextResponse.next({ request });
-        cookiesToSet.forEach(({ name, value, options }) =>
-          response.cookies.set(name, value, options ?? {})
-        );
-      },
-    },
-  });
+  // 2. Fallback to Supabase SSR Auth if quotely_session is not present
+  if (!isAuthenticated) {
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  // Refresh session — this is the canonical Supabase SSR pattern
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    if (
+      supabaseUrl &&
+      supabaseAnonKey &&
+      !supabaseUrl.includes('placeholder') &&
+      !supabaseAnonKey.includes('placeholder')
+    ) {
+      try {
+        const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+          cookies: {
+            getAll() {
+              return request.cookies.getAll();
+            },
+            setAll(cookiesToSet: { name: string; value: string; options?: CookieOptions }[]) {
+              cookiesToSet.forEach(({ name, value }) =>
+                request.cookies.set(name, value)
+              );
+              response = NextResponse.next({ request });
+              cookiesToSet.forEach(({ name, value, options }) =>
+                response.cookies.set(name, value, options ?? {})
+              );
+            },
+          },
+        });
 
-  const isAuthenticated = !!user;
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        if (user) {
+          isAuthenticated = true;
+        }
+      } catch {
+        isAuthenticated = false;
+      }
+    }
+  }
+
   const isProtectedRoute = PROTECTED_PREFIXES.some((prefix) =>
     pathname.startsWith(prefix)
   );
@@ -103,7 +127,7 @@ export async function middleware(request: NextRequest) {
 
   // Redirect already-authenticated users away from auth pages
   if (isAuthRoute && isAuthenticated) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
+    return NextResponse.redirect(new URL('/app/dashboard', request.url));
   }
 
   return response;

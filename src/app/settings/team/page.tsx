@@ -50,8 +50,8 @@ export default function WorkspaceTeamSettingsPage() {
 
   const filteredMembers = workspaceMembers.filter((m) => {
     const matchesSearch =
-      m.user?.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      m.user?.email.toLowerCase().includes(searchQuery.toLowerCase());
+      (m.user?.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (m.user?.email || '').toLowerCase().includes(searchQuery.toLowerCase());
     const matchesRole = roleFilter === 'all' || m.role === roleFilter;
     return matchesSearch && matchesRole;
   });

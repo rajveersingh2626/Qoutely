@@ -67,7 +67,7 @@ const WorkspaceContext = createContext<WorkspaceContextType | undefined>(undefin
 
 export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Load initial state from SEED constants for instantaneous render
-  const [currentUser, setCurrentUser] = useState<Profile>(SEED_PROFILES[3]); // Default: Arjun Kapoor (Underwriter)
+  const [currentUser, setCurrentUser] = useState<Profile>(SEED_PROFILES[0]); // Default: Test Administrator (Super Admin)
   const [workspaces, setWorkspaces] = useState<Workspace[]>(SEED_WORKSPACES);
   const [currentWorkspace, setCurrentWorkspace] = useState<Workspace>(SEED_WORKSPACES[0]);
   const [members, setMembers] = useState<WorkspaceMember[]>(SEED_WORKSPACE_MEMBERS);
@@ -82,7 +82,7 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const memberRecord = members.find(
     (m) => m.workspace_id === currentWorkspace.id && m.user_id === currentUser.id
   );
-  const userRole: UserRole = memberRecord ? memberRecord.role : 'underwriter';
+  const userRole: UserRole = memberRecord ? memberRecord.role : 'super_admin';
 
   // Role permissions
   const canManageFirm = userRole === 'super_admin' || userRole === 'brokerage_owner';
@@ -173,6 +173,16 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   useEffect(() => {
     refreshData();
+    // Hydrate current user from server session cookie
+    fetch('/api/auth/session')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.authenticated && data.user) {
+          setCurrentUser(data.user);
+          if (data.workspace) setCurrentWorkspace(data.workspace);
+        }
+      })
+      .catch(() => {});
   }, [refreshData]);
 
   const logAction = (
@@ -225,7 +235,7 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   };
 
   const switchUser = (userId: string) => {
-    const found = SEED_PROFILES.find((p) => p.id === userId);
+    const found = SEED_PROFILES.find((p) => p.id === userId) || SEED_PROFILES[0];
     if (found) {
       setCurrentUser(found);
     }

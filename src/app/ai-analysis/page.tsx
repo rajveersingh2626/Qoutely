@@ -41,16 +41,46 @@ export default function AIAnalysisPage() {
   const [isRunning, setIsRunning] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const handleRunAnalysis = () => {
+  const handleRunAnalysis = async () => {
     setIsRunning(true);
-    setTimeout(() => {
-      const res = analyzeProposalAI({
-        raw_text: inputText,
-        business_description: inputText,
+    try {
+      const res = await fetch('/api/classify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ business_description: inputText }),
       });
-      setAnalysisResult(res);
-      setIsRunning(false);
-    }, 400);
+      if (res.ok) {
+        const json = await res.json();
+        if (json.data) {
+          setAnalysisResult({
+            business_summary: json.data.business_summary || '',
+            keywords: json.data.keywords || [],
+            occupancy_candidates: (json.data.occupancy_candidates || []).map((c: any) => ({
+              code: c.code,
+              description: c.description,
+              confidence: c.confidence || 0.9,
+              reason: c.reason || '',
+              loss_cost: c.loss_cost,
+              category: c.category,
+            })),
+            hazard_flags: json.data.hazard_flags || [],
+            missing_fields: json.data.missing_fields || [],
+            confidence_score: json.data.occupancy_candidates?.[0]?.confidence || 0.92,
+          });
+          setIsRunning(false);
+          return;
+        }
+      }
+    } catch {
+      // fallback
+    }
+
+    const fallbackRes = analyzeProposalAI({
+      raw_text: inputText,
+      business_description: inputText,
+    });
+    setAnalysisResult(fallbackRes);
+    setIsRunning(false);
   };
 
   const handleCopyJSON = () => {

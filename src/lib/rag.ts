@@ -33,29 +33,33 @@ export interface RAGClassificationResult {
 /**
  * Normalizes text for token search
  */
-function tokenize(text: string): string[] {
-  return text
+function tokenize(text: unknown): string[] {
+  if (text === null || text === undefined) return [];
+  const str = typeof text === 'string' ? text : String(text);
+  return str
     .toLowerCase()
     .replace(/[^a-z0-9\s]/g, ' ')
     .split(/\s+/)
-    .filter(t => t.length > 2);
+    .filter((t) => t.length > 2);
 }
 
 /**
  * Hybrid Vector/Semantic Search over IIB Schedule 3 (600+ occupancies)
  */
 export function searchOccupanciesRAG(businessDescription: string, limit: number = 5): RAGClassificationResult {
-  const queryTokens = tokenize(businessDescription);
+  const queryTokens = tokenize(businessDescription || '');
   const matchedKeywordsSet = new Set<string>();
+  const queryDesc = (businessDescription || '').toLowerCase();
 
   const scored = occupanciesData.map((occ: any) => {
     let score = 0;
     const descTokens = tokenize(occ.description);
-    const catTokens = tokenize(occ.category);
-    const keywords = (occ.keywords || []).map((k: string) => k.toLowerCase());
+    const catTokens = tokenize(occ.category_tag || occ.category || '');
+    const keywords = (occ.keywords || []).map((k: any) => String(k).toLowerCase());
 
     // 1. Exact phrase matches in description
-    if (occ.description.toLowerCase().includes(businessDescription.toLowerCase().slice(0, 30))) {
+    const occDesc = (occ.description || '').toLowerCase();
+    if (occDesc && queryDesc && queryDesc.length >= 5 && occDesc.includes(queryDesc.slice(0, 30))) {
       score += 40;
     }
 
