@@ -50,6 +50,19 @@ export async function POST(req: NextRequest) {
       workspace_id,
       user_id
     );
+
+    if (!result.success) {
+      return NextResponse.json(
+        {
+          success: false,
+          is_valid_proposal: false,
+          error: result.error || 'Failed to extract proposal from input.',
+          meta: result.meta,
+        },
+        { status: 422 }
+      );
+    }
+
     return NextResponse.json(result);
   } catch (err: any) {
     return NextResponse.json(

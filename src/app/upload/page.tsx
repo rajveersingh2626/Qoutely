@@ -49,22 +49,21 @@ export default function UploadProposalPage() {
 
   // Extracted Editable Fields from AI / Schema Clamp
   const [extractedData, setExtractedData] = useState({
-    clientName: 'Acme Industries Ltd',
-    gst: '27AAACA1234A1Z5',
-    address: 'Plot 101, Industrial Corridor Phase II, MIDC, Mumbai, Maharashtra 400093',
-    state: 'Maharashtra',
-    district: 'Mumbai Suburban',
-    businessDescription:
-      'Precision CNC metal machining, tool stamping, component fabrication and parts assembly workshop. Electrical equipment tested and certified.',
-    sumInsuredBuilding: 15000000,
-    sumInsuredStocks: 12800000,
-    sumInsuredPM: 26000000,
-    totalSumInsured: 53800000,
-    hypothecation: 'State Bank of India',
-    riskCode: '1023',
+    clientName: '',
+    gst: '',
+    address: '',
+    state: '',
+    district: '',
+    businessDescription: '',
+    sumInsuredBuilding: 0,
+    sumInsuredStocks: 0,
+    sumInsuredPM: 0,
+    totalSumInsured: 0,
+    hypothecation: '',
+    riskCode: '1001',
     eqZone: 'Zone 3',
     pastClaimRatio: '<=70',
-    confidenceScore: 96,
+    confidenceScore: 0,
   });
 
   const timelineSteps = [
@@ -133,6 +132,10 @@ export default function UploadProposalPage() {
       }
 
       const result = await res.json();
+      if (!result.success || result.is_valid_proposal === false) {
+        throw new Error(result.error || 'The document or text is not recognized as a valid insurance proposal.');
+      }
+
       const data = result.data || {};
 
       setCurrentStep('classification');
@@ -145,26 +148,23 @@ export default function UploadProposalPage() {
         data.sum_insured?.total ||
         (data.sum_insured?.building || 0) +
           (data.sum_insured?.plant_and_machinery || 0) +
-          (data.sum_insured?.stocks || 0) ||
-        53800000;
+          (data.sum_insured?.stocks || 0) +
+          (data.sum_insured?.furniture_and_fixtures || 0) +
+          (data.sum_insured?.other || 0);
 
       setExtractedData({
-        clientName: data.client_name || 'Acme Industries Ltd',
-        gst: data.gst_number || '27AAACA1234A1Z5',
-        address:
-          data.address ||
-          'Plot 101, Industrial Corridor Phase II, MIDC, Mumbai, Maharashtra 400093',
-        state: data.state || 'Maharashtra',
-        district: data.district || 'Mumbai Suburban',
-        businessDescription:
-          data.business_description ||
-          'Precision CNC metal machining, tool stamping, component fabrication and parts assembly workshop.',
-        sumInsuredBuilding: data.sum_insured?.building || 15000000,
-        sumInsuredStocks: data.sum_insured?.stocks || 12800000,
-        sumInsuredPM: data.sum_insured?.plant_and_machinery || 26000000,
+        clientName: data.client_name || '',
+        gst: data.gst_number || '',
+        address: data.address || '',
+        state: data.state || '',
+        district: data.district || '',
+        businessDescription: data.business_description || '',
+        sumInsuredBuilding: data.sum_insured?.building || 0,
+        sumInsuredStocks: data.sum_insured?.stocks || 0,
+        sumInsuredPM: data.sum_insured?.plant_and_machinery || 0,
         totalSumInsured: totalSI,
-        hypothecation: 'State Bank of India',
-        riskCode: data.clamped_occupancy_code || data.occupancy_code || '1023',
+        hypothecation: '',
+        riskCode: data.clamped_occupancy_code || data.occupancy_code || '1001',
         eqZone: result.software_boundary?.eq_zone || 'Zone 3',
         pastClaimRatio: data.claim_history_last_3_years ? '>70' : '<=70',
         confidenceScore: Math.round(
@@ -174,12 +174,11 @@ export default function UploadProposalPage() {
 
       setCurrentStep('completed');
     } catch (err: any) {
-      console.warn('Extraction pipeline fallback triggered:', err);
+      console.warn('Extraction rejected or failed:', err);
       setErrorMessage(
-        err.message || 'Gemini extraction encountered a problem. Loaded benchmark proposal.'
+        err.message || 'Gemini extraction could not process this document.'
       );
-      // Fallback: advance to completed with default benchmark
-      setCurrentStep('completed');
+      setCurrentStep('idle');
     } finally {
       setIsProcessing(false);
     }
@@ -233,41 +232,56 @@ export default function UploadProposalPage() {
         }),
       });
 
-      if (res.ok) {
-        const result = await res.json();
-        const data = result.data || {};
-        setCurrentStep('classification');
-        await new Promise((r) => setTimeout(r, 300));
-        setCurrentStep('premium');
-        await new Promise((r) => setTimeout(r, 300));
-
-        setExtractedData({
-          clientName: data.client_name || 'Acme Industries Ltd',
-          gst: data.gst_number || '27AAACA1234A1Z5',
-          address:
-            data.address ||
-            'Plot 101, Industrial Corridor Phase II, MIDC, Mumbai, Maharashtra 400093',
-          state: data.state || 'Maharashtra',
-          district: data.district || 'Mumbai Suburban',
-          businessDescription: data.business_description || sampleText.slice(0, 150),
-          sumInsuredBuilding: data.sum_insured?.building || 15000000,
-          sumInsuredStocks: data.sum_insured?.stocks || 12800000,
-          sumInsuredPM: data.sum_insured?.plant_and_machinery || 26000000,
-          totalSumInsured: data.sum_insured?.total || 53800000,
-          hypothecation: 'State Bank of India',
-          riskCode: data.clamped_occupancy_code || data.occupancy_code || '1023',
-          eqZone: result.software_boundary?.eq_zone || 'Zone 3',
-          pastClaimRatio: data.claim_history_last_3_years ? '>70' : '<=70',
-          confidenceScore: Math.round(
-            (result.software_boundary?.confidence_score || 0.96) * 100
-          ),
-        });
-        setCurrentStep('completed');
-      } else {
-        throw new Error('API route returned error');
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || `Server returned status ${res.status}`);
       }
-    } catch {
+
+      const result = await res.json();
+      if (!result.success || result.is_valid_proposal === false) {
+        throw new Error(result.error || 'The entered text is not a valid insurance proposal.');
+      }
+
+      const data = result.data || {};
+      setCurrentStep('classification');
+      await new Promise((r) => setTimeout(r, 300));
+      setCurrentStep('premium');
+      await new Promise((r) => setTimeout(r, 300));
+
+      const totalSI =
+        data.sum_insured?.total ||
+        (data.sum_insured?.building || 0) +
+          (data.sum_insured?.plant_and_machinery || 0) +
+          (data.sum_insured?.stocks || 0) +
+          (data.sum_insured?.furniture_and_fixtures || 0) +
+          (data.sum_insured?.other || 0);
+
+      setExtractedData({
+        clientName: data.client_name || '',
+        gst: data.gst_number || '',
+        address: data.address || '',
+        state: data.state || '',
+        district: data.district || '',
+        businessDescription: data.business_description || sampleText.slice(0, 150),
+        sumInsuredBuilding: data.sum_insured?.building || 0,
+        sumInsuredStocks: data.sum_insured?.stocks || 0,
+        sumInsuredPM: data.sum_insured?.plant_and_machinery || 0,
+        totalSumInsured: totalSI,
+        hypothecation: '',
+        riskCode: data.clamped_occupancy_code || data.occupancy_code || '1001',
+        eqZone: result.software_boundary?.eq_zone || 'Zone 3',
+        pastClaimRatio: data.claim_history_last_3_years ? '>70' : '<=70',
+        confidenceScore: Math.round(
+          (result.software_boundary?.confidence_score || 0.95) * 100
+        ),
+      });
       setCurrentStep('completed');
+    } catch (err: any) {
+      console.warn('Text extraction rejected or failed:', err);
+      setErrorMessage(
+        err.message || 'Gemini extraction could not process this text.'
+      );
+      setCurrentStep('idle');
     } finally {
       setIsProcessing(false);
     }
@@ -326,8 +340,8 @@ export default function UploadProposalPage() {
     });
 
     addDocument({
-      file_name: uploadedFile?.name || 'Proposal_Acme_Industries.pdf',
-      file_url: '/uploads/' + (uploadedFile?.name || 'Proposal_Acme_Industries.pdf'),
+      file_name: uploadedFile?.name || `${extractedData.clientName || 'Proposal'}_Document.pdf`,
+      file_url: '/uploads/' + (uploadedFile?.name || `${extractedData.clientName || 'Proposal'}_Document.pdf`),
       document_type: uploadedFile?.type.includes('image') ? 'image' : 'pdf',
       file_size: 146000,
       ocr_status: 'completed',
@@ -414,16 +428,23 @@ export default function UploadProposalPage() {
       />
 
       <div className="p-6 md:p-8 max-w-7xl mx-auto w-full space-y-6">
-        {/* Error Alert */}
+        {/* Error / Rejection Alert */}
         {errorMessage && (
-          <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 text-amber-900 dark:text-amber-200 text-xs flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0" />
-              <span>{errorMessage}</span>
+          <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/50 border border-rose-300 dark:border-rose-800 text-rose-900 dark:text-rose-200 text-xs flex items-start justify-between shadow-xs">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-bold text-[13px] text-rose-900 dark:text-rose-100">
+                  Document / Content Verification Failed
+                </p>
+                <p className="mt-0.5 text-rose-700 dark:text-rose-300 leading-relaxed font-medium">
+                  {errorMessage}
+                </p>
+              </div>
             </div>
             <button
               onClick={() => setErrorMessage(null)}
-              className="text-amber-700 dark:text-amber-300 hover:text-amber-900"
+              className="text-rose-700 dark:text-rose-300 hover:text-rose-900 dark:hover:text-white p-1 rounded-lg hover:bg-rose-100 dark:hover:bg-rose-900/50 transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -721,7 +742,7 @@ FIRE HYDRANTS: INSTALLED & CERTIFIED`
                     </span>
                   </div>
                   <span className="text-[10px] font-mono text-slate-400">
-                    {uploadedFile?.name || 'Proposal_Acme_Industries.pdf'}
+                    {uploadedFile?.name || `${extractedData.clientName || 'Proposal'}_Document.pdf`}
                   </span>
                 </div>
 

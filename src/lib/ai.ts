@@ -100,16 +100,46 @@ export async function extractProposal(
   const mimeType = typeof input === 'object' ? input.mimeType : undefined;
   const fileName = typeof input === 'object' ? input.fileName : undefined;
 
+  if (!hasKey || !client) {
+    return {
+      success: false,
+      error: 'Gemini API key is not configured or unavailable. Real AI processing is required.',
+    };
+  }
+
+  // Pre-check for empty / trivial input
+  const textToCheck = rawText.trim();
+  if (!base64 && textToCheck.length < 15) {
+    return {
+      success: false,
+      is_valid_proposal: false,
+      error: 'The provided text is too short to be an insurance proposal or RFQ. Please provide meaningful commercial risk details.',
+    };
+  }
+
   const prompt = `You are Quotely's senior commercial insurance underwriter for India.
-Extract all relevant underwriting fields from the proposal or quote document provided.
+Review the following document or text for commercial property, fire, engineering, storage, manufacturing, shop, or industrial insurance underwriting.
+
+STEP 1: RELEVANCE VERIFICATION
+Determine whether the document or text is genuinely related to commercial property/fire insurance, an RFQ, a policy schedule, a risk inspection, or an insurance proposal.
+- If the text is random gibberish (e.g. "asdf", keyboard mash), spam, unrelated personal text (e.g. cooking recipes, essays, general chat, coding scripts, personal letters, jokes, resumes, non-insurance papers), or does NOT describe a commercial business/property with insurable assets:
+  You MUST return:
+  {
+    "is_insurance_document": false,
+    "rejection_reason": "Bro, this document/text is not related to commercial property insurance or an underwriting proposal. Please upload a genuine commercial proposal or policy schedule."
+  }
+- If it IS genuinely related to commercial insurance, an RFQ, or business property underwriting, set "is_insurance_document": true, and extract the real entities present in the document. Do NOT invent fake company names or fake numbers if they are not in the document.
+
 Return ONLY valid JSON matching this schema:
 {
-  "client_name": string,
-  "gst_number": string,
-  "address": string,
-  "district": string,
-  "state": string,
-  "business_description": string,
+  "is_insurance_document": boolean,
+  "rejection_reason": string | null,
+  "client_name": string | null,
+  "gst_number": string | null,
+  "address": string | null,
+  "district": string | null,
+  "state": string | null,
+  "business_description": string | null,
   "occupancy_code": string | null,
   "construction_type": "Class A" | "Class B" | "Class C" | "Kutcha",
   "policy_duration_months": number,
@@ -136,167 +166,107 @@ Return ONLY valid JSON matching this schema:
 ${rawText ? `\nDocument content / excerpt:\n${rawText}` : ''}
 ${fileName ? `\nDocument filename: ${fileName}` : ''}`;
 
-  if (hasKey && client) {
-    try {
-      const contents: any[] = [];
-      if (base64 && mimeType) {
-        const cleanBase64 = base64.replace(/^data:[^;]+;base64,/, '');
-        contents.push({
-          inlineData: {
-            data: cleanBase64,
-            mimeType: mimeType,
-          },
-        });
-      }
-      contents.push(prompt);
-
-      const response = await client.models.generateContent({
-        model: modelName,
-        contents: contents.length === 1 ? contents[0] : contents,
-        config: {
-          responseMimeType: 'application/json',
+  try {
+    const contents: any[] = [];
+    if (base64 && mimeType) {
+      const cleanBase64 = base64.replace(/^data:[^;]+;base64,/, '');
+      contents.push({
+        inlineData: {
+          data: cleanBase64,
+          mimeType: mimeType,
         },
       });
+    }
+    contents.push(prompt);
 
-      const responseText = response.text || '{}';
-      const parsed = JSON.parse(responseText);
-      const latency = Date.now() - startTime;
-      const inputTokens = Math.max(50, Math.round(prompt.length / 4) + (base64 ? 300 : 0));
-      const outputTokens = Math.round(responseText.length / 4);
-      const cost = calculateAICost(inputTokens, outputTokens);
+    const response = await client.models.generateContent({
+      model: modelName,
+      contents: contents.length === 1 ? contents[0] : contents,
+      config: {
+        responseMimeType: 'application/json',
+      },
+    });
 
-      await logAIRequest({
-        workspace_id: workspaceId,
-        user_id: userId,
-        endpoint: '/api/extract',
-        model: modelName,
-        input_tokens: inputTokens,
-        output_tokens: outputTokens,
-        cost_usd: cost,
-        latency_ms: latency,
-        is_mocked: false,
-      });
+    const responseText = response.text || '{}';
+    const parsed = JSON.parse(responseText);
+    const latency = Date.now() - startTime;
+    const inputTokens = Math.max(50, Math.round(prompt.length / 4) + (base64 ? 300 : 0));
+    const outputTokens = Math.round(responseText.length / 4);
+    const cost = calculateAICost(inputTokens, outputTokens);
 
-      // Karpathy Software 2.0 / 1.0 Boundary Clamp
-      const clampedResult = validateAndClampLLMOutput(parsed, modelName);
+    await logAIRequest({
+      workspace_id: workspaceId,
+      user_id: userId,
+      endpoint: '/api/extract',
+      model: modelName,
+      input_tokens: inputTokens,
+      output_tokens: outputTokens,
+      cost_usd: cost,
+      latency_ms: latency,
+      is_mocked: false,
+    });
 
-      // Perform RAG search on the business description to get statutory IIB Schedule 3 occupancy code
-      const searchDesc = `${clampedResult.data.business_description} ${rawText}`.trim();
-      const ragResult = searchOccupanciesRAG(searchDesc || 'commercial risk');
-      const finalCode = clampedResult.data.occupancy_code || ragResult.primaryCandidate?.code || '1023';
-
-      // Match Earthquake Zone from district/state/address
-      const searchLocation = `${clampedResult.data.district} ${clampedResult.data.state} ${clampedResult.data.address}`.trim();
-      const eqMatch = matchDistrictEQZone(searchLocation);
-      const resolvedZone = eqMatch?.zone || 'Zone 3';
-      const confidence = Math.min(0.98, Math.max(0.88, ragResult.primaryCandidate?.confidence || 0.95));
-
+    // 1. Check if Gemini rejected the document as unrelated/BS
+    if (parsed.is_insurance_document === false) {
       return {
-        success: true,
-        data: {
-          ...clampedResult.data,
-          clamped_occupancy_code: finalCode,
-          occupancy_candidates: ragResult.topCandidates,
-        },
-        software_boundary: {
-          ...clampedResult.software_boundary,
-          eq_zone: resolvedZone,
-          confidence_score: confidence,
-        },
+        success: false,
+        is_valid_proposal: false,
+        error:
+          parsed.rejection_reason ||
+          'Bro, this document/text is not related to commercial property insurance or an underwriting proposal. Please upload a genuine commercial proposal or policy schedule.',
         meta: { model: modelName, latency_ms: latency, cost_usd: cost, is_mocked: false },
       };
-    } catch (err: any) {
-      console.warn('Gemini API call failed, falling back to deterministic parser:', err);
     }
-  }
 
-  // Deterministic Fallback if no API key or on transient error
-  const latency = Date.now() - startTime;
-  
-  // Try to decode base64 if rawText is empty and it's text/plain
-  let effectiveText = rawText;
-  if (!effectiveText && base64) {
-    try {
-      const cleanBase64 = base64.replace(/^data:[^;]+;base64,/, '');
-      effectiveText = Buffer.from(cleanBase64, 'base64').toString('utf-8');
-    } catch {
-      effectiveText = '';
+    // 2. Check if minimal required data is present
+    if (
+      !parsed.client_name &&
+      !parsed.business_description &&
+      (!parsed.sum_insured || parsed.sum_insured.total === 0)
+    ) {
+      return {
+        success: false,
+        is_valid_proposal: false,
+        error: 'The document does not contain recognizable client information, business description, or sum insured values. Please provide a valid commercial proposal.',
+        meta: { model: modelName, latency_ms: latency, cost_usd: cost, is_mocked: false },
+      };
     }
+
+    // Karpathy Software 2.0 / 1.0 Boundary Clamp
+    const clampedResult = validateAndClampLLMOutput(parsed, modelName);
+
+    // Perform RAG search on the business description to get statutory IIB Schedule 3 occupancy code
+    const searchDesc = `${clampedResult.data.business_description || ''} ${rawText}`.trim();
+    const ragResult = searchOccupanciesRAG(searchDesc || 'commercial risk');
+    const finalCode = clampedResult.data.occupancy_code || ragResult.primaryCandidate?.code || '1023';
+
+    // Match Earthquake Zone from district/state/address
+    const searchLocation = `${clampedResult.data.district || ''} ${clampedResult.data.state || ''} ${clampedResult.data.address || ''}`.trim();
+    const eqMatch = matchDistrictEQZone(searchLocation);
+    const resolvedZone = eqMatch?.zone || 'Zone 3';
+    const confidence = Math.min(0.98, Math.max(0.85, ragResult.primaryCandidate?.confidence || 0.92));
+
+    return {
+      success: true,
+      data: {
+        ...clampedResult.data,
+        clamped_occupancy_code: finalCode,
+        occupancy_candidates: ragResult.topCandidates,
+      },
+      software_boundary: {
+        ...clampedResult.software_boundary,
+        eq_zone: resolvedZone,
+        confidence_score: confidence,
+      },
+      meta: { model: modelName, latency_ms: latency, cost_usd: cost, is_mocked: false },
+    };
+  } catch (err: any) {
+    console.error('Gemini API extraction failed:', err);
+    return {
+      success: false,
+      error: `Gemini extraction failed: ${err.message || 'Unable to process document'}. Please check the document format or try again.`,
+    };
   }
-
-  // Domain entity extraction via regex on text
-  const isShivaji = effectiveText.toLowerCase().includes('shivaji') || effectiveText.toLowerCase().includes('cold storage');
-  const isVanguard = effectiveText.toLowerCase().includes('vanguard') || effectiveText.toLowerCase().includes('cleanroom');
-  const isAcme = effectiveText.toLowerCase().includes('acme') || (!isShivaji && !isVanguard);
-
-  const gstMatch = effectiveText.match(/\b([0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1})\b/i);
-  const clientMatch = effectiveText.match(/(?:INSURED(?:\s+NAME)?|CLIENT(?:\s+NAME)?)\s*[:\-]\s*([^\n\r]+)/i);
-
-  const ragResult = searchOccupanciesRAG(effectiveText || (isAcme ? 'precision cnc metal machining tool stamping' : 'commercial trading storage'));
-  const finalCode = ragResult.primaryCandidate?.code || (isAcme ? '1023' : isShivaji ? '2060' : '1023');
-
-  const eqMatch = matchDistrictEQZone(effectiveText);
-  const resolvedZone = eqMatch?.zone || (isVanguard ? 'Zone 2' : 'Zone 3');
-
-  const fallbackData = {
-    client_name: clientMatch ? clientMatch[1].trim() : (isShivaji ? 'Shivaji Agro Industries Pvt Ltd' : isVanguard ? 'Vanguard Electronics Components India' : 'Acme Industries Ltd'),
-    gst_number: gstMatch ? gstMatch[1].toUpperCase() : (isShivaji ? '27AALCS9821R1Z9' : isVanguard ? '09AAECV1102Q1Z4' : '27AAACA1234A1Z5'),
-    address: isShivaji ? 'Plot A-42, MIDC Industrial Area, Baramati, Dist. Pune - 413133' : isVanguard ? 'C-18, Sector 62, Electronic City, Noida - 201301' : 'Plot 101, Industrial Corridor Phase II, MIDC, Mumbai, Maharashtra 400093',
-    district: isShivaji ? 'Pune' : isVanguard ? 'Gautam Buddha Nagar' : 'Mumbai Suburban',
-    state: isShivaji ? 'Maharashtra' : isVanguard ? 'Uttar Pradesh' : 'Maharashtra',
-    business_description: effectiveText.length > 20 ? effectiveText.slice(0, 300) : (isShivaji ? 'Agro-commodity cold storage, temperature controlled warehouse for fruits and grains' : isVanguard ? 'PCB surface mount assembly, semiconductor testing, sensor packaging cleanroom' : 'Precision CNC metal machining, tool stamping, component fabrication and parts assembly workshop'),
-    construction_type: 'Class A' as const,
-    policy_duration_months: 12,
-    previous_insurer: isShivaji ? 'The New India Assurance Co. Ltd.' : 'National Insurance Co',
-    claim_history_last_3_years: false,
-    claim_ratio_percent: 0,
-    sum_insured: {
-      building: isShivaji ? 20000000 : isVanguard ? 40000000 : 15000000,
-      plant_and_machinery: isShivaji ? 35000000 : isVanguard ? 80000000 : 26000000,
-      stocks: isShivaji ? 30000000 : isVanguard ? 40000000 : 12800000,
-      furniture_and_fixtures: 0,
-      other: 0,
-      total: isShivaji ? 85000000 : isVanguard ? 160000000 : 53800000
-    },
-    perils_required: {
-      fire_flexa: true,
-      stfi: true,
-      earthquake: true,
-      terrorism: true
-    },
-    occupancy_code: finalCode,
-    hazard_flags: isAcme ? ['Cutting oils and industrial solvents on shop floor'] : ['Standard commercial risk profile'],
-    missing_fields: []
-  };
-
-  await logAIRequest({
-    workspace_id: workspaceId,
-    user_id: userId,
-    endpoint: '/api/extract',
-    model: 'fallback-deterministic',
-    input_tokens: Math.round(prompt.length / 4),
-    output_tokens: 380,
-    cost_usd: 0,
-    latency_ms: latency,
-    is_mocked: true
-  });
-
-  const clampedFallback = validateAndClampLLMOutput(fallbackData, 'fallback-deterministic');
-
-  return {
-    success: true,
-    data: {
-      ...clampedFallback.data,
-      clamped_occupancy_code: finalCode,
-      occupancy_candidates: ragResult.topCandidates,
-    },
-    software_boundary: {
-      ...clampedFallback.software_boundary,
-      eq_zone: resolvedZone,
-      confidence_score: Math.min(0.98, Math.max(0.85, ragResult.primaryCandidate?.confidence || 0.95)),
-    },
-    meta: { model: 'fallback-deterministic', latency_ms: latency, cost_usd: 0, is_mocked: true }
-  };
 }
 
 /**
@@ -309,16 +279,25 @@ export async function classifyOccupancy(businessDescription: string, district?: 
   const { client, hasKey } = getGeminiClient();
   const modelName = 'gemini-2.5-flash';
 
-  const prompt = `You are Quotely's senior underwriting classifier.
-Review this business description and the candidate IIB Schedule 3 occupancies retrieved from tariff records:
+  const prompt = `You are Quotely's senior underwriting classifier under the All India Fire Tariff (AIFT 2001) and IIB Loss Cost Guidelines.
 
-Business: "${businessDescription}"
+STEP 1: VALIDATE RELEVANCE
+Check if the following business description is a real, legitimate commercial enterprise, manufacturing operation, storage facility, or insurable business risk:
+"${businessDescription}"
+
+If the text is gibberish, spam, keyboard smash (e.g. "asdfghjkl", "qwerty"), random words, completely unrelated content (e.g. food recipe, poetry, casual chat), or contains no recognizable business activity:
+Set "is_valid_occupancy": false and set "rejection_reason": "Bro, this isn't related to an insurable business or commercial property."
+
+STEP 2: CLASSIFICATION (only if is_valid_occupancy is true)
+Review the candidate IIB Schedule 3 occupancies retrieved from tariff records:
 Retrieved Candidates from IIB Schedule 3:
 ${JSON.stringify(ragResult.topCandidates, null, 2)}
 
 Provide the final candidate rankings. NEVER invent occupancy codes not present in the candidates.
 Return ONLY valid JSON matching this schema:
 {
+  "is_valid_occupancy": boolean,
+  "rejection_reason": string | null,
   "business_summary": string,
   "keywords": string[],
   "occupancy_candidates": [
@@ -335,83 +314,65 @@ Return ONLY valid JSON matching this schema:
   "missing_fields": string[]
 }`;
 
-  if (hasKey && client) {
-    try {
-      const response = await client.models.generateContent({
-        model: modelName,
-        contents: prompt,
-        config: {
-          responseMimeType: 'application/json'
-        }
-      });
-
-      const responseText = response.text || '{}';
-      const parsed = JSON.parse(responseText);
-      const latency = Date.now() - startTime;
-      const inputTokens = Math.round(prompt.length / 4);
-      const outputTokens = Math.round(responseText.length / 4);
-      const cost = calculateAICost(inputTokens, outputTokens);
-
-      await logAIRequest({
-        workspace_id: workspaceId,
-        user_id: userId,
-        endpoint: '/api/classify',
-        model: modelName,
-        input_tokens: inputTokens,
-        output_tokens: outputTokens,
-        cost_usd: cost,
-        latency_ms: latency,
-        is_mocked: false
-      });
-
-      return {
-        success: true,
-        data: {
-          ...parsed,
-          eq_zone: eqMatch
-        },
-        meta: { model: modelName, latency_ms: latency, cost_usd: cost, is_mocked: false }
-      };
-    } catch (err) {
-      console.warn('Gemini classify failed, using grounded RAG result:', err);
-    }
+  if (!hasKey || !client) {
+    return {
+      success: false,
+      error: 'Gemini AI service is unavailable: GEMINI_API_KEY is not configured.',
+    };
   }
 
-  // Grounded RAG Fallback
-  const latency = Date.now() - startTime;
-  const fallbackResult = {
-    business_summary: `Commercial enterprise operating in ${ragResult.primaryCandidate?.category || 'industrial manufacturing'}. Primary processes involve: ${businessDescription.slice(0, 150)}.`,
-    keywords: ragResult.matchedKeywords,
-    occupancy_candidates: ragResult.topCandidates.map(c => ({
-      code: c.code,
-      description: c.description,
-      confidence: c.confidence,
-      reason: c.reason
-    })),
-    confidence_tier: ragResult.confidenceTier,
-    clarification_question: ragResult.clarificationQuestion || null,
-    hazard_flags: ragResult.primaryCandidate?.hazardRating === 'High' ? ['Classified as High Hazard under AIFT Section 3', 'Sprinkler or hydrant compliance recommended'] : ['Standard industrial light hazard risk profile'],
-    missing_fields: [],
-    eq_zone: eqMatch
-  };
+  try {
+    const response = await client.models.generateContent({
+      model: modelName,
+      contents: prompt,
+      config: {
+        responseMimeType: 'application/json'
+      }
+    });
 
-  await logAIRequest({
-    workspace_id: workspaceId,
-    user_id: userId,
-    endpoint: '/api/classify',
-    model: 'grounded-rag',
-    input_tokens: Math.round(prompt.length / 4),
-    output_tokens: 310,
-    cost_usd: 0,
-    latency_ms: latency,
-    is_mocked: true
-  });
+    const responseText = response.text || '{}';
+    const parsed = JSON.parse(responseText);
+    const latency = Date.now() - startTime;
+    const inputTokens = Math.round(prompt.length / 4);
+    const outputTokens = Math.round(responseText.length / 4);
+    const cost = calculateAICost(inputTokens, outputTokens);
 
-  return {
-    success: true,
-    data: fallbackResult,
-    meta: { model: 'grounded-rag', latency_ms: latency, cost_usd: 0, is_mocked: true }
-  };
+    await logAIRequest({
+      workspace_id: workspaceId,
+      user_id: userId,
+      endpoint: '/api/classify',
+      model: modelName,
+      input_tokens: inputTokens,
+      output_tokens: outputTokens,
+      cost_usd: cost,
+      latency_ms: latency,
+      is_mocked: false
+    });
+
+    if (parsed.is_valid_occupancy === false) {
+      return {
+        success: false,
+        is_valid_occupancy: false,
+        error: parsed.rejection_reason || "Bro, this isn't related to an insurable business description.",
+        meta: { model: modelName, latency_ms: latency, cost_usd: cost, is_mocked: false }
+      };
+    }
+
+    return {
+      success: true,
+      data: {
+        ...parsed,
+        eq_zone: eqMatch
+      },
+      meta: { model: modelName, latency_ms: latency, cost_usd: cost, is_mocked: false }
+    };
+  } catch (err: any) {
+    console.error('Gemini classify failed:', err);
+    return {
+      success: false,
+      error: `Occupancy classification failed: ${err.message || 'Error processing business description'}`
+    };
+  }
 }
 
 /**
@@ -421,6 +382,13 @@ export async function explainRecommendation(occupancyCode: string, businessDescr
   const startTime = Date.now();
   const { client, hasKey } = getGeminiClient();
   const modelName = 'gemini-2.5-flash';
+
+  if (!hasKey || !client) {
+    return {
+      success: false,
+      error: 'Gemini AI service is unavailable: GEMINI_API_KEY is not configured.'
+    };
+  }
 
   const prompt = `You are an expert Indian insurance underwriter.
 Explain precisely why Occupancy Code ${occupancyCode} is the statutory recommendation for the following business:
@@ -444,79 +412,46 @@ Return ONLY valid JSON matching this schema:
   "underwriter_advisory": string
 }`;
 
-  if (hasKey && client) {
-    try {
-      const response = await client.models.generateContent({
-        model: modelName,
-        contents: prompt,
-        config: {
-          responseMimeType: 'application/json'
-        }
-      });
+  try {
+    const response = await client.models.generateContent({
+      model: modelName,
+      contents: prompt,
+      config: {
+        responseMimeType: 'application/json'
+      }
+    });
 
-      const responseText = response.text || '{}';
-      const parsed = JSON.parse(responseText);
-      const latency = Date.now() - startTime;
-      const inputTokens = Math.round(prompt.length / 4);
-      const outputTokens = Math.round(responseText.length / 4);
-      const cost = calculateAICost(inputTokens, outputTokens);
+    const responseText = response.text || '{}';
+    const parsed = JSON.parse(responseText);
+    const latency = Date.now() - startTime;
+    const inputTokens = Math.round(prompt.length / 4);
+    const outputTokens = Math.round(responseText.length / 4);
+    const cost = calculateAICost(inputTokens, outputTokens);
 
-      await logAIRequest({
-        workspace_id: workspaceId,
-        user_id: userId,
-        endpoint: '/api/explain',
-        model: modelName,
-        input_tokens: inputTokens,
-        output_tokens: outputTokens,
-        cost_usd: cost,
-        latency_ms: latency,
-        is_mocked: false
-      });
+    await logAIRequest({
+      workspace_id: workspaceId,
+      user_id: userId,
+      endpoint: '/api/explain',
+      model: modelName,
+      input_tokens: inputTokens,
+      output_tokens: outputTokens,
+      cost_usd: cost,
+      latency_ms: latency,
+      is_mocked: false
+    });
 
-      return {
-        success: true,
-        data: parsed,
-        meta: { model: modelName, latency_ms: latency, cost_usd: cost, is_mocked: false }
-      };
-    } catch (err) {
-      console.warn('Gemini explain call failed:', err);
-    }
+    return {
+      success: true,
+      data: parsed,
+      meta: { model: modelName, latency_ms: latency, cost_usd: cost, is_mocked: false }
+    };
+  } catch (err: any) {
+    console.error('Gemini explain call failed:', err);
+    return {
+      success: false,
+      error: `Underwriting rationale generation failed: ${err.message || 'Gemini AI service error'}`
+    };
   }
-
-  // Deterministic Fallback
-  const latency = Date.now() - startTime;
-  const fallback = {
-    code: occupancyCode,
-    title: `Occupancy ${occupancyCode} Underwriting Rationale`,
-    executive_summary: `Code ${occupancyCode} covers mechanical and engineering processes where metal fabrication, milling, stamping, and electrical component assembly form the dominant risk profile.`,
-    statutory_citations: [
-      'AIFT 2001 Section 3 - Industrial Occupancies Schedule',
-      'IIB Loss Cost Publication Schedule 3 (Engineering & Manufacturing)',
-      'IRDAI Guidelines on Risk Classification & Minimum Underwriting Rates'
-    ],
-    tariff_risk_category: 'Category 2',
-    category_loading_or_discount: '-5% Discount on Base Flexa Rate',
-    hazard_evaluation: 'Low-to-medium combustibility with primary exposure originating from cutting lubricants and electrical control panels.',
-    underwriter_advisory: 'Recommend installation of automatic fire detection in CNC controller bays and Class B CO2 extinguishers near solvent storage.'
-  };
-
-  await logAIRequest({
-    workspace_id: workspaceId,
-    user_id: userId,
-    endpoint: '/api/explain',
-    model: 'fallback-deterministic',
-    input_tokens: Math.round(prompt.length / 4),
-    output_tokens: 280,
-    cost_usd: 0,
-    latency_ms: latency,
-    is_mocked: true
-  });
-
-  return {
-    success: true,
-    data: fallback,
-    meta: { model: 'fallback-deterministic', latency_ms: latency, cost_usd: 0, is_mocked: true }
-  };
 }
 
 /**
@@ -526,6 +461,13 @@ export async function summarizeProposal(proposalData: any, workspaceId?: string,
   const startTime = Date.now();
   const { client, hasKey } = getGeminiClient();
   const modelName = 'gemini-2.5-flash';
+
+  if (!hasKey || !client) {
+    return {
+      success: false,
+      error: 'Gemini AI service is unavailable: GEMINI_API_KEY is not configured.'
+    };
+  }
 
   const prompt = `You are Quotely's senior underwriting auditor.
 Summarize this proposal and identify any missing risk disclosures:
@@ -540,72 +482,46 @@ Return ONLY valid JSON matching this schema:
   "underwriter_recommendation": string
 }`;
 
-  if (hasKey && client) {
-    try {
-      const response = await client.models.generateContent({
-        model: modelName,
-        contents: prompt,
-        config: {
-          responseMimeType: 'application/json'
-        }
-      });
+  try {
+    const response = await client.models.generateContent({
+      model: modelName,
+      contents: prompt,
+      config: {
+        responseMimeType: 'application/json'
+      }
+    });
 
-      const responseText = response.text || '{}';
-      const parsed = JSON.parse(responseText);
-      const latency = Date.now() - startTime;
-      const inputTokens = Math.round(prompt.length / 4);
-      const outputTokens = Math.round(responseText.length / 4);
-      const cost = calculateAICost(inputTokens, outputTokens);
+    const responseText = response.text || '{}';
+    const parsed = JSON.parse(responseText);
+    const latency = Date.now() - startTime;
+    const inputTokens = Math.round(prompt.length / 4);
+    const outputTokens = Math.round(responseText.length / 4);
+    const cost = calculateAICost(inputTokens, outputTokens);
 
-      await logAIRequest({
-        workspace_id: workspaceId,
-        user_id: userId,
-        endpoint: '/api/summarize',
-        model: modelName,
-        input_tokens: inputTokens,
-        output_tokens: outputTokens,
-        cost_usd: cost,
-        latency_ms: latency,
-        is_mocked: false
-      });
+    await logAIRequest({
+      workspace_id: workspaceId,
+      user_id: userId,
+      endpoint: '/api/summarize',
+      model: modelName,
+      input_tokens: inputTokens,
+      output_tokens: outputTokens,
+      cost_usd: cost,
+      latency_ms: latency,
+      is_mocked: false
+    });
 
-      return {
-        success: true,
-        data: parsed,
-        meta: { model: modelName, latency_ms: latency, cost_usd: cost, is_mocked: false }
-      };
-    } catch (err) {
-      console.warn('Gemini summarize call failed:', err);
-    }
+    return {
+      success: true,
+      data: parsed,
+      meta: { model: modelName, latency_ms: latency, cost_usd: cost, is_mocked: false }
+    };
+  } catch (err: any) {
+    console.error('Gemini summarize call failed:', err);
+    return {
+      success: false,
+      error: `Proposal summary generation failed: ${err.message || 'Gemini AI service error'}`
+    };
   }
-
-  // Deterministic Fallback
-  const latency = Date.now() - startTime;
-  const fallback = {
-    client_summary: `Commercial property policy for ${proposalData.client_name || 'Insured Firm'} with aggregate sum insured of ₹${((proposalData.sum_insured?.total || 53800000) / 10000000).toFixed(2)} Cr.`,
-    risk_overview: `Occupancy code ${proposalData.occupancy_code || '1023'} located in ${proposalData.district || 'Gurugram'}, ${proposalData.state || 'Haryana'}.`,
-    key_exposures: ['Heavy machinery downtime exposure', 'Earthquake Zone IV seismic ground acceleration risk', 'Monsoon STFI water ingress risk'],
-    missing_disclosures: ['Annual maintenance contracts for electrical substations', 'Basement storage status for raw material stock'],
-    underwriter_recommendation: 'Bind quote with standard tariff deductibles; require hydrants test certificate within 30 days.'
-  };
-
-  await logAIRequest({
-    workspace_id: workspaceId,
-    user_id: userId,
-    endpoint: '/api/summarize',
-    model: 'fallback-deterministic',
-    input_tokens: Math.round(prompt.length / 4),
-    output_tokens: 240,
-    cost_usd: 0,
-    latency_ms: latency,
-    is_mocked: true
-  });
-
-  return {
-    success: true,
-    data: fallback,
-    meta: { model: 'fallback-deterministic', latency_ms: latency, cost_usd: 0, is_mocked: true }
-  };
 }
 
 /**

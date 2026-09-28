@@ -18,6 +18,17 @@ export async function POST(req: NextRequest) {
     }
 
     const result = await summarizeProposal(proposal_data, auth.workspace_id, auth.user.id);
+
+    if (!result.success) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: result.error || 'Failed to summarize proposal.',
+        },
+        { status: 422 }
+      );
+    }
+
     return NextResponse.json(result);
   } catch (err: any) {
     return NextResponse.json(

@@ -9,41 +9,47 @@ import occupanciesData from '@/data/occupancies.json';
  */
 
 export const SumInsuredSchema = z.object({
-  building: z.coerce.number().nonnegative().default(0),
-  plant_and_machinery: z.coerce.number().nonnegative().default(0),
-  stocks: z.coerce.number().nonnegative().default(0),
-  furniture_and_fixtures: z.coerce.number().nonnegative().default(0),
-  other: z.coerce.number().nonnegative().default(0),
-  total: z.coerce.number().nonnegative().default(0),
+  building: z.coerce.number().nonnegative().nullable().optional().transform((v) => v || 0),
+  plant_and_machinery: z.coerce.number().nonnegative().nullable().optional().transform((v) => v || 0),
+  stocks: z.coerce.number().nonnegative().nullable().optional().transform((v) => v || 0),
+  furniture_and_fixtures: z.coerce.number().nonnegative().nullable().optional().transform((v) => v || 0),
+  other: z.coerce.number().nonnegative().nullable().optional().transform((v) => v || 0),
+  total: z.coerce.number().nonnegative().nullable().optional().transform((v) => v || 0),
 }).transform((val) => {
   // Software 1.0 Arithmetic Clamp: Guarantee total is mathematically correct
-  const sum = val.building + val.plant_and_machinery + val.stocks + val.furniture_and_fixtures + val.other;
+  const sum = (val.building || 0) + (val.plant_and_machinery || 0) + (val.stocks || 0) + (val.furniture_and_fixtures || 0) + (val.other || 0);
   return {
     ...val,
-    total: sum > 0 ? sum : val.total,
+    total: sum > 0 ? sum : (val.total || 0),
   };
 });
 
 export const PerilsRequiredSchema = z.object({
-  fire_flexa: z.boolean().default(true),
-  stfi: z.boolean().default(true),
-  earthquake: z.boolean().default(true),
-  terrorism: z.boolean().default(false),
+  fire_flexa: z.coerce.boolean().nullable().optional().transform((v) => v ?? true),
+  stfi: z.coerce.boolean().nullable().optional().transform((v) => v ?? true),
+  earthquake: z.coerce.boolean().nullable().optional().transform((v) => v ?? true),
+  terrorism: z.coerce.boolean().nullable().optional().transform((v) => v ?? false),
 });
 
 export const ProposalExtractionSchema = z.object({
-  client_name: z.string().min(1, 'Client name is required').default('Commercial Enterprise'),
-  gst_number: z.string().optional().default(''),
-  address: z.string().optional().default(''),
-  district: z.string().optional().default(''),
-  state: z.string().optional().default(''),
-  business_description: z.string().min(1, 'Business description is required').default(''),
-  construction_type: z.enum(['Class A', 'Class B', 'Class C', 'Kutcha', 'Pucca']).default('Class A'),
-  policy_duration_months: z.coerce.number().int().positive().default(12),
-  previous_insurer: z.string().optional().default('None / Fresh Proposal'),
-  claim_history_last_3_years: z.boolean().default(false),
-  claim_ratio_percent: z.coerce.number().min(0).max(500).default(0),
-  sum_insured: SumInsuredSchema.default({
+  client_name: z.string().nullable().optional().transform((v) => v || ''),
+  gst_number: z.string().nullable().optional().transform((v) => v || ''),
+  address: z.string().nullable().optional().transform((v) => v || ''),
+  district: z.string().nullable().optional().transform((v) => v || ''),
+  state: z.string().nullable().optional().transform((v) => v || ''),
+  business_description: z.string().nullable().optional().transform((v) => v || ''),
+  construction_type: z.string().nullable().optional().transform((v) => {
+    if (!v) return 'Class A';
+    if (v.includes('B')) return 'Class B';
+    if (v.includes('C')) return 'Class C';
+    if (v.toLowerCase().includes('kutcha')) return 'Kutcha';
+    return 'Class A';
+  }),
+  policy_duration_months: z.coerce.number().int().positive().nullable().optional().transform((v) => v || 12),
+  previous_insurer: z.string().nullable().optional().transform((v) => v || 'None / Fresh Proposal'),
+  claim_history_last_3_years: z.coerce.boolean().nullable().optional().transform((v) => Boolean(v)),
+  claim_ratio_percent: z.coerce.number().min(0).max(500).nullable().optional().transform((v) => v || 0),
+  sum_insured: SumInsuredSchema.nullable().optional().transform((v) => v || {
     building: 0,
     plant_and_machinery: 0,
     stocks: 0,
@@ -51,15 +57,15 @@ export const ProposalExtractionSchema = z.object({
     other: 0,
     total: 0,
   }),
-  perils_required: PerilsRequiredSchema.default({
+  perils_required: PerilsRequiredSchema.nullable().optional().transform((v) => v || {
     fire_flexa: true,
     stfi: true,
     earthquake: true,
     terrorism: false,
   }),
   occupancy_code: z.string().nullable().optional(),
-  hazard_flags: z.array(z.string()).default([]),
-  missing_fields: z.array(z.string()).default([]),
+  hazard_flags: z.array(z.string()).nullable().optional().transform((v) => v || []),
+  missing_fields: z.array(z.string()).nullable().optional().transform((v) => v || []),
 });
 
 export type ValidatedProposalExtraction = z.infer<typeof ProposalExtractionSchema>;
@@ -86,6 +92,7 @@ export function validateAndClampLLMOutput(rawLLMOutput: unknown, modelName = 'ge
   if (parseResult.success) {
     data = parseResult.data;
   } else {
+    console.warn('ProposalExtractionSchema parse warning:', parseResult.error.format());
     // Graceful fallback to default clamped structure with issues flagged
     data = ProposalExtractionSchema.parse({});
     data.missing_fields.push('llm_schema_parsing_warning');

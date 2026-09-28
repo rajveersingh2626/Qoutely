@@ -23,6 +23,17 @@ export async function POST(req: NextRequest) {
       auth.workspace_id,
       auth.user.id
     );
+
+    if (!result.success) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: result.error || 'Failed to generate underwriting rationale.',
+        },
+        { status: 422 }
+      );
+    }
+
     return NextResponse.json(result);
   } catch (err: any) {
     return NextResponse.json(
