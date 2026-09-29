@@ -30,14 +30,14 @@ export default function LoginPage() {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: email.trim(), password: password.trim() }),
       });
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.success) {
-        throw new Error(data.error || 'Authentication failed');
+        throw new Error(data.error || 'Authentication failed. Please verify your credentials.');
       }
       switchUser(data.user.id);
-      router.push('/app/dashboard');
+      window.location.href = '/app/dashboard';
     } catch (err: any) {
       setError(err.message || 'Login failed');
       setIsLoading(false);

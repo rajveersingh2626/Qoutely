@@ -19,6 +19,7 @@ import {
   SEED_WORKSPACES,
   SEED_WORKSPACE_MEMBERS,
   supabase,
+  isSupabaseConfigured,
 } from '@/lib/supabase';
 
 interface WorkspaceContextType {
@@ -104,6 +105,9 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   // Live Supabase Fetch
   const refreshData = useCallback(async () => {
+    if (!isSupabaseConfigured()) {
+      return;
+    }
     try {
       // 1. Workspaces
       const { data: wsData, error: wsErr } = await supabase

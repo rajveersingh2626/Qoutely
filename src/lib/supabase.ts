@@ -13,7 +13,58 @@ import {
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-anon-key';
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const isSupabaseConfigured = (): boolean => {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !key) return false;
+  if (url.includes('placeholder.supabase.co') || key === 'placeholder-anon-key' || key.includes('placeholder')) {
+    return false;
+  }
+  return url.startsWith('https://');
+};
+
+function createDummyQuery(): any {
+  const dummy = () => createDummyQuery();
+  return new Proxy(dummy, {
+    get(_target, prop) {
+      if (prop === 'then') {
+        return (resolve: any) => Promise.resolve({ data: null, error: null }).then(resolve);
+      }
+      if (prop === 'catch') {
+        return (reject: any) => Promise.resolve({ data: null, error: null }).catch(reject);
+      }
+      return () => createDummyQuery();
+    },
+    apply() {
+      return createDummyQuery();
+    }
+  });
+}
+
+function initSupabaseClient() {
+  if (!isSupabaseConfigured()) {
+    return {
+      from: () => createDummyQuery(),
+      auth: {
+        getUser: () => Promise.resolve({ data: { user: null }, error: null }),
+        getSession: () => Promise.resolve({ data: { session: null }, error: null }),
+        signInWithPassword: () => Promise.resolve({ data: { user: null, session: null }, error: new Error('Supabase not configured') }),
+        signOut: () => Promise.resolve({ error: null }),
+        onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+      },
+      storage: {
+        from: () => ({
+          upload: () => Promise.resolve({ data: null, error: null }),
+          getPublicUrl: () => ({ data: { publicUrl: '' } }),
+        }),
+      },
+    } as unknown as ReturnType<typeof createClient>;
+  }
+
+  return createClient(supabaseUrl, supabaseAnonKey);
+}
+
+export const supabase = initSupabaseClient();
 
 // ==============================================================================
 // INITIAL SEED DATA FOR COMMERCIAL INSURANCE BROKERAGES
@@ -340,6 +391,9 @@ export async function fetchScopedQuotes(workspaceId: string, isSuperAdmin = fals
 }
 
 export async function fetchScopedMembers(workspaceId: string, isSuperAdmin = false) {
+  if (!isSupabaseConfigured()) {
+    return SEED_WORKSPACE_MEMBERS.filter((m) => isSuperAdmin || m.workspace_id === workspaceId);
+  }
   let query = supabase.from('workspace_members').select('*, user:profiles(*)');
   if (!isSuperAdmin) {
     query = query.eq('workspace_id', workspaceId);
@@ -352,6 +406,9 @@ export async function fetchScopedMembers(workspaceId: string, isSuperAdmin = fal
 }
 
 export async function fetchScopedClients(workspaceId: string, isSuperAdmin = false) {
+  if (!isSupabaseConfigured()) {
+    return SEED_CLIENTS.filter((c) => isSuperAdmin || c.workspace_id === workspaceId);
+  }
   let query = supabase.from('clients').select('*');
   if (!isSuperAdmin) {
     query = query.eq('workspace_id', workspaceId);
@@ -364,6 +421,9 @@ export async function fetchScopedClients(workspaceId: string, isSuperAdmin = fal
 }
 
 export async function fetchScopedAuditLogs(workspaceId: string, isSuperAdmin = false) {
+  if (!isSupabaseConfigured()) {
+    return SEED_AUDIT_LOGS.filter((a) => isSuperAdmin || a.workspace_id === workspaceId);
+  }
   let query = supabase.from('audit_logs').select('*').order('timestamp', { ascending: false });
   if (!isSuperAdmin) {
     query = query.eq('workspace_id', workspaceId);

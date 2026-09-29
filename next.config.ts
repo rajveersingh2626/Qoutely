@@ -36,11 +36,12 @@ const securityHeaders = [
     key: 'Content-Security-Policy',
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-eval' 'unsafe-inline'", // unsafe-eval required for Next.js dev HMR; 'unsafe-inline' for inline scripts
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "font-src 'self' https://fonts.gstatic.com",
-      "img-src 'self' data: blob: https://images.unsplash.com https://api.dicebear.com",
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://generativelanguage.googleapis.com",
+      "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live https://*.vercel.live",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://vercel.live",
+      "font-src 'self' https://fonts.gstatic.com https://vercel.live https://assets.vercel.com",
+      "img-src 'self' data: blob: https://images.unsplash.com https://api.dicebear.com https://vercel.live https://*.vercel.live https://vercel.com",
+      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://generativelanguage.googleapis.com https://vercel.live https://*.vercel.live https://sockjs-mt1.pusher.com wss://ws-mt1.pusher.com",
+      "frame-src 'self' https://vercel.live",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",
