@@ -46,6 +46,8 @@ export async function middleware(request: NextRequest) {
     pathname === '/' ||
     // Supabase email magic link / OAuth callback
     pathname.startsWith('/auth/') ||
+    pathname.startsWith('/quotes') ||
+    pathname.startsWith('/app/quotes') ||
     pathname === '/accept-invitation'
   ) {
     return NextResponse.next();

@@ -240,3 +240,103 @@ export function formatINR(val: number): string {
 export function formatNumberINR(val: number): string {
   return new Intl.NumberFormat('en-IN').format(val);
 }
+
+export function formatINRWithDecimals(val: number): string {
+  return new Intl.NumberFormat('en-IN', {
+    style: 'currency',
+    currency: 'INR',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(val);
+}
+
+/**
+ * Pure Deterministic Premium Engine Calculation Function
+ *
+ * Implements the IRDAI commercial rating formula:
+ * 1. Base Rate per mille = (Flexa + STFI + EQ)
+ * 2. Adjusted Rate = Base Rate * (1 + Loadings - Discounts)
+ * 3. Net Premium = (Sum Insured / 1000) * Adjusted Rate
+ * 4. GST = Net Premium * 0.18
+ * 5. Total Final Premium = Net Premium + GST
+ */
+export interface PremiumCalculationInput {
+  sumInsured: number;
+  flexaRate: number;
+  stfiRate: number;
+  eqRate: number;
+  discounts: number; // percentage (e.g. 5 for 5% or 0.05)
+  loadings: number;  // percentage (e.g. 10 for 10% or 0.10)
+}
+
+export interface PremiumCalculationResult {
+  sumInsured: number;
+  flexaRate: number;
+  stfiRate: number;
+  eqRate: number;
+  discounts: number;
+  loadings: number;
+  discountPercentage: number;
+  loadingPercentage: number;
+  discountFactor: number;
+  loadingFactor: number;
+  baseRate: number;
+  adjustedRate: number;
+  netPremium: number;
+  gst: number;
+  totalFinalPremium: number;
+  totalPremium: number;
+}
+
+export function calculatePremium(data: PremiumCalculationInput): PremiumCalculationResult {
+  const sumInsured = Math.max(0, Number(data.sumInsured) || 0);
+  const flexaRate = Math.max(0, Number(data.flexaRate) || 0);
+  const stfiRate = Math.max(0, Number(data.stfiRate) || 0);
+  const eqRate = Math.max(0, Number(data.eqRate) || 0);
+
+  const rawDiscounts = Math.max(0, Number(data.discounts) || 0);
+  const rawLoadings = Math.max(0, Number(data.loadings) || 0);
+
+  // Normalize percentage vs decimal (e.g., 10 => 0.10, or 0.10 => 0.10)
+  const discountDecimal = rawDiscounts > 1 ? rawDiscounts / 100 : rawDiscounts;
+  const loadingDecimal = rawLoadings > 1 ? rawLoadings / 100 : rawLoadings;
+
+  // 1. Base Rate per mille = (Flexa + STFI + EQ)
+  const baseRate = Number((flexaRate + stfiRate + eqRate).toFixed(4));
+
+  // 2. Adjusted Rate = Base Rate * (1 + Loadings - Discounts)
+  const adjustedRate = Number(
+    Math.max(0, baseRate * (1 + loadingDecimal - discountDecimal)).toFixed(4)
+  );
+
+  // 3. Net Premium = (Sum Insured / 1000) * Adjusted Rate
+  const netPremium = Number(
+    ((sumInsured / 1000) * adjustedRate).toFixed(2)
+  );
+
+  // 4. GST = Net Premium * 0.18
+  const gst = Number((netPremium * 0.18).toFixed(2));
+
+  // 5. Total Final Premium = Net Premium + GST
+  const totalFinalPremium = Number((netPremium + gst).toFixed(2));
+
+  return {
+    sumInsured,
+    flexaRate,
+    stfiRate,
+    eqRate,
+    discounts: rawDiscounts,
+    loadings: rawLoadings,
+    discountPercentage: Number((discountDecimal * 100).toFixed(2)),
+    loadingPercentage: Number((loadingDecimal * 100).toFixed(2)),
+    discountFactor: discountDecimal,
+    loadingFactor: loadingDecimal,
+    baseRate,
+    adjustedRate,
+    netPremium,
+    gst,
+    totalFinalPremium,
+    totalPremium: totalFinalPremium,
+  };
+}
+
