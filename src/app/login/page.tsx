@@ -118,14 +118,53 @@ export default function LoginPage() {
               </span>
             </div>
 
-            {/* Test Account Notification Banner */}
-            <div className="mb-5 p-3.5 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 flex items-center gap-3">
-              <KeyRound className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
-              <div className="text-xs text-emerald-900 dark:text-emerald-200">
-                <span className="font-bold">Test Account Access:</span>
-                <div className="font-mono text-[11px] mt-0.5 text-emerald-800 dark:text-emerald-300">
-                  Username: <strong className="underline">test</strong> | Password: <strong className="underline">test</strong>
+            {/* Credentials Quick-Access Banner */}
+            <div className="mb-5 p-3.5 rounded-2xl bg-emerald-50/90 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 space-y-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <KeyRound className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
+                  <span className="text-xs font-bold text-emerald-900 dark:text-emerald-200">
+                    Quick Sign-In Credentials
+                  </span>
                 </div>
+                <span className="text-[10px] text-emerald-700 dark:text-emerald-400 font-mono">
+                  Pass: Password123!
+                </span>
+              </div>
+              <div className="grid grid-cols-2 gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmail('rajveer@capitalbrokers.in');
+                    setPassword('Password123!');
+                  }}
+                  className="px-2.5 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-emerald-300 dark:border-emerald-700/60 text-left hover:bg-emerald-100/50 dark:hover:bg-emerald-900/30 transition-colors cursor-pointer"
+                >
+                  <span className="block text-[11px] font-bold text-slate-800 dark:text-slate-100">
+                    Rajveer (Super Admin)
+                  </span>
+                  <span className="block text-[10px] text-emerald-700 dark:text-emerald-400 truncate">
+                    rajveer@capitalbrokers.in
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmail('dinesh@capitalbrokers.in');
+                    setPassword('Password123!');
+                  }}
+                  className="px-2.5 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-emerald-300 dark:border-emerald-700/60 text-left hover:bg-emerald-100/50 dark:hover:bg-emerald-900/30 transition-colors cursor-pointer"
+                >
+                  <span className="block text-[11px] font-bold text-slate-800 dark:text-slate-100">
+                    Dinesh (Underwriter)
+                  </span>
+                  <span className="block text-[10px] text-emerald-700 dark:text-emerald-400 truncate">
+                    dinesh@capitalbrokers.in
+                  </span>
+                </button>
+              </div>
+              <div className="text-[10px] text-slate-500 dark:text-slate-400">
+                Tip: You can also simply enter <strong className="text-emerald-600 dark:text-emerald-400">test</strong> / <strong className="text-emerald-600 dark:text-emerald-400">test</strong>.
               </div>
             </div>
 
@@ -148,7 +187,7 @@ export default function LoginPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="w-full pl-9 pr-3 py-2.5 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                    placeholder="Enter 'test' or email"
+                    placeholder="e.g. rajveer@capitalbrokers.in or 'test'"
                   />
                 </div>
               </div>
