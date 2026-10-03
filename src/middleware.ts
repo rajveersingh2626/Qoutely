@@ -4,20 +4,21 @@ import { NextRequest, NextResponse } from 'next/server';
 /**
  * Quotely Auth Middleware — Software 1.0 Route Guard
  *
- * Protects all internal SaaS routes under /app/* and /quotes, /dashboard, /clients,
- * /settings, /admin, /audit-logs, /upload, /ai-analysis, /workspaces, /team.
- *
+ * Protects all internal SaaS routes under /app/* and other authenticated paths.
  * - Unauthenticated users hitting a protected route → redirected to /login
- * - Authenticated users hitting /login or /forgot-password → redirected to /dashboard
+ * - Authenticated users hitting /login or forgot-password → redirected to /app/dashboard
+ * - /super-admin route requires super_admin flag checked server-side
  * - /api/* routes, public marketing page (/), and Supabase auth callbacks are always allowed.
  */
 
 const PROTECTED_PREFIXES = [
+  '/app',
   '/dashboard',
   '/quotes',
   '/clients',
   '/settings',
   '/admin',
+  '/super-admin',
   '/audit-logs',
   '/upload',
   '/ai-analysis',
@@ -27,97 +28,75 @@ const PROTECTED_PREFIXES = [
   '/knowledge-base',
   '/earthquake-zones',
   '/security',
-  '/app',
 ];
 
 const AUTH_ROUTES = ['/login', '/forgot-password', '/reset-password'];
 
+const ALWAYS_PUBLIC = [
+  '/api/',
+  '/_next/',
+  '/favicon',
+  '/logo',
+  '/robots.txt',
+  '/sitemap.xml',
+  '/',
+  '/auth/',
+  '/accept-invitation',
+];
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Always allow: API routes, Next.js internals, static files, and Supabase auth callbacks
-  if (
-    pathname.startsWith('/api/') ||
-    pathname.startsWith('/_next/') ||
-    pathname.startsWith('/favicon') ||
-    pathname.startsWith('/logo') ||
-    pathname === '/robots.txt' ||
-    pathname === '/sitemap.xml' ||
-    pathname === '/' ||
-    // Supabase email magic link / OAuth callback
-    pathname.startsWith('/auth/') ||
-    pathname.startsWith('/quotes') ||
-    pathname.startsWith('/app/quotes') ||
-    pathname === '/accept-invitation'
-  ) {
-    return NextResponse.next();
+  // Always allow public paths
+  if (ALWAYS_PUBLIC.some((p) => pathname === p || pathname.startsWith(p))) {
+    return NextResponse.next({ request });
   }
 
-  // Create a response to carry mutated cookies from Supabase
-  let response = NextResponse.next({
-    request,
+  // Create a mutable response so Supabase can refresh and set cookies
+  let response = NextResponse.next({ request });
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  // If Supabase is not configured, block all protected routes
+  if (
+    !supabaseUrl ||
+    !supabaseAnonKey ||
+    supabaseUrl.includes('placeholder') ||
+    supabaseAnonKey.includes('placeholder')
+  ) {
+    const isProtectedRoute = PROTECTED_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+    if (isProtectedRoute) {
+      const loginUrl = new URL('/login', request.url);
+      loginUrl.searchParams.set('error', 'service_unavailable');
+      return NextResponse.redirect(loginUrl);
+    }
+    return response;
+  }
+
+  // Initialize Supabase SSR client — it reads and refreshes cookies automatically
+  const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+    cookies: {
+      getAll() {
+        return request.cookies.getAll();
+      },
+      setAll(cookiesToSet: { name: string; value: string; options?: CookieOptions }[]) {
+        cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+        response = NextResponse.next({ request });
+        cookiesToSet.forEach(({ name, value, options }) =>
+          response.cookies.set(name, value, options ?? {})
+        );
+      },
+    },
   });
 
-  // 1. Check Quotely session cookie
-  const sessionCookie = request.cookies.get('quotely_session')?.value;
-  let isAuthenticated = false;
+  // Validate session — getUser() verifies the JWT signature server-side (secure)
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
 
-  if (sessionCookie) {
-    try {
-      const decoded = JSON.parse(Buffer.from(sessionCookie, 'base64').toString('utf-8'));
-      if (decoded?.user?.id) {
-        isAuthenticated = true;
-      }
-    } catch {
-      isAuthenticated = false;
-    }
-  }
-
-  // 2. Fallback to Supabase SSR Auth if quotely_session is not present
-  if (!isAuthenticated) {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-    if (
-      supabaseUrl &&
-      supabaseAnonKey &&
-      !supabaseUrl.includes('placeholder') &&
-      !supabaseAnonKey.includes('placeholder')
-    ) {
-      try {
-        const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
-          cookies: {
-            getAll() {
-              return request.cookies.getAll();
-            },
-            setAll(cookiesToSet: { name: string; value: string; options?: CookieOptions }[]) {
-              cookiesToSet.forEach(({ name, value }) =>
-                request.cookies.set(name, value)
-              );
-              response = NextResponse.next({ request });
-              cookiesToSet.forEach(({ name, value, options }) =>
-                response.cookies.set(name, value, options ?? {})
-              );
-            },
-          },
-        });
-
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-
-        if (user) {
-          isAuthenticated = true;
-        }
-      } catch {
-        isAuthenticated = false;
-      }
-    }
-  }
-
-  const isProtectedRoute = PROTECTED_PREFIXES.some((prefix) =>
-    pathname.startsWith(prefix)
-  );
+  const isAuthenticated = !!user;
+  const isProtectedRoute = PROTECTED_PREFIXES.some((prefix) => pathname.startsWith(prefix));
   const isAuthRoute = AUTH_ROUTES.some((route) => pathname.startsWith(route));
 
   // Redirect unauthenticated users away from protected routes

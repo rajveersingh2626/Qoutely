@@ -1,25 +1,52 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { SEED_PROFILES, SEED_WORKSPACES } from '@/lib/supabase';
+import { createSupabaseServerClient } from '@/lib/supabase-server';
 
 export async function GET(req: NextRequest) {
-  const sessionCookie = req.cookies.get('quotely_session')?.value;
-
-  if (!sessionCookie) {
-    return NextResponse.json({ authenticated: false, user: null, workspace: null });
-  }
-
   try {
-    const decoded = JSON.parse(Buffer.from(sessionCookie, 'base64').toString('utf-8'));
-    const fullProfile = SEED_PROFILES.find((p) => p.id === decoded.user?.id) || decoded.user;
-    const workspace = SEED_WORKSPACES.find((w) => w.id === decoded.workspace_id) || SEED_WORKSPACES[0];
+    const supabase = await createSupabaseServerClient();
+
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
+
+    if (error || !user) {
+      return NextResponse.json({ authenticated: false, user: null, workspace: null });
+    }
+
+    // Fetch full profile
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', user.id)
+      .single();
+
+    // Fetch first active workspace membership with workspace details
+    const { data: membership } = await supabase
+      .from('workspace_members')
+      .select('*, workspace:workspaces(*)')
+      .eq('user_id', user.id)
+      .eq('status', 'active')
+      .order('joined_at', { ascending: true })
+      .limit(1)
+      .single();
+
+    const userProfile = profile || {
+      id: user.id,
+      name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+      email: user.email!,
+      super_admin: false,
+      created_at: user.created_at,
+    };
 
     return NextResponse.json({
       authenticated: true,
-      user: fullProfile,
-      workspace,
-      role: decoded.role || 'super_admin',
+      user: userProfile,
+      workspace: membership?.workspace || null,
+      role: membership?.role || 'viewer',
     });
-  } catch {
+  } catch (err: any) {
+    console.error('[Session Error]', err);
     return NextResponse.json({ authenticated: false, user: null, workspace: null });
   }
 }

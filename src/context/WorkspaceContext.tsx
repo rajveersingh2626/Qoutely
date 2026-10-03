@@ -12,12 +12,6 @@ import {
   WorkspaceMember,
 } from '@/types/database';
 import {
-  SEED_AUDIT_LOGS,
-  SEED_CLIENTS,
-  SEED_PROFILES,
-  SEED_QUOTES,
-  SEED_WORKSPACES,
-  SEED_WORKSPACE_MEMBERS,
   supabase,
   isSupabaseConfigured,
 } from '@/lib/supabase';
@@ -67,14 +61,35 @@ interface WorkspaceContextType {
 const WorkspaceContext = createContext<WorkspaceContextType | undefined>(undefined);
 
 export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Load initial state from SEED constants for instantaneous render
-  const [currentUser, setCurrentUser] = useState<Profile>(SEED_PROFILES[0]); // Default: Test Administrator (Super Admin)
-  const [workspaces, setWorkspaces] = useState<Workspace[]>(SEED_WORKSPACES);
-  const [currentWorkspace, setCurrentWorkspace] = useState<Workspace>(SEED_WORKSPACES[0]);
-  const [members, setMembers] = useState<WorkspaceMember[]>(SEED_WORKSPACE_MEMBERS);
-  const [clients, setClients] = useState<Client[]>(SEED_CLIENTS);
-  const [quotes, setQuotes] = useState<Quote[]>(SEED_QUOTES);
-  const [auditLogs, setAuditLogs] = useState<AuditLog[]>(SEED_AUDIT_LOGS);
+  // Start with empty state — hydrated from real Supabase session (no seed data as fallback)
+  const [currentUser, setCurrentUser] = useState<Profile>({
+    id: '',
+    name: 'Loading...',
+    email: '',
+    created_at: new Date().toISOString(),
+  });
+  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
+  const [currentWorkspace, setCurrentWorkspace] = useState<Workspace>({
+    id: '',
+    name: 'Loading workspace...',
+    slug: '',
+    gst: '',
+    address: '',
+    owner_id: '',
+    default_rules: {
+      default_discretionary_discount: 10,
+      default_brokerage_share: 15,
+      auto_recommend_terrorism: false,
+      default_eq_zone: 'Zone 2',
+      irda_license_no: '',
+      cin_no: '',
+    },
+    created_at: new Date().toISOString(),
+  });
+  const [members, setMembers] = useState<WorkspaceMember[]>([]);
+  const [clients, setClients] = useState<Client[]>([]);
+  const [quotes, setQuotes] = useState<Quote[]>([]);
+  const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
   const [documents, setDocuments] = useState<UploadedDocument[]>([]);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [isAiDrawerOpen, setIsAiDrawerOpen] = useState(false);
@@ -83,7 +98,7 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const memberRecord = members.find(
     (m) => m.workspace_id === currentWorkspace.id && m.user_id === currentUser.id
   );
-  const userRole: UserRole = memberRecord ? memberRecord.role : 'super_admin';
+  const userRole: UserRole = memberRecord ? memberRecord.role : 'viewer';
 
   // Role permissions
   const canManageFirm = userRole === 'super_admin' || userRole === 'brokerage_owner';
@@ -103,13 +118,13 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Live Supabase Fetch
+  // Live Supabase Fetch — scoped to current workspace via RLS
   const refreshData = useCallback(async () => {
     if (!isSupabaseConfigured()) {
       return;
     }
     try {
-      // 1. Workspaces
+      // 1. Workspaces (RLS scopes to user's enrolled workspaces)
       const { data: wsData, error: wsErr } = await supabase
         .from('workspaces')
         .select('*')
@@ -117,36 +132,41 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
       if (!wsErr && wsData && wsData.length > 0) {
         setWorkspaces(wsData);
-        const match = wsData.find((w: Workspace) => w.id === currentWorkspace.id);
-        if (match) setCurrentWorkspace(match);
+        // If current workspace is a placeholder, pick the first real one
+        if (!currentWorkspace.id) {
+          setCurrentWorkspace(wsData[0]);
+        } else {
+          const match = wsData.find((w: Workspace) => w.id === currentWorkspace.id);
+          if (match) setCurrentWorkspace(match);
+        }
       }
 
-      // 2. Members
+      // 2. Members (scoped by RLS to current workspace members)
       const { data: memData, error: memErr } = await supabase
         .from('workspace_members')
         .select('*, user:profiles(*)');
 
-      if (!memErr && memData && memData.length > 0) {
+      if (!memErr && memData) {
         setMembers(memData);
       }
 
-      // 3. Clients
+      // 3. Clients (RLS enforces workspace_id scoping)
       const { data: clientData, error: clientErr } = await supabase
         .from('clients')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (!clientErr && clientData && clientData.length > 0) {
+      if (!clientErr && clientData) {
         setClients(clientData);
       }
 
-      // 4. Quotes
+      // 4. Quotes (RLS enforces workspace_id scoping + RBAC)
       const { data: quoteData, error: quoteErr } = await supabase
         .from('quotes')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (!quoteErr && quoteData && quoteData.length > 0) {
+      if (!quoteErr && quoteData) {
         setQuotes(quoteData);
       }
 
@@ -157,7 +177,7 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         .order('timestamp', { ascending: false })
         .limit(100);
 
-      if (!auditErr && auditData && auditData.length > 0) {
+      if (!auditErr && auditData) {
         setAuditLogs(auditData);
       }
 
@@ -167,13 +187,14 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (!docErr && docData && docData.length > 0) {
+      if (!docErr && docData) {
         setDocuments(docData);
       }
     } catch (err) {
       console.warn('Supabase synchronization error:', err);
     }
   }, [currentWorkspace.id]);
+
 
   useEffect(() => {
     refreshData();
@@ -239,9 +260,10 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   };
 
   const switchUser = (userId: string) => {
-    const found = SEED_PROFILES.find((p) => p.id === userId) || SEED_PROFILES[0];
-    if (found) {
-      setCurrentUser(found);
+    // Find user profile from existing member records
+    const memberProfile = members.find((m) => m.user_id === userId)?.user;
+    if (memberProfile) {
+      setCurrentUser(memberProfile);
     }
   };
 

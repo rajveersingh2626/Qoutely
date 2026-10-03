@@ -9,9 +9,12 @@ export type UserRole =
 export interface Profile {
   id: string;
   name: string;
+  full_name?: string;
   email: string;
   avatar?: string;
   phone?: string;
+  super_admin?: boolean;
+  is_super_admin?: boolean;
   created_at: string;
 }
 
@@ -47,8 +50,25 @@ export interface WorkspaceMember {
   user?: Profile;
 }
 
+export interface Organization {
+  id: string;
+  name: string;
+  created_at: string;
+}
+
+export interface OrganizationMember {
+  id: string;
+  org_id: string;
+  user_id: string;
+  role: 'admin' | 'underwriter' | 'sales';
+  created_at: string;
+  user?: Profile;
+  organization?: Organization;
+}
+
 export interface Client {
   id: string;
+  org_id?: string;
   workspace_id: string;
   client_name: string;
   gst: string;
@@ -136,6 +156,7 @@ export interface AIAnalysisResult {
 export interface Quote {
   id: string;
   quote_number: string;
+  org_id?: string;
   workspace_id: string;
   client_id: string;
   client_name: string;

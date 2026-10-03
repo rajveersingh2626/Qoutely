@@ -31,7 +31,7 @@ import { formatINR } from '@/lib/calculator';
 import { downloadQuoteSlipPDF } from '@/lib/pdf-generator';
 
 export default function DashboardPage() {
-  const { quotes, clients, currentWorkspace, auditLogs, canGenerateQuotes } = useWorkspace();
+  const { quotes, clients, currentWorkspace, auditLogs, canGenerateQuotes, documents } = useWorkspace();
   const [chartMode, setChartMode] = useState<'volume' | 'premium'>('volume');
 
   // KPIs
@@ -40,25 +40,41 @@ export default function DashboardPage() {
   const pendingReviewsCount = quotes.filter((q) => q.status === 'under_review' || q.status === 'draft').length;
   const totalPremiumMonth = quotes.reduce((acc, q) => acc + (q.total_premium || 0), 0);
 
-  // Monthly Quote trend data
-  const monthlyData = [
-    { month: 'Oct', count: 12, premium: 1420000 },
-    { month: 'Nov', count: 18, premium: 2150000 },
-    { month: 'Dec', count: 24, premium: 3840000 },
-    { month: 'Jan', count: 29, premium: 4210000 },
-    { month: 'Feb', count: 35, premium: 5120000 },
-    { month: 'Mar', count: 42, premium: 6480000 },
-  ];
-  const maxMonthCount = 50;
-  const maxMonthPremium = 7000000;
+  // Monthly Quote trend — computed from real quotes data
+  const now = new Date();
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const monthlyData = Array.from({ length: 6 }, (_, i) => {
+    const d = new Date(now.getFullYear(), now.getMonth() - (5 - i), 1);
+    const monthQuotes = quotes.filter((q) => {
+      const qDate = new Date(q.created_at);
+      return qDate.getFullYear() === d.getFullYear() && qDate.getMonth() === d.getMonth();
+    });
+    return {
+      month: monthNames[d.getMonth()],
+      count: monthQuotes.length,
+      premium: monthQuotes.reduce((s, q) => s + (q.total_premium || 0), 0),
+    };
+  });
+  const maxMonthCount = Math.max(...monthlyData.map((m) => m.count), 1);
+  const maxMonthPremium = Math.max(...monthlyData.map((m) => m.premium), 1);
 
-  // Occupancy breakdown
-  const occupancyBreakdown = [
-    { label: 'Storage & Godowns (4002)', count: 14, percent: 38, color: 'bg-emerald-500' },
-    { label: 'Manufacturing & Plants (2044/2060)', count: 11, percent: 30, color: 'bg-teal-500' },
-    { label: 'Offices & Commercial (1007)', count: 7, percent: 19, color: 'bg-blue-500' },
-    { label: 'Hospitality & Retail (1011/1017)', count: 5, percent: 13, color: 'bg-amber-500' },
-  ];
+  // Occupancy breakdown — computed from real quotes
+  const occupancyCounts: Record<string, number> = {};
+  quotes.forEach((q) => {
+    const key = q.occupation_description || 'Other';
+    occupancyCounts[key] = (occupancyCounts[key] || 0) + 1;
+  });
+  const topOccupancies = Object.entries(occupancyCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 4);
+  const occupancyColors = ['bg-emerald-500', 'bg-teal-500', 'bg-blue-500', 'bg-amber-500'];
+  const occupancyBreakdown = topOccupancies.map(([label, count], i) => ({
+    label,
+    count,
+    percent: quotes.length > 0 ? Math.round((count / quotes.length) * 100) : 0,
+    color: occupancyColors[i] || 'bg-slate-500',
+  }));
+
 
   return (
     <div className="flex-1 flex flex-col h-full overflow-y-auto bg-slate-50 dark:bg-slate-950">
@@ -199,8 +215,10 @@ export default function DashboardPage() {
                 <Cpu className="w-5 h-5" />
               </div>
               <div>
-                <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">AI Engine (Today)</span>
-                <span className="text-sm font-bold text-slate-900 dark:text-white">18 req • $0.002</span>
+                <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">AI Engine</span>
+                <span className="text-sm font-bold text-slate-900 dark:text-white">
+                  {quotes.length} quotes • Gemini 2.0
+                </span>
               </div>
             </div>
             <Link href="/app/settings/ai" className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 hover:underline">
@@ -216,7 +234,7 @@ export default function DashboardPage() {
               </div>
               <div>
                 <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">API Health</span>
-                <span className="text-sm font-bold text-slate-900 dark:text-white">310ms • 99.98%</span>
+                <span className="text-sm font-bold text-slate-900 dark:text-white">Live • Supabase</span>
               </div>
             </div>
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -229,11 +247,11 @@ export default function DashboardPage() {
                 <HardDrive className="w-5 h-5" />
               </div>
               <div>
-                <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">S3 / Doc Storage</span>
-                <span className="text-sm font-bold text-slate-900 dark:text-white">12.4 MB / 10 GB</span>
+                <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider block">Documents</span>
+                <span className="text-sm font-bold text-slate-900 dark:text-white">{documents.length} files uploaded</span>
               </div>
             </div>
-            <span className="text-[10px] font-mono text-slate-400">14 files</span>
+            <span className="text-[10px] font-mono text-slate-400">{documents.length} docs</span>
           </div>
 
           {/* 4. Quote Accuracy Widget */}

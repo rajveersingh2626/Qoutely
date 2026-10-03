@@ -1,74 +1,101 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { SEED_PROFILES, SEED_WORKSPACES, SEED_WORKSPACE_MEMBERS } from '@/lib/supabase';
+import { createSupabaseServerClient } from '@/lib/supabase-server';
+import { createClient } from '@supabase/supabase-js';
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { email, password } = body;
 
-    const trimmedIdentifier = (email || '').trim().toLowerCase();
-    const trimmedPassword = (password || '').trim().toLowerCase();
-
-    // Check credentials strictly: username 'test' (or 'test@quotely.ai', or starting with 'test') and password 'test'
-    const isTestAccount =
-      (trimmedIdentifier === 'test' ||
-        trimmedIdentifier === 'test@quotely.ai' ||
-        trimmedIdentifier.startsWith('test@') ||
-        trimmedIdentifier === 'admin' ||
-        trimmedIdentifier === 'admin@quotely.ai') &&
-      (trimmedPassword === 'test' || trimmedPassword === 'admin');
-
-    if (!isTestAccount) {
+    if (!email || !password) {
       return NextResponse.json(
-        {
-          success: false,
-          error: 'Invalid credentials. Please enter username "test" and password "test".',
-        },
+        { success: false, error: 'Email and password are required.' },
+        { status: 400 }
+      );
+    }
+
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+
+    if (!supabaseUrl || !supabaseAnonKey || supabaseUrl.includes('placeholder')) {
+      return NextResponse.json(
+        { success: false, error: 'Authentication service is not configured.' },
+        { status: 503 }
+      );
+    }
+
+    // Use a direct Supabase client here since we need to set cookies manually
+    const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email.trim().toLowerCase(),
+      password,
+    });
+
+    if (error || !data.user || !data.session) {
+      return NextResponse.json(
+        { success: false, error: error?.message || 'Invalid email or password.' },
         { status: 401 }
       );
     }
 
-    const testProfile = SEED_PROFILES[0];
-    const defaultWorkspace = SEED_WORKSPACES[0];
-    const memberRecord = SEED_WORKSPACE_MEMBERS.find(
-      (m) => m.user_id === testProfile.id && m.workspace_id === defaultWorkspace.id
-    );
-    const role = memberRecord ? memberRecord.role : 'super_admin';
+    // Fetch user profile from profiles table
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', data.user.id)
+      .single();
 
-    const sessionPayload = {
-      user: {
-        id: testProfile.id,
-        name: testProfile.name,
-        email: testProfile.email,
-        avatar: testProfile.avatar,
-      },
-      workspace_id: defaultWorkspace.id,
-      role,
-      issuedAt: Date.now(),
+    // Fetch first workspace membership for this user
+    const { data: membership } = await supabase
+      .from('workspace_members')
+      .select('*, workspace:workspaces(*)')
+      .eq('user_id', data.user.id)
+      .eq('status', 'active')
+      .order('joined_at', { ascending: true })
+      .limit(1)
+      .single();
+
+    const userProfile = profile || {
+      id: data.user.id,
+      name: data.user.user_metadata?.name || data.user.email?.split('@')[0] || 'User',
+      email: data.user.email!,
+      created_at: data.user.created_at,
     };
 
-    const sessionString = Buffer.from(JSON.stringify(sessionPayload)).toString('base64');
+    const workspace = membership?.workspace || null;
+    const role = membership?.role || 'viewer';
 
+    // Build response with Supabase session tokens in cookies
     const res = NextResponse.json({
       success: true,
-      user: testProfile,
-      workspace: defaultWorkspace,
+      user: userProfile,
+      workspace,
       role,
     });
 
-    // Set secure HTTP-only session cookie recognized by middleware
-    res.cookies.set('quotely_session', sessionString, {
+    // Set Supabase auth cookies so middleware can validate via SSR
+    res.cookies.set('sb-access-token', data.session.access_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
+      maxAge: data.session.expires_in,
+    });
+
+    res.cookies.set('sb-refresh-token', data.session.refresh_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 60 * 60 * 24 * 30, // 30 days
     });
 
     return res;
   } catch (err: any) {
+    console.error('[Auth Login Error]', err);
     return NextResponse.json(
-      { success: false, error: err.message || 'Login failed' },
+      { success: false, error: err.message || 'Login failed. Please try again.' },
       { status: 500 }
     );
   }

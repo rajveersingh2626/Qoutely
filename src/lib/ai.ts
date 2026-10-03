@@ -21,7 +21,7 @@ export interface AIRequestLog {
 // In-memory request log cache for observability
 const requestLogsCache: AIRequestLog[] = [];
 
-// Gemini 2.5 Flash Pricing (per 1M tokens)
+// Gemini 2.0 Flash Pricing (per 1M tokens)
 const GEMINI_INPUT_COST_PER_MILLION = 0.075;
 const GEMINI_OUTPUT_COST_PER_MILLION = 0.30;
 
@@ -41,12 +41,16 @@ export async function logAIRequest(log: AIRequestLog): Promise<void> {
   requestLogsCache.unshift(fullLog);
   if (requestLogsCache.length > 200) requestLogsCache.pop();
 
-  // Try to write to Supabase if configured
+  // Only persist to Supabase if we have a valid workspace_id (never use hardcoded placeholder)
+  if (!fullLog.workspace_id || fullLog.workspace_id.startsWith('00000000')) {
+    return; // Cache to memory only — no DB write without proper workspace context
+  }
+
   try {
     if (supabase) {
       await supabase.from('ai_requests').insert({
-        workspace_id: fullLog.workspace_id || '00000000-0000-0000-0000-000000000001',
-        user_id: fullLog.user_id || '00000000-0000-0000-0000-000000000001',
+        workspace_id: fullLog.workspace_id,
+        user_id: fullLog.user_id,
         endpoint: fullLog.endpoint,
         model: fullLog.model,
         input_tokens: fullLog.input_tokens,
@@ -57,7 +61,7 @@ export async function logAIRequest(log: AIRequestLog): Promise<void> {
       });
     }
   } catch (err) {
-    // Graceful fallback to memory log
+    // Graceful fallback to memory log — never throw
   }
 }
 
@@ -93,7 +97,7 @@ export async function extractProposal(
 ) {
   const startTime = Date.now();
   const { client, hasKey } = getGeminiClient();
-  const modelName = 'gemini-2.5-flash';
+  const modelName = 'gemini-2.0-flash';
 
   const rawText = typeof input === 'string' ? input : (input.content || '');
   const base64 = typeof input === 'object' ? input.base64 : undefined;
@@ -277,7 +281,7 @@ export async function classifyOccupancy(businessDescription: string, district?: 
   const ragResult = searchOccupanciesRAG(businessDescription);
   const eqMatch = district ? matchDistrictEQZone(district) : null;
   const { client, hasKey } = getGeminiClient();
-  const modelName = 'gemini-2.5-flash';
+  const modelName = 'gemini-2.0-flash';
 
   const prompt = `You are Quotely's senior underwriting classifier under the All India Fire Tariff (AIFT 2001) and IIB Loss Cost Guidelines.
 
@@ -381,7 +385,7 @@ Return ONLY valid JSON matching this schema:
 export async function explainRecommendation(occupancyCode: string, businessDescription: string, workspaceId?: string, userId?: string) {
   const startTime = Date.now();
   const { client, hasKey } = getGeminiClient();
-  const modelName = 'gemini-2.5-flash';
+  const modelName = 'gemini-2.0-flash';
 
   if (!hasKey || !client) {
     return {
@@ -460,7 +464,7 @@ Return ONLY valid JSON matching this schema:
 export async function summarizeProposal(proposalData: any, workspaceId?: string, userId?: string) {
   const startTime = Date.now();
   const { client, hasKey } = getGeminiClient();
-  const modelName = 'gemini-2.5-flash';
+  const modelName = 'gemini-2.0-flash';
 
   if (!hasKey || !client) {
     return {
@@ -530,7 +534,7 @@ Return ONLY valid JSON matching this schema:
 export async function testAIConnection() {
   const startTime = Date.now();
   const { client, hasKey } = getGeminiClient();
-  const modelName = 'gemini-2.5-flash';
+  const modelName = 'gemini-2.0-flash';
 
   if (!hasKey || !client) {
     return {
@@ -548,7 +552,7 @@ export async function testAIConnection() {
   }
 
   try {
-    const testPrompt = 'Respond with JSON only: {"status": "ok", "service": "Quotely AI Underwriting Engine", "model": "gemini-2.5-flash", "timestamp": "' + new Date().toISOString() + '"}';
+    const testPrompt = 'Respond with JSON only: {"status": "ok", "service": "Quotely AI Underwriting Engine", "model": "gemini-2.0-flash", "timestamp": "' + new Date().toISOString() + '"}';
     const response = await client.models.generateContent({
       model: modelName,
       contents: testPrompt,
