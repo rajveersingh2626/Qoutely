@@ -34,11 +34,10 @@ export function analyzeProposalAI(input: ProposalInputData): AIAnalysisResult {
     .join(' ')
     .toLowerCase();
 
-  // Extract relevant keywords
+  // Extract relevant keywords (strictly address/grammatical noise — preserve commercial trade terms)
   const stopWords = new Set([
-    'and', 'the', 'for', 'with', 'from', 'this', 'that', 'have', 'been', 'near', 'road',
-    'pvt', 'ltd', 'company', 'premises', 'situated', 'khasra', 'measuring', 'near',
-    'trading', 'dealing', 'sales', 'retail', 'wholesale', 'goods', 'products'
+    'and', 'the', 'for', 'with', 'from', 'this', 'that', 'have', 'been', 'road',
+    'pvt', 'ltd', 'premises', 'situated', 'khasra', 'measuring', 'near', 'plot'
   ]);
 
   const rawTokens = combinedText

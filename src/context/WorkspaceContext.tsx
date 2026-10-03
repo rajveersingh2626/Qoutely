@@ -30,6 +30,8 @@ interface WorkspaceContextType {
   setIsCommandPaletteOpen: (open: boolean) => void;
   isAiDrawerOpen: boolean;
   setIsAiDrawerOpen: (open: boolean) => void;
+  isMobileSidebarOpen: boolean;
+  setIsMobileSidebarOpen: (open: boolean) => void;
   switchWorkspace: (workspaceId: string) => void;
   switchUser: (userId: string) => void;
   createWorkspace: (data: Partial<Workspace>) => Workspace;
@@ -93,6 +95,7 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [documents, setDocuments] = useState<UploadedDocument[]>([]);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [isAiDrawerOpen, setIsAiDrawerOpen] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Compute current user role in current workspace
   const memberRecord = members.find(
@@ -738,6 +741,8 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         setIsCommandPaletteOpen,
         isAiDrawerOpen,
         setIsAiDrawerOpen,
+        isMobileSidebarOpen,
+        setIsMobileSidebarOpen,
         switchWorkspace,
         switchUser,
         createWorkspace,

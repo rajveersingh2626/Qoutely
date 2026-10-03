@@ -30,6 +30,7 @@ import {
   Upload,
   UserCheck,
   Users,
+  X,
 } from 'lucide-react';
 import { useWorkspace } from '@/context/WorkspaceContext';
 import { useTheme } from '@/context/ThemeContext';
@@ -49,6 +50,8 @@ export const Sidebar: React.FC = () => {
     isAiDrawerOpen,
     setIsAiDrawerOpen,
     setIsCommandPaletteOpen,
+    isMobileSidebarOpen,
+    setIsMobileSidebarOpen,
   } = useWorkspace();
   const { theme, toggleTheme } = useTheme();
 
@@ -134,52 +137,80 @@ export const Sidebar: React.FC = () => {
   };
 
   return (
-    <aside className="w-64 flex-shrink-0 flex flex-col justify-between h-screen border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-colors z-20">
-      <div className="flex flex-col flex-1 overflow-y-auto">
-        {/* Brand Header */}
-        <div className="p-4 border-b border-slate-100 dark:border-slate-800/60">
-          <div className="flex items-center justify-between mb-3">
-            <Link href="/app/dashboard" className="flex items-center gap-2.5 group">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-white shadow-emerald shadow-sm group-hover:scale-105 transition-transform">
-                {/* Shield Q Logo */}
-                <svg
-                  className="w-5 h-5"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.4"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                  <circle cx="12" cy="11" r="3.2" />
-                  <path d="m14.5 13.5 2 2" />
-                </svg>
-              </div>
-              <div>
-                <span className="text-lg font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
-                  Quotely
-                  <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400">
-                    SaaS
+    <>
+      {/* Mobile Drawer Overlay Backdrop */}
+      {isMobileSidebarOpen && (
+        <div
+          onClick={() => setIsMobileSidebarOpen(false)}
+          className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs z-40 lg:hidden transition-opacity"
+          aria-hidden="true"
+        />
+      )}
+
+      <aside
+        className={`fixed inset-y-0 left-0 w-72 max-w-[85vw] flex flex-col justify-between h-full bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 z-50 transform transition-transform duration-300 ease-in-out lg:static lg:w-64 lg:translate-x-0 ${
+          isMobileSidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0'
+        } flex-shrink-0`}
+      >
+        <div className="flex flex-col flex-1 overflow-y-auto">
+          {/* Brand Header */}
+          <div className="p-4 border-b border-slate-100 dark:border-slate-800/60">
+            <div className="flex items-center justify-between mb-3">
+              <Link
+                href="/app/dashboard"
+                onClick={() => setIsMobileSidebarOpen(false)}
+                className="flex items-center gap-2.5 group"
+              >
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-700 flex items-center justify-center text-white shadow-emerald shadow-sm group-hover:scale-105 transition-transform">
+                  {/* Shield Q Logo */}
+                  <svg
+                    className="w-5 h-5"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    <circle cx="12" cy="11" r="3.2" />
+                    <path d="m14.5 13.5 2 2" />
+                  </svg>
+                </div>
+                <div>
+                  <span className="text-lg font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
+                    Quotely
+                    <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400">
+                      SaaS
+                    </span>
                   </span>
-                </span>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-                  AI Underwriting OS
-                </p>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                    AI Underwriting OS
+                  </p>
+                </div>
+              </Link>
+
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={toggleTheme}
+                  className="p-2 rounded-lg text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  title="Toggle theme"
+                >
+                  {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                </button>
+
+                <button
+                  onClick={() => setIsMobileSidebarOpen(false)}
+                  className="lg:hidden p-2 rounded-lg text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+                  title="Close sidebar"
+                >
+                  <X className="w-4 h-4" />
+                </button>
               </div>
-            </Link>
+            </div>
 
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-lg text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-              title="Toggle theme"
-            >
-              {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-            </button>
-          </div>
-
-          {/* Workspace Switcher */}
-          <div className="relative">
+            {/* Workspace Switcher */}
+            <div className="relative">
             <button
               onClick={() => setIsWorkspaceMenuOpen(!isWorkspaceMenuOpen)}
               className="w-full flex items-center justify-between p-2 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-800/70 dark:hover:bg-slate-800 border border-slate-200/80 dark:border-slate-700/60 text-left transition-all"
@@ -454,5 +485,6 @@ export const Sidebar: React.FC = () => {
         )}
       </div>
     </aside>
+  </>
   );
 };

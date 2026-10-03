@@ -8,6 +8,7 @@ import {
   ChevronRight,
   FilePlus,
   HelpCircle,
+  Menu,
   Search,
   Sparkles,
   Upload,
@@ -27,6 +28,8 @@ export const Header: React.FC<HeaderProps> = ({ title, subtitle, breadcrumbs }) 
     setIsCommandPaletteOpen,
     setIsAiDrawerOpen,
     canGenerateQuotes,
+    isMobileSidebarOpen,
+    setIsMobileSidebarOpen,
   } = useWorkspace();
 
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -56,9 +59,17 @@ export const Header: React.FC<HeaderProps> = ({ title, subtitle, breadcrumbs }) 
   ];
 
   return (
-    <header className="h-16 px-6 border-b border-slate-200/80 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md flex items-center justify-between sticky top-0 z-10 transition-colors">
-      {/* Left: Greeting / Breadcrumbs */}
-      <div className="flex items-center gap-3">
+    <header className="h-16 px-4 sm:px-6 border-b border-slate-200/80 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md flex items-center justify-between sticky top-0 z-10 transition-colors">
+      {/* Left: Mobile Menu Toggle + Greeting / Breadcrumbs */}
+      <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+        <button
+          type="button"
+          onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+          className="lg:hidden p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none transition-colors"
+          aria-label="Toggle navigation menu"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
         {breadcrumbs && breadcrumbs.length > 0 ? (
           <nav className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400">
             {breadcrumbs.map((b, i) => (

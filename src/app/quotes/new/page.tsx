@@ -21,6 +21,7 @@ import {
   Percent,
   Coins,
   Building2,
+  Building,
   ArrowUpRight,
   Shield,
   Layers,
@@ -29,6 +30,11 @@ import {
   MessageSquare,
   Send,
   CornerDownRight,
+  MapPin,
+  CheckSquare,
+  Square,
+  BadgePercent,
+  FileCheck,
 } from 'lucide-react';
 import { useWorkspace } from '@/context/WorkspaceContext';
 import { Header } from '@/components/layout/Header';
@@ -39,6 +45,7 @@ import {
   formatINRWithDecimals,
   OCCUPANCIES,
 } from '@/lib/calculator';
+import { matchDistrictEQZone } from '@/lib/rag';
 import { downloadQuoteSlipPDF } from '@/lib/pdf-generator';
 import { Quote } from '@/types/database';
 
@@ -61,9 +68,20 @@ interface AIExtractionResponse {
 
 const SAMPLE_PROPOSALS = [
   {
+    title: 'Krishna & Co. Food & Oil Godown',
+    client: 'Krishna & Company',
+    gst: '07ALMPA9603N1ZS',
+    address: 'Khasra No-309/2, Pul Pehladpur, Near Lal Kuan Sunday Bazar, New Delhi - 110044',
+    hypothecation: 'Bank of India, South Delhi Branch',
+    sumInsured: 50000000,
+    text: 'Trading and storage of food products of Nestle, Bajaj almond oil, cosmetic products and similar goods. Category I hazardous goods godown with operational fire hydrants, standard drainage and 24x7 security.',
+  },
+  {
     title: 'Acme CNC Machining',
     client: 'Acme Industries Ltd',
     gst: '27AAACA1234A1Z5',
+    address: 'Plot 42, GIDC Phase II, Vatva, Ahmedabad, Gujarat 382445',
+    hypothecation: 'State Bank of India',
     sumInsured: 5000000,
     text: 'High-precision CNC metal machining, tool stamping, lathe turning and automotive parts fabrication workshop. Certified electrical switchgear with quarterly audit.',
   },
@@ -71,6 +89,8 @@ const SAMPLE_PROPOSALS = [
     title: 'Apex Pharma Labs',
     client: 'Apex Healthcare Formulations Ltd',
     gst: '24AABCA5678B1Z2',
+    address: 'Plot 18, Electronic City Phase 1, Bengaluru, Karnataka 560100',
+    hypothecation: 'HDFC Bank',
     sumInsured: 25000000,
     text: 'Pharmaceutical cleanroom manufacturing, oral dosage tablet formulations, API blending and analytical testing research laboratories. Controlled HVAC system.',
   },
@@ -78,6 +98,8 @@ const SAMPLE_PROPOSALS = [
     title: 'Global Logistics Godown',
     client: 'TransWorld Supply Chain Solutions LLP',
     gst: '07AAACT9012C1Z4',
+    address: 'Shed 12, Palam Industrial Area, New Delhi 110077',
+    hypothecation: 'Punjab National Bank',
     sumInsured: 12000000,
     text: 'FMCG packaged foods and dry goods warehousing facility. Palletized racking with automatic smoke beam detectors and Category I godown warranty compliance.',
   },
@@ -85,6 +107,8 @@ const SAMPLE_PROPOSALS = [
     title: 'Bharat Textile Weaving',
     client: 'Bharat Spinners & Weaving Mills',
     gst: '33AABCB3456D1Z6',
+    address: 'Mill Road, Tirupur, Coimbatore, Tamil Nadu 641602',
+    hypothecation: 'Canara Bank',
     sumInsured: 35000000,
     text: 'Cotton spinning, automated shuttleless loom weaving and yarn fabric processing facility. Overhead fire sprinkler network and daily lint extraction.',
   },
@@ -94,11 +118,22 @@ export default function NewQuoteWorkspacePage() {
   const router = useRouter();
   const { currentWorkspace, addQuote } = useWorkspace();
 
-  // 1. Client & Proposal Metadata State (Clean un-mocked start)
+  // 1. Client & Proposal Metadata State
   const [clientName, setClientName] = useState('');
   const [clientGst, setClientGst] = useState('');
+  const [clientAddress, setClientAddress] = useState('');
+  const [hypothecationBank, setHypothecationBank] = useState('');
   const [eqZone, setEqZone] = useState('Zone 3 (Moderate Damage Risk)');
+  const [detectedZoneInfo, setDetectedZoneInfo] = useState<{
+    zone: string;
+    district: string;
+    hazardLevel?: string;
+    rate: number;
+    source: string;
+  } | null>(null);
   const [businessDescription, setBusinessDescription] = useState('');
+  const [brokeragePercent, setBrokeragePercent] = useState<number>(15);
+  const [activeMobileTab, setActiveMobileTab] = useState<'input' | 'calc' | 'slip'>('input');
 
   // 2. AI Extraction & Clarification State
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -122,6 +157,73 @@ export default function NewQuoteWorkspacePage() {
   const [savedQuoteId, setSavedQuoteId] = useState<string | null>(null);
   const [isCopied, setIsCopied] = useState(false);
   const [showSampleMenu, setShowSampleMenu] = useState(false);
+
+  // Auto-detect Earthquake Zone & STFI when Address, Pincode or GST is entered
+  React.useEffect(() => {
+    if (!clientAddress && !clientGst) {
+      setDetectedZoneInfo(null);
+      return;
+    }
+
+    // Try full address / pincode first
+    if (clientAddress.trim()) {
+      const match = matchDistrictEQZone(clientAddress);
+      if (match) {
+        const zoneLabel =
+          match.zone === 'Zone 1'
+            ? 'Zone 1 (High Damage Risk)'
+            : match.zone === 'Zone 2'
+            ? 'Zone 2 (Moderate Damage Risk)'
+            : match.zone === 'Zone 3'
+            ? 'Zone 3 (Medium Damage Risk)'
+            : 'Zone 4 (Low Damage Risk)';
+
+        setEqZone(zoneLabel);
+        setEqRate(match.eqRatePerMille);
+        setDetectedZoneInfo({
+          zone: match.zone,
+          district: match.district,
+          hazardLevel: match.hazardLevel,
+          rate: match.eqRatePerMille,
+          source: 'Address / Pincode AI Match',
+        });
+        return;
+      }
+    }
+
+    // Fallback: If GST is entered, extract state code
+    if (clientGst && clientGst.length >= 2) {
+      const stateCode = clientGst.substring(0, 2);
+      const GST_STATE_MAP: Record<string, { zone: string; label: string; rate: number; state: string }> = {
+        '07': { zone: 'Zone 2', label: 'Zone 2 (Moderate Damage Risk)', rate: 0.15, state: 'Delhi NCR' },
+        '27': { zone: 'Zone 3', label: 'Zone 3 (Medium Damage Risk)', rate: 0.10, state: 'Maharashtra' },
+        '24': { zone: 'Zone 2', label: 'Zone 2 (Moderate Damage Risk)', rate: 0.15, state: 'Gujarat' },
+        '29': { zone: 'Zone 4', label: 'Zone 4 (Low Damage Risk)', rate: 0.05, state: 'Karnataka' },
+        '36': { zone: 'Zone 4', label: 'Zone 4 (Low Damage Risk)', rate: 0.05, state: 'Telangana' },
+        '33': { zone: 'Zone 3', label: 'Zone 3 (Medium Damage Risk)', rate: 0.10, state: 'Tamil Nadu' },
+        '19': { zone: 'Zone 2', label: 'Zone 2 (Moderate Damage Risk)', rate: 0.15, state: 'West Bengal' },
+        '18': { zone: 'Zone 1', label: 'Zone 1 (High Damage Risk)', rate: 0.25, state: 'Assam / NE' },
+        '10': { zone: 'Zone 2', label: 'Zone 2 (Moderate Damage Risk)', rate: 0.15, state: 'Bihar' },
+        '06': { zone: 'Zone 2', label: 'Zone 2 (Moderate Damage Risk)', rate: 0.15, state: 'Haryana' },
+        '03': { zone: 'Zone 2', label: 'Zone 2 (Moderate Damage Risk)', rate: 0.15, state: 'Punjab' },
+        '08': { zone: 'Zone 3', label: 'Zone 3 (Medium Damage Risk)', rate: 0.10, state: 'Rajasthan' },
+        '23': { zone: 'Zone 3', label: 'Zone 3 (Medium Damage Risk)', rate: 0.10, state: 'Madhya Pradesh' },
+      };
+
+      if (GST_STATE_MAP[stateCode]) {
+        const item = GST_STATE_MAP[stateCode];
+        setEqZone(item.label);
+        setEqRate(item.rate);
+        setDetectedZoneInfo({
+          zone: item.zone,
+          district: item.state,
+          hazardLevel: `${item.zone} - GST State Code Match`,
+          rate: item.rate,
+          source: `GST State Code (${stateCode})`,
+        });
+      }
+    }
+  }, [clientAddress, clientGst]);
 
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -259,6 +361,8 @@ export default function NewQuoteWorkspacePage() {
   const handleLoadSample = (sample: (typeof SAMPLE_PROPOSALS)[0]) => {
     setClientName(sample.client);
     setClientGst(sample.gst);
+    setClientAddress(sample.address || '');
+    setHypothecationBank((sample as any).hypothecation || '');
     setSumInsured(sample.sumInsured);
     setBusinessDescription(sample.text);
     setAnalysisError(null);
@@ -485,12 +589,52 @@ Total Final Premium: ₹ ${formatINRWithDecimals(calculation.totalFinalPremium)}
         </div>
       </div>
 
+      {/* Mobile Step Switcher */}
+      <div className="lg:hidden flex items-center border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-2 gap-1.5 overflow-x-auto flex-shrink-0">
+        <button
+          type="button"
+          onClick={() => setActiveMobileTab('input')}
+          className={`flex-1 min-w-[105px] py-1.5 px-2.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors ${
+            activeMobileTab === 'input'
+              ? 'bg-blue-600 text-white shadow-xs'
+              : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+          }`}
+        >
+          <Sparkles className="w-3.5 h-3.5" />
+          <span>01. Input & AI</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveMobileTab('calc')}
+          className={`flex-1 min-w-[105px] py-1.5 px-2.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors ${
+            activeMobileTab === 'calc'
+              ? 'bg-emerald-600 text-white shadow-xs'
+              : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+          }`}
+        >
+          <Calculator className="w-3.5 h-3.5" />
+          <span>02. Tariff Math</span>
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveMobileTab('slip')}
+          className={`flex-1 min-w-[105px] py-1.5 px-2.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors ${
+            activeMobileTab === 'slip'
+              ? 'bg-emerald-700 text-white shadow-xs'
+              : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
+          }`}
+        >
+          <Coins className="w-3.5 h-3.5" />
+          <span>03. Slip Ledger</span>
+        </button>
+      </div>
+
       {/* Main 3-Column Split Workspace */}
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 overflow-hidden">
         {/* ====================================================================== */}
         {/* LEFT PANEL: Proposal Input & AI Extraction (4 Cols) */}
         {/* ====================================================================== */}
-        <div className="lg:col-span-4 border-r border-slate-200/80 dark:border-slate-800 p-6 overflow-y-auto bg-white dark:bg-slate-900 space-y-6">
+        <div className={`lg:col-span-4 border-r border-slate-200/80 dark:border-slate-800 p-4 sm:p-6 overflow-y-auto bg-white dark:bg-slate-900 space-y-6 ${activeMobileTab === 'input' ? 'block' : 'hidden lg:block'}`}>
           <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
             <div>
               <span className="text-[11px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 flex items-center gap-1.5">
@@ -778,7 +922,7 @@ Total Final Premium: ₹ ${formatINRWithDecimals(calculation.totalFinalPremium)}
         {/* ====================================================================== */}
         {/* MIDDLE PANEL: Deterministic Tariff Engine (4 Cols) */}
         {/* ====================================================================== */}
-        <div className="lg:col-span-4 border-r border-slate-200/80 dark:border-slate-800 p-6 overflow-y-auto bg-slate-50/50 dark:bg-slate-900/50 space-y-6">
+        <div className={`lg:col-span-4 border-r border-slate-200/80 dark:border-slate-800 p-4 sm:p-6 overflow-y-auto bg-slate-50/50 dark:bg-slate-900/50 space-y-6 ${activeMobileTab === 'calc' ? 'block' : 'hidden lg:block'}`}>
           <div className="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
             <div>
               <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
@@ -817,6 +961,35 @@ Total Final Premium: ₹ ${formatINRWithDecimals(calculation.totalFinalPremium)}
                 </div>
               </div>
 
+              {/* Risk Location & Pincode with AI Zone Auto-Detection */}
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-[11px] font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1">
+                    <MapPin className="w-3.5 h-3.5 text-blue-500" />
+                    <span>Risk Location Address & PIN Code</span>
+                  </label>
+                  {detectedZoneInfo && (
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-900 font-semibold flex items-center gap-1">
+                      <Sparkles className="w-3 h-3 text-blue-500" />
+                      <span>{detectedZoneInfo.zone} ({detectedZoneInfo.rate.toFixed(2)}‰)</span>
+                    </span>
+                  )}
+                </div>
+                <input
+                  type="text"
+                  value={clientAddress}
+                  onChange={(e) => setClientAddress(e.target.value)}
+                  placeholder="e.g. Pul Pehladpur, New Delhi - 110044 or Nariman Point, Mumbai 400021"
+                  className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                {detectedZoneInfo && (
+                  <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium mt-1 flex items-center gap-1">
+                    <Check className="w-3 h-3 text-emerald-600" />
+                    <span>Auto-mapped: {detectedZoneInfo.district} ({detectedZoneInfo.source})</span>
+                  </p>
+                )}
+              </div>
+
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
@@ -837,14 +1010,80 @@ Total Final Premium: ₹ ${formatINRWithDecimals(calculation.totalFinalPremium)}
                   </label>
                   <select
                     value={eqZone}
-                    onChange={(e) => setEqZone(e.target.value)}
+                    onChange={(e) => {
+                      setEqZone(e.target.value);
+                      if (e.target.value.includes('Zone 1')) setEqRate(0.25);
+                      else if (e.target.value.includes('Zone 2')) setEqRate(0.15);
+                      else if (e.target.value.includes('Zone 3')) setEqRate(0.10);
+                      else if (e.target.value.includes('Zone 4')) setEqRate(0.05);
+                    }}
                     className="w-full px-2.5 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500 truncate"
                   >
-                    <option value="Zone 1 (High Damage Risk)">Zone 1 / V (High Risk)</option>
-                    <option value="Zone 2 (Moderate Damage Risk)">Zone 2 / IV (Delhi, Gujarat)</option>
-                    <option value="Zone 3 (Medium Damage Risk)">Zone 3 / III (Mumbai, Pune)</option>
-                    <option value="Zone 4 (Low Damage Risk)">Zone 4 / II (Bengaluru, Hyd)</option>
+                    <option value="Zone 1 (High Damage Risk)">Zone 1 / V (0.25‰ - NE, Kutch, Bihar)</option>
+                    <option value="Zone 2 (Moderate Damage Risk)">Zone 2 / IV (0.15‰ - Delhi, Gujarat, Punjab)</option>
+                    <option value="Zone 3 (Medium Damage Risk)">Zone 3 / III (0.10‰ - Mumbai, Pune, Chennai)</option>
+                    <option value="Zone 4 (Low Damage Risk)">Zone 4 / II (0.05‰ - Bengaluru, Hyd, Jaipur)</option>
                   </select>
+                </div>
+              </div>
+
+              {/* Hypothecation Bank (for Mandate / Bank Loan coverage) */}
+              <div>
+                <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  Hypothecation Bank / Financier
+                </label>
+                <div className="relative">
+                  <Building className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
+                  <input
+                    type="text"
+                    value={hypothecationBank}
+                    onChange={(e) => setHypothecationBank(e.target.value)}
+                    placeholder="e.g. State Bank of India, SME Branch / HDFC Bank"
+                    className="w-full pl-8 pr-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  />
+                </div>
+              </div>
+
+              {/* Brokerage & Commission Controls */}
+              <div className="p-3 rounded-xl bg-amber-50/70 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-900/60 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-amber-900 dark:text-amber-200 text-[11px] font-bold">
+                    <BadgePercent className="w-3.5 h-3.5 text-amber-600" />
+                    <span>Brokerage Margin (IRDAI Cap 15%)</span>
+                  </div>
+                  <span className="text-xs font-mono font-bold text-amber-700 dark:text-amber-300">
+                    {brokeragePercent}%
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <input
+                    type="range"
+                    min="0"
+                    max="20"
+                    step="0.5"
+                    value={brokeragePercent}
+                    onChange={(e) => setBrokeragePercent(Number(e.target.value))}
+                    className="flex-1 accent-amber-600 h-1.5 bg-amber-200 dark:bg-amber-800 rounded-lg cursor-pointer"
+                  />
+                  <div className="w-16">
+                    <input
+                      type="number"
+                      min="0"
+                      max="25"
+                      step="0.5"
+                      value={brokeragePercent}
+                      onChange={(e) => setBrokeragePercent(Number(e.target.value))}
+                      className="w-full px-2 py-1 text-center font-mono font-bold text-xs rounded-lg border border-amber-300 dark:border-amber-800 bg-white dark:bg-slate-900"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between text-[11px] text-amber-800 dark:text-amber-300 font-mono pt-1 border-t border-amber-200 dark:border-amber-900">
+                  <span>Earnable Brokerage:</span>
+                  <span className="font-bold">
+                    ₹ {formatINRWithDecimals((calculation.netPremium * brokeragePercent) / 100)}
+                  </span>
                 </div>
               </div>
             </div>
@@ -1065,7 +1304,7 @@ Total Final Premium: ₹ ${formatINRWithDecimals(calculation.totalFinalPremium)}
         {/* ====================================================================== */}
         {/* RIGHT PANEL: Live Premium Summary & Quote Slip Generation (4 Cols) */}
         {/* ====================================================================== */}
-        <div className="lg:col-span-4 p-6 overflow-y-auto bg-white dark:bg-slate-900 flex flex-col justify-between space-y-6">
+        <div className={`lg:col-span-4 p-4 sm:p-6 overflow-y-auto bg-white dark:bg-slate-900 flex flex-col justify-between space-y-6 ${activeMobileTab === 'slip' ? 'block' : 'hidden lg:flex'}`}>
           <div className="space-y-6">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
               <div>
@@ -1225,6 +1464,48 @@ Total Final Premium: ₹ ${formatINRWithDecimals(calculation.totalFinalPremium)}
         </div>
       </div>
 
+      {/* Mobile Sticky Action Bar */}
+      <div className="lg:hidden p-3.5 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3 shadow-lg z-20 flex-shrink-0">
+        <div>
+          <span className="text-[10px] uppercase font-semibold text-slate-400 block">Total Final Premium</span>
+          <span className="text-base font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">
+            {formatINRWithDecimals(calculation.totalFinalPremium)}
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          {activeMobileTab === 'input' && (
+            <button
+              type="button"
+              onClick={() => setActiveMobileTab('calc')}
+              className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm"
+            >
+              <span>Tariff Math</span>
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          )}
+          {activeMobileTab === 'calc' && (
+            <button
+              type="button"
+              onClick={() => setActiveMobileTab('slip')}
+              className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm"
+            >
+              <span>Review Slip</span>
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          )}
+          {activeMobileTab === 'slip' && (
+            <button
+              type="button"
+              onClick={handleGenerateQuoteSlip}
+              className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-sm"
+            >
+              <FileText className="w-4 h-4" />
+              <span>Generate Slip</span>
+            </button>
+          )}
+        </div>
+      </div>
+
       {/* ====================================================================== */}
       {/* QUOTE SLIP PREVIEW MODAL */}
       {/* ====================================================================== */}
@@ -1283,18 +1564,28 @@ Total Final Premium: ₹ ${formatINRWithDecimals(calculation.totalFinalPremium)}
               </div>
 
               {/* Insured & Occupancy Spec */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase block mb-1">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-1">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase block">
                     Insured Client
                   </span>
                   <p className="font-bold text-slate-900 dark:text-white text-sm">{clientName}</p>
-                  <p className="font-mono text-slate-500 mt-0.5">GSTIN: {clientGst}</p>
+                  <p className="font-mono text-slate-500 text-[11px]">GSTIN: {clientGst || 'N/A'}</p>
+                  {clientAddress && (
+                    <p className="text-[10px] text-slate-500 truncate mt-1">
+                      <span className="font-semibold text-slate-600 dark:text-slate-400">Risk Loc:</span> {clientAddress}
+                    </p>
+                  )}
+                  {hypothecationBank && (
+                    <p className="text-[10px] text-blue-600 dark:text-blue-400 font-medium">
+                      Hypothecated: {hypothecationBank}
+                    </p>
+                  )}
                 </div>
 
-                <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase block mb-1">
-                    Classified Risk
+                <div className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 space-y-1">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase block">
+                    Classified Risk & Tariff
                   </span>
                   <div className="flex items-center gap-1.5">
                     <span className="font-mono font-bold px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs">
@@ -1305,6 +1596,10 @@ Total Final Premium: ₹ ${formatINRWithDecimals(calculation.totalFinalPremium)}
                     </span>
                   </div>
                   <p className="text-[10px] text-slate-500 mt-1">{eqZone}</p>
+                  <div className="pt-1 flex items-center justify-between text-[11px] font-mono text-amber-700 dark:text-amber-400">
+                    <span>Brokerage Margin:</span>
+                    <span className="font-bold">{brokeragePercent}% (₹ {formatINRWithDecimals((calculation.netPremium * brokeragePercent) / 100)})</span>
+                  </div>
                 </div>
               </div>
 
