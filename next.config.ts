@@ -52,6 +52,11 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   outputFileTracingRoot: path.join(__dirname),
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '25mb',
+    },
+  },
 
   // TypeScript: Hard fail on type errors in production builds
   typescript: {

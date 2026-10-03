@@ -63,24 +63,17 @@ export default function AIAnalysisPage() {
   const { setIsAiDrawerOpen } = useWorkspace();
 
   const [activeTab, setActiveTab] = useState<'text' | 'file'>('text');
-  const [inputText, setInputText] = useState(SAMPLE_RFQS[0].text);
-  const [selectedPreset, setSelectedPreset] = useState(0);
+  const [inputText, setInputText] = useState('');
+  const [selectedPreset, setSelectedPreset] = useState<number | null>(null);
+  const [showSamplePresets, setShowSamplePresets] = useState(false);
 
-  const [analysisResult, setAnalysisResult] = useState<AIAnalysisResult>(() =>
-    analyzeProposalAI({
-      business_name: 'Acme Industries Ltd',
-      business_description: 'Precision CNC metal machining, tool stamping, component fabrication and parts assembly workshop.',
-      raw_text: SAMPLE_RFQS[0].text,
-      sum_insured: 53800000,
-    })
-  );
-
-  const [selectedCandidateCode, setSelectedCandidateCode] = useState<string>('1023');
+  const [analysisResult, setAnalysisResult] = useState<AIAnalysisResult | null>(null);
+  const [selectedCandidateCode, setSelectedCandidateCode] = useState<string>('');
   const [isRunning, setIsRunning] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showJsonRaw, setShowJsonRaw] = useState(false);
   const [executionMeta, setExecutionMeta] = useState<{ model: string; latency_ms: number; live: boolean }>({
-    model: 'gemini-3.8-flash',
+    model: 'gemini-3.5-flash',
     latency_ms: 320,
     live: true,
   });
@@ -165,30 +158,14 @@ export default function AIAnalysisPage() {
     const start = Date.now();
 
     try {
-      let content = '';
-      let base64 = '';
-      const mimeType = file.type || 'application/pdf';
-
-      if (file.name.endsWith('.txt') || file.type.startsWith('text/')) {
-        content = await file.text();
-      } else {
-        base64 = await new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result as string);
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
-      }
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('fileName', file.name);
+      formData.append('mimeType', file.type || 'application/pdf');
 
       const res = await fetch('/api/extract', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          content: content || undefined,
-          base64: base64 || undefined,
-          mimeType,
-          fileName: file.name,
-        }),
+        body: formData,
       });
 
       if (res.ok) {
@@ -245,18 +222,13 @@ export default function AIAnalysisPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const activeCandidate =
-    analysisResult.occupancy_candidates.find((c) => c.code === selectedCandidateCode) ||
-    analysisResult.occupancy_candidates[0] || {
-      code: '1023',
-      description: 'Engineering Workshops - Metalworking with cold work',
-      confidence: 0.95,
-      reason: 'Standard metalworking workshop classification.',
-      loss_cost: 1.15,
-      category: 'Category 2',
-    };
+  const activeCandidate = analysisResult
+    ? (analysisResult.occupancy_candidates.find((c) => c.code === selectedCandidateCode) ||
+       analysisResult.occupancy_candidates[0] || null)
+    : null;
 
   const handleCreateQuote = () => {
+    if (!activeCandidate) return;
     const params = new URLSearchParams();
     params.set('code', activeCandidate.code);
     params.set('desc', activeCandidate.description);
@@ -349,28 +321,37 @@ export default function AIAnalysisPage() {
                 </div>
               </div>
 
-              {/* Sample Presets */}
+              {/* Sample Presets Collapsible */}
               {activeTab === 'text' && (
                 <div>
-                  <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block mb-2">
-                    Quick Sample Proposals
-                  </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {SAMPLE_RFQS.map((sample, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => handleSelectPreset(idx)}
-                        className={`p-2 rounded-xl text-left border text-xs transition-all ${
-                          selectedPreset === idx
-                            ? 'border-emerald-500 bg-emerald-50/60 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200 font-semibold'
-                            : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 text-slate-700 dark:text-slate-300'
-                        }`}
-                      >
-                        <p className="font-bold truncate">{sample.label}</p>
-                        <p className="text-[10px] text-slate-400 truncate">{sample.district}</p>
-                      </button>
-                    ))}
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowSamplePresets(!showSamplePresets)}
+                    className="text-[11px] font-medium text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 flex items-center gap-1.5 transition-colors"
+                  >
+                    <Zap className="w-3 h-3 text-amber-500" />
+                    <span>Need sample data? {showSamplePresets ? 'Hide sample RFQs ▲' : 'Browse sample RFQ templates ▼'}</span>
+                  </button>
+
+                  {showSamplePresets && (
+                    <div className="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-slate-100 dark:border-slate-800 animate-fadeIn">
+                      {SAMPLE_RFQS.map((sample, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => handleSelectPreset(idx)}
+                          className={`p-2 rounded-xl text-left border text-xs transition-all ${
+                            selectedPreset === idx
+                              ? 'border-emerald-500 bg-emerald-50/60 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-200 font-semibold'
+                              : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 text-slate-700 dark:text-slate-300'
+                          }`}
+                        >
+                          <p className="font-bold truncate">{sample.label}</p>
+                          <p className="text-[10px] text-slate-400 truncate">{sample.district}</p>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -442,12 +423,33 @@ export default function AIAnalysisPage() {
 
           {/* Right Column: Underwriting Results Workbench (7 cols) */}
           <div className="lg:col-span-7 space-y-4">
-            {/* Primary Recommended Match Card */}
-            <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-card space-y-5">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-                <div className="flex items-center gap-2">
-                  <Flame className="w-4 h-4 text-emerald-600" />
-                  <span className="text-sm font-bold text-slate-900 dark:text-white">
+            {!analysisResult || !activeCandidate ? (
+              <div className="p-8 md:p-12 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-card flex flex-col items-center justify-center text-center space-y-4 min-h-[460px]">
+                <div className="w-16 h-16 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shadow-inner">
+                  <Sparkles className="w-8 h-8" />
+                </div>
+                <div className="max-w-md space-y-2">
+                  <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                    Awaiting Underwriting Proposal
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                    Paste client trade notes, an RFQ description, or upload a proposal document on the left, then click <span className="font-semibold text-emerald-600 dark:text-emerald-400">Run Statutory Underwriting Classification</span>.
+                  </p>
+                  <div className="pt-3 flex flex-wrap items-center justify-center gap-2 text-[11px] text-slate-400">
+                    <span className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 font-mono">✓ 600+ IIB Codes</span>
+                    <span className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 font-mono">✓ AIFT 2001 Clamped</span>
+                    <span className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 font-mono">✓ Zero Hallucination Math</span>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <>
+                {/* Primary Recommended Match Card */}
+                <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-card space-y-5">
+                  <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+                    <div className="flex items-center gap-2">
+                      <Flame className="w-4 h-4 text-emerald-600" />
+                      <span className="text-sm font-bold text-slate-900 dark:text-white">
                     Primary Statutory Classification
                   </span>
                 </div>
@@ -638,6 +640,8 @@ export default function AIAnalysisPage() {
                   {JSON.stringify(analysisResult, null, 2)}
                 </pre>
               </div>
+            )}
+              </>
             )}
           </div>
         </div>

@@ -24,6 +24,7 @@ import {
   ArrowUpRight,
   Shield,
   Layers,
+  ChevronDown,
 } from 'lucide-react';
 import { useWorkspace } from '@/context/WorkspaceContext';
 import { Header } from '@/components/layout/Header';
@@ -84,42 +85,31 @@ export default function NewQuoteWorkspacePage() {
   const router = useRouter();
   const { currentWorkspace, addQuote } = useWorkspace();
 
-  // 1. Client & Proposal Metadata State
-  const [clientName, setClientName] = useState('Acme Industries Ltd');
-  const [clientGst, setClientGst] = useState('27AAACA1234A1Z5');
-  const [eqZone, setEqZone] = useState('Zone 2 (Moderate Damage Risk)');
-  const [businessDescription, setBusinessDescription] = useState(
-    'Precision CNC metal machining, tool stamping, component fabrication and parts assembly workshop. Electrical equipment tested and certified.'
-  );
+  // 1. Client & Proposal Metadata State (Clean un-mocked start)
+  const [clientName, setClientName] = useState('');
+  const [clientGst, setClientGst] = useState('');
+  const [eqZone, setEqZone] = useState('Zone 3 (Moderate Damage Risk)');
+  const [businessDescription, setBusinessDescription] = useState('');
 
   // 2. AI Extraction State
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [aiResult, setAiResult] = useState<AIExtractionResponse | null>({
-    occupancyCode: '1023',
-    occupancyDescription: 'Engineering Workshops, CNC Metal Machining & Parts Fabrication',
-    matchedKeywords: ['cnc', 'machining', 'metal', 'tooling', 'fabrication', 'parts', 'workshop'],
-    confidenceScore: 0.96,
-    suggestedFlexaRate: 0.65,
-    suggestedStfiRate: 0.15,
-    suggestedEqRate: 0.10,
-    riskTier: 'Medium',
-    reasoning: 'Extracted metal cutting, CNC precision tooling, and components assembly operations under AIFT Section III.',
-  });
+  const [aiResult, setAiResult] = useState<AIExtractionResponse | null>(null);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
   const [aiAppliedNotification, setAiAppliedNotification] = useState(false);
 
   // 3. Deterministic Engine Form State (Controlled inputs)
-  const [sumInsured, setSumInsured] = useState<number>(5000000);
+  const [sumInsured, setSumInsured] = useState<number>(10000000);
   const [flexaRate, setFlexaRate] = useState<number>(0.65);
   const [stfiRate, setStfiRate] = useState<number>(0.15);
   const [eqRate, setEqRate] = useState<number>(0.10);
-  const [loadings, setLoadings] = useState<number>(10); // percentage (10%)
-  const [discounts, setDiscounts] = useState<number>(5); // percentage (5%)
+  const [loadings, setLoadings] = useState<number>(0);
+  const [discounts, setDiscounts] = useState<number>(10);
 
   // 4. Modal / Quote Slip preview state
   const [isSlipModalOpen, setIsSlipModalOpen] = useState(false);
   const [savedQuoteId, setSavedQuoteId] = useState<string | null>(null);
   const [isCopied, setIsCopied] = useState(false);
+  const [showSampleMenu, setShowSampleMenu] = useState(false);
 
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -161,7 +151,7 @@ export default function NewQuoteWorkspacePage() {
     });
   }, [sumInsured, flexaRate, stfiRate, eqRate, discounts, loadings]);
 
-  // STEP 1: AI Proposal Extraction Simulation handler hitting /api/extract-proposal
+  // STEP 1: Live AI Risk Classification handler hitting /api/classify (Gemini 3.8 Flash)
   const handleAnalyzeProposal = async () => {
     if (!businessDescription.trim()) {
       setAnalysisError('Please enter a business description to analyze.');
@@ -172,10 +162,10 @@ export default function NewQuoteWorkspacePage() {
     setAnalysisError(null);
 
     try {
-      const response = await fetch('/api/extract-proposal', {
+      const response = await fetch('/api/classify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ description: businessDescription }),
+        body: JSON.stringify({ business_description: businessDescription }),
       });
 
       if (!response.ok) {
@@ -183,22 +173,34 @@ export default function NewQuoteWorkspacePage() {
         throw new Error(errorData.error || 'Failed to analyze proposal.');
       }
 
-      const data: AIExtractionResponse = await response.json();
-      setAiResult(data);
+      const resJson = await response.json();
+      const topCand = resJson.data?.occupancy_candidates?.[0];
+      if (topCand) {
+        const matched = OCCUPANCIES.find((o) => o.code === topCand.code);
+        const flexa = matched ? matched.flexa_rate : (topCand.loss_cost || 0.65);
+        const stfi = matched ? (matched.stfi_rate || 0.15) : 0.15;
+        const eq = matched ? (matched.eq_rate || 0.10) : 0.10;
 
-      // Auto-apply suggested rates if available
-      if (typeof data.suggestedFlexaRate === 'number') {
-        setFlexaRate(data.suggestedFlexaRate);
-      }
-      if (typeof data.suggestedStfiRate === 'number') {
-        setStfiRate(data.suggestedStfiRate);
-      }
-      if (typeof data.suggestedEqRate === 'number') {
-        setEqRate(data.suggestedEqRate);
-      }
+        setAiResult({
+          occupancyCode: topCand.code,
+          occupancyDescription: topCand.description,
+          matchedKeywords: resJson.data.keywords || [topCand.code],
+          confidenceScore: topCand.confidence || 0.95,
+          suggestedFlexaRate: flexa,
+          suggestedStfiRate: stfi,
+          suggestedEqRate: eq,
+          riskTier: matched?.category === 1 ? 'Low' : 'Medium',
+          reasoning: topCand.reason || 'Classified via Gemini 3.8 Flash grounded in AIFT 2001 and IIB Schedule 3.',
+        });
 
-      setAiAppliedNotification(true);
-      setTimeout(() => setAiAppliedNotification(false), 3500);
+        // Auto-apply suggested rates
+        setFlexaRate(flexa);
+        setStfiRate(stfi);
+        setEqRate(eq);
+
+        setAiAppliedNotification(true);
+        setTimeout(() => setAiAppliedNotification(false), 3500);
+      }
     } catch (err: any) {
       setAnalysisError(err.message || 'Error executing AI risk extraction.');
     } finally {
@@ -387,22 +389,39 @@ Total Final Premium: ₹ ${formatINRWithDecimals(calculation.totalFinalPremium)}
           </span>
         </div>
 
-        {/* Sample Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto py-0.5">
-          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mr-1 hidden md:inline">
-            Presets:
-          </span>
-          {SAMPLE_PROPOSALS.map((sample, idx) => (
-            <button
-              key={idx}
-              type="button"
-              onClick={() => handleLoadSample(sample)}
-              className="text-[11px] font-medium px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors whitespace-nowrap flex items-center gap-1"
-            >
-              <Zap className="w-3 h-3 text-amber-500" />
-              <span>{sample.title}</span>
-            </button>
-          ))}
+        {/* Sample Templates Secondary Dropdown */}
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => setShowSampleMenu(!showSampleMenu)}
+            className="text-[11px] font-medium px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 hover:bg-slate-100 dark:bg-slate-800/80 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors flex items-center gap-1.5"
+          >
+            <Zap className="w-3 h-3 text-amber-500" />
+            <span>Need sample data? Load preset template</span>
+            <ChevronDown className={`w-3 h-3 transition-transform ${showSampleMenu ? 'rotate-180' : ''}`} />
+          </button>
+
+          {showSampleMenu && (
+            <div className="absolute right-0 mt-1.5 w-64 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xl p-1.5 z-30 animate-fadeIn">
+              <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                Sample Proposal Templates
+              </div>
+              {SAMPLE_PROPOSALS.map((sample, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => {
+                    handleLoadSample(sample);
+                    setShowSampleMenu(false);
+                  }}
+                  className="w-full text-left px-2.5 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700/60 text-xs text-slate-700 dark:text-slate-200 transition-colors flex items-center justify-between group"
+                >
+                  <span className="font-medium group-hover:text-blue-600 dark:group-hover:text-blue-400">{sample.title}</span>
+                  <span className="text-[10px] text-slate-400 font-mono">₹{(sample.sumInsured / 100000).toFixed(0)}L</span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -423,7 +442,7 @@ Total Final Premium: ₹ ${formatINRWithDecimals(calculation.totalFinalPremium)}
               </h2>
             </div>
             <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-semibold border border-blue-200 dark:border-blue-900">
-              API /extract-proposal
+              Gemini 3.8 Flash • AI Classifier
             </span>
           </div>
 
@@ -479,6 +498,21 @@ Total Final Premium: ₹ ${formatINRWithDecimals(calculation.totalFinalPremium)}
             <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs flex items-center gap-2 animate-fadeIn">
               <Check className="w-4 h-4 text-emerald-600 flex-shrink-0" />
               <span>Extracted rates applied to Deterministic Tariff Engine!</span>
+            </div>
+          )}
+
+          {/* AI Empty State Helper */}
+          {!aiResult && !isAnalyzing && (
+            <div className="p-4 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 text-center space-y-2">
+              <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 mx-auto flex items-center justify-center">
+                <Sparkles className="w-4 h-4" />
+              </div>
+              <p className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                Ready for Underwriting Analysis
+              </p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 max-w-xs mx-auto leading-relaxed">
+                Describe the business activity or risk above and click <span className="font-semibold text-blue-600 dark:text-blue-400">Analyze Risk & Match Occupancy</span> to map it to IRDAI tariff codes via Gemini 3.8 Flash.
+              </p>
             </div>
           )}
 

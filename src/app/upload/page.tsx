@@ -47,6 +47,8 @@ export default function UploadProposalPage() {
     type: string;
   } | null>(null);
 
+  const [showSampleProposals, setShowSampleProposals] = useState(false);
+
   // Extracted Editable Fields from AI / Schema Clamp
   const [extractedData, setExtractedData] = useState({
     clientName: '',
@@ -92,38 +94,18 @@ export default function UploadProposalPage() {
     });
 
     try {
-      const payload: Record<string, unknown> = {
-        fileName: file.name,
-        workspace_id: currentWorkspace.id,
-        user_id: currentUser.id,
-      };
-
-      if (file.name.endsWith('.txt') || file.type.startsWith('text/')) {
-        const textContent = await new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result as string);
-          reader.onerror = reject;
-          reader.readAsText(file);
-        });
-        payload.content = textContent;
-      } else {
-        const base64Data = await new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result as string);
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
-        payload.base64 = base64Data;
-        payload.mimeType = file.type || 'application/pdf';
-      }
-
       setCurrentStep('extraction');
 
-      // Call live /api/extract with Gemini 2.5 Flash
+      // Native FormData streaming — avoids HTTP 413 Payload Too Large
+      const formData = new FormData();
+      formData.append('file', file);
+      if (currentWorkspace?.id) formData.append('workspace_id', currentWorkspace.id);
+      if (currentUser?.id) formData.append('user_id', currentUser.id);
+
+      // Call live /api/extract with streaming FormData
       const res = await fetch('/api/extract', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: formData,
       });
 
       if (!res.ok) {
@@ -411,7 +393,7 @@ export default function UploadProposalPage() {
     <div className="flex-1 flex flex-col h-full overflow-y-auto bg-slate-50 dark:bg-slate-950 font-sans">
       <Header
         title="Upload & Autonomous Ingestion Pipeline"
-        subtitle="Extract proposal forms, quote slips, RFQs, and schedules via Gemini 2.5 Flash"
+        subtitle="Extract proposal forms, quote slips, RFQs, and schedules via Gemini 3.8 Flash"
         breadcrumbs={[
           { label: 'Underwriting', href: '/quotes/new' },
           { label: 'Upload Pipeline' },
@@ -553,7 +535,7 @@ export default function UploadProposalPage() {
                   Drag & drop your commercial proposal document (PDF or Images)
                 </h3>
                 <p className="text-xs text-slate-500 max-w-md mt-1 mb-4">
-                  Supports proposal PDFs, scanned forms (PNG/JPG), and text schedules. Routed directly to Gemini 2.5 Flash with IIB Schedule 3 boundary clamping.
+                  Supports proposal PDFs, scanned forms (PNG/JPG), and text schedules. Routed directly to Gemini 3.8 Flash with IIB Schedule 3 boundary clamping.
                 </p>
 
                 <button
@@ -576,7 +558,7 @@ export default function UploadProposalPage() {
                       <span>Type or Paste Proposal / Slip Details</span>
                     </h3>
                     <p className="text-xs text-slate-500 mt-0.5">
-                      Type anything in free-form English or Hindi-English. Gemini 2.5 Flash will extract entities, clamp statutory tariffs, and generate your PDF.
+                      Type anything in free-form English or Hindi-English. Gemini 3.8 Flash will extract entities, clamp statutory tariffs, and generate your PDF.
                     </p>
                   </div>
                   <button
@@ -620,18 +602,27 @@ export default function UploadProposalPage() {
               </div>
             )}
 
-            {/* Ingest Sample Proposal Cards */}
-            <div>
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
-                Or trigger instant live extraction with sample documents:
-              </p>
-              <div className="grid md:grid-cols-3 gap-3">
-                <button
-                  type="button"
-                  onClick={() =>
-                    handleSimulateTextExtraction(
-                      'Proposal_Acme_Industries_Fire_Policy.pdf',
-                      `ACME BROKERAGE SERVICES PVT. LTD.
+            {/* Optional Collapsible Sample Proposals */}
+            <div className="pt-2 border-t border-slate-200/80 dark:border-slate-800">
+              <button
+                type="button"
+                onClick={() => setShowSampleProposals(!showSampleProposals)}
+                className="flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition-colors py-1 cursor-pointer"
+              >
+                <span>Need test proposal data?</span>
+                <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold">
+                  {showSampleProposals ? 'Hide sample templates ▲' : 'Browse sample templates ▼'}
+                </span>
+              </button>
+
+              {showSampleProposals && (
+                <div className="grid md:grid-cols-3 gap-3 mt-3 animate-in fade-in">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleSimulateTextExtraction(
+                        'Proposal_Acme_Industries_Fire_Policy.pdf',
+                        `ACME BROKERAGE SERVICES PVT. LTD.
 PROPOSAL FOR BHARAT SOOKSHMA UDYAM SURAKSHA POLICY
 INSURED NAME: ACME INDUSTRIES LTD
 GSTIN: 27AAACA1234A1Z5
@@ -643,25 +634,25 @@ CONSTRUCTION: CLASS A PUCCA RCC
 EARTHQUAKE ZONE: ZONE III (MUMBAI)
 CLAIMS HISTORY: NIL IN LAST 3 YEARS (CLAIM RATIO 0%)
 HYPOTHECATION: STATE BANK OF INDIA`
-                    )
-                  }
-                  className="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500 text-left transition-all hover:shadow-md"
-                >
-                  <div className="flex items-center gap-2 mb-1.5 text-emerald-600 font-bold text-xs">
-                    <FileText className="w-4 h-4" />
-                    <span>Acme Industries Proposal (CNC Metalworking)</span>
-                  </div>
-                  <p className="text-[11px] text-slate-500 line-clamp-2">
-                    Commercial manufacturing proposal for metal machining & assembly. Sum Insured ₹5,38,00,000.
-                  </p>
-                </button>
+                      )
+                    }
+                    className="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500 text-left transition-all hover:shadow-md cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2 mb-1.5 text-emerald-600 font-bold text-xs">
+                      <FileText className="w-4 h-4" />
+                      <span>Acme CNC Metalworking</span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 line-clamp-2">
+                      Precision CNC metal machining & stamping in Mumbai. Sum Insured ₹5.38 Cr.
+                    </p>
+                  </button>
 
-                <button
-                  type="button"
-                  onClick={() =>
-                    handleSimulateTextExtraction(
-                      'Shivaji_Agro_Cold_Storage_RFQ.pdf',
-                      `SHIVAJI AGRO INDUSTRIES PVT LTD
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleSimulateTextExtraction(
+                        'Shivaji_Agro_Cold_Storage_RFQ.pdf',
+                        `SHIVAJI AGRO INDUSTRIES PVT LTD
 GSTIN: 27AALCS9821R1Z9
 ADDRESS: GAT NO 412, PUNE-NASHIK HIGHWAY, CHAKAN INDUSTRIAL AREA, PUNE 410501
 DISTRICT: PUNE, STATE: MAHARASHTRA
@@ -671,25 +662,25 @@ CONSTRUCTION: CLASS A
 EARTHQUAKE ZONE: ZONE III (PUNE)
 PREVIOUS INSURER: THE NEW INDIA ASSURANCE CO. LTD.
 CLAIMS: 0 CLAIMS IN LAST 3 YEARS`
-                    )
-                  }
-                  className="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500 text-left transition-all hover:shadow-md"
-                >
-                  <div className="flex items-center gap-2 mb-1.5 text-blue-600 font-bold text-xs">
-                    <FileSpreadsheet className="w-4 h-4" />
-                    <span>Shivaji Agro Cold Storage RFQ</span>
-                  </div>
-                  <p className="text-[11px] text-slate-500 line-clamp-2">
-                    Agricultural commodity cold storage facility in Chakan, Pune. Sum Insured ₹8,50,00,000.
-                  </p>
-                </button>
+                      )
+                    }
+                    className="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500 text-left transition-all hover:shadow-md cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2 mb-1.5 text-blue-600 font-bold text-xs">
+                      <FileSpreadsheet className="w-4 h-4" />
+                      <span>Shivaji Agro Cold Storage</span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 line-clamp-2">
+                      Commodity cold storage facility in Pune. Sum Insured ₹8.50 Cr.
+                    </p>
+                  </button>
 
-                <button
-                  type="button"
-                  onClick={() =>
-                    handleSimulateTextExtraction(
-                      'Vanguard_Electronics_Schedule.pdf',
-                      `VANGUARD ELECTRONICS COMPONENTS INDIA
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleSimulateTextExtraction(
+                        'Vanguard_Electronics_Schedule.pdf',
+                        `VANGUARD ELECTRONICS COMPONENTS INDIA
 GSTIN: 09AAECV1102Q1Z4
 ADDRESS: SECTOR 63, ELECTRONIC CITY, NOIDA, GAUTAM BUDDHA NAGAR, UTTAR PRADESH 201301
 DISTRICT: GAUTAM BUDDHA NAGAR, STATE: UTTAR PRADESH
@@ -698,19 +689,20 @@ SUM INSURED: BUILDING: RS. 4,00,00,000 | P&M: RS. 8,00,00,000 | STOCKS: RS. 4,00
 CONSTRUCTION: CLASS A RCC
 EQ ZONE: ZONE IV (DELHI NCR)
 FIRE HYDRANTS: INSTALLED & CERTIFIED`
-                    )
-                  }
-                  className="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500 text-left transition-all hover:shadow-md"
-                >
-                  <div className="flex items-center gap-2 mb-1.5 text-blue-600 font-bold text-xs">
-                    <FileSpreadsheet className="w-4 h-4" />
-                    <span>Vanguard Electronics Schedule (Noida)</span>
-                  </div>
-                  <p className="text-[11px] text-slate-500 line-clamp-2">
-                    High-tech cleanroom electronic PCB assembly facility in Noida (Zone IV). Sum Insured ₹16,00,00,000.
-                  </p>
-                </button>
-              </div>
+                      )
+                    }
+                    className="p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500 text-left transition-all hover:shadow-md cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2 mb-1.5 text-blue-600 font-bold text-xs">
+                      <FileSpreadsheet className="w-4 h-4" />
+                      <span>Vanguard Electronics (Noida)</span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 line-clamp-2">
+                      Electronic PCB cleanroom in Noida (Zone IV). Sum Insured ₹16.00 Cr.
+                    </p>
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -720,7 +712,7 @@ FIRE HYDRANTS: INSTALLED & CERTIFIED`
           <div className="p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-center flex flex-col items-center justify-center space-y-3">
             <Loader2 className="w-10 h-10 text-emerald-600 animate-spin" />
             <h4 className="text-sm font-bold text-slate-900 dark:text-white">
-              Gemini 2.5 Flash is analyzing your proposal payload...
+              Gemini 3.8 Flash is analyzing your proposal payload...
             </h4>
             <p className="text-xs text-slate-500 max-w-sm">
               Extracting entities, checking occupancy risk codes against IIB Schedule 3, and mapping earthquake zones.

@@ -3,7 +3,7 @@ import { GoogleGenAI } from '@google/genai';
 import { getAuthenticatedUser } from '@/lib/api-auth';
 import { searchOccupanciesRAG, matchDistrictEQZone } from '@/lib/rag';
 
-import { getGeminiClient, PRIMARY_GEMINI_MODEL, FALLBACK_GEMINI_MODEL } from '@/lib/ai';
+import { getGeminiClient, callGeminiGenerate } from '@/lib/ai';
 
 export async function POST(req: NextRequest) {
   // Optional auth verification with demo fallback
@@ -48,27 +48,11 @@ ${eqMatch ? `Seismic Lookup: District "${eqMatch.district}" in "${eqMatch.state}
 ${ragOccupancies.topCandidates.length > 0 ? `Top Matched IIB Occupancies: ${ragOccupancies.topCandidates.map(c => `Code ${c.code} (${c.description}) [Loss cost: ${c.baseLossCostStock}‰, Hazard: ${c.hazardRating}]`).join('; ')}` : ''}
 `;
 
-        let responseText = '';
-        try {
-          const response = await client.models.generateContent({
-            model: PRIMARY_GEMINI_MODEL,
-            contents: `${systemPrompt}\n\n${ragContext}\n\nUser Question: "${query}"`,
-            config: {
-              responseMimeType: 'application/json',
-            },
-          });
-          responseText = response.text || '{}';
-        } catch (mErr: any) {
-          console.warn(`Chat model ${PRIMARY_GEMINI_MODEL} failed, falling back to ${FALLBACK_GEMINI_MODEL}:`, mErr?.message);
-          const response = await client.models.generateContent({
-            model: FALLBACK_GEMINI_MODEL,
-            contents: `${systemPrompt}\n\n${ragContext}\n\nUser Question: "${query}"`,
-            config: {
-              responseMimeType: 'application/json',
-            },
-          });
-          responseText = response.text || '{}';
-        }
+        const { text: responseText } = await callGeminiGenerate(
+          client,
+          `${systemPrompt}\n\n${ragContext}\n\nUser Question: "${query}"`,
+          { responseMimeType: 'application/json' }
+        );
 
         const parsed = JSON.parse(responseText || '{}');
         return NextResponse.json({
