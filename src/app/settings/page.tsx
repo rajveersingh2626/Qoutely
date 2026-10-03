@@ -23,19 +23,19 @@ import { Header } from '@/components/layout/Header';
 export default function SettingsPage() {
   const { currentWorkspace, updateWorkspace, canManageFirm, userRole } = useWorkspace();
 
-  const [name, setName] = useState(currentWorkspace.name);
-  const [gst, setGst] = useState(currentWorkspace.gst);
-  const [address, setAddress] = useState(currentWorkspace.address);
-  const [email, setEmail] = useState(currentWorkspace.email || 'contact@capitalinsurance.co.in');
-  const [phone, setPhone] = useState(currentWorkspace.phone || '011-45631850');
+  const [name, setName] = useState(currentWorkspace.name || '');
+  const [gst, setGst] = useState(currentWorkspace.gst || '');
+  const [address, setAddress] = useState(currentWorkspace.address || '');
+  const [email, setEmail] = useState(currentWorkspace.email || '');
+  const [phone, setPhone] = useState(currentWorkspace.phone || '');
   const [irdaLicense, setIrdaLicense] = useState(
-    currentWorkspace.default_rules.irda_license_no || '236'
+    currentWorkspace.default_rules?.irda_license_no || ''
   );
   const [cinNo, setCinNo] = useState(
-    currentWorkspace.default_rules.cin_no || 'U74999DL2003PTC119576'
+    currentWorkspace.default_rules?.cin_no || ''
   );
   const [discount, setDiscount] = useState(
-    currentWorkspace.default_rules.default_discretionary_discount || 10
+    currentWorkspace.default_rules?.default_discretionary_discount || 0
   );
   const [geminiKey, setGeminiKey] = useState('••••••••••••••••••••••••••••••••');
   const [savedSuccess, setSavedSuccess] = useState(false);

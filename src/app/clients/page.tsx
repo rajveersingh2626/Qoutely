@@ -28,9 +28,9 @@ export default function ClientsPage() {
     client_name: '',
     gst: '',
     address: '',
-    district: 'South East Delhi',
-    state: 'Delhi',
-    industry: 'FMCG Trading & Warehousing',
+    district: '',
+    state: '',
+    industry: '',
     notes: '',
   });
 
@@ -49,9 +49,9 @@ export default function ClientsPage() {
       client_name: '',
       gst: '',
       address: '',
-      district: 'South East Delhi',
-      state: 'Delhi',
-      industry: 'FMCG Trading & Warehousing',
+      district: '',
+      state: '',
+      industry: '',
       notes: '',
     });
   };

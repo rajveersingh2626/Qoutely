@@ -62,9 +62,9 @@ export default function UploadProposalPage() {
     sumInsuredPM: 0,
     totalSumInsured: 0,
     hypothecation: '',
-    riskCode: '1001',
-    eqZone: 'Zone 3',
-    pastClaimRatio: '<=70',
+    riskCode: '',
+    eqZone: '',
+    pastClaimRatio: '',
     confidenceScore: 0,
   });
 
@@ -868,7 +868,8 @@ FIRE HYDRANTS: INSTALLED & CERTIFIED`
                     </label>
                     <input
                       type="number"
-                      value={extractedData.totalSumInsured}
+                      value={extractedData.totalSumInsured || ''}
+                      placeholder="0"
                       onChange={(e) =>
                         setExtractedData({
                           ...extractedData,

@@ -97,13 +97,13 @@ export default function NewQuoteWorkspacePage() {
   const [analysisError, setAnalysisError] = useState<string | null>(null);
   const [aiAppliedNotification, setAiAppliedNotification] = useState(false);
 
-  // 3. Deterministic Engine Form State (Controlled inputs)
-  const [sumInsured, setSumInsured] = useState<number>(10000000);
-  const [flexaRate, setFlexaRate] = useState<number>(0.65);
-  const [stfiRate, setStfiRate] = useState<number>(0.15);
-  const [eqRate, setEqRate] = useState<number>(0.10);
+  // 3. Deterministic Engine Form State (Controlled inputs, clean un-prefilled UX)
+  const [sumInsured, setSumInsured] = useState<number>(0);
+  const [flexaRate, setFlexaRate] = useState<number>(0);
+  const [stfiRate, setStfiRate] = useState<number>(0);
+  const [eqRate, setEqRate] = useState<number>(0);
   const [loadings, setLoadings] = useState<number>(0);
-  const [discounts, setDiscounts] = useState<number>(10);
+  const [discounts, setDiscounts] = useState<number>(0);
 
   // 4. Modal / Quote Slip preview state
   const [isSlipModalOpen, setIsSlipModalOpen] = useState(false);
@@ -235,6 +235,19 @@ export default function NewQuoteWorkspacePage() {
 
   // Generate Quote Slip & persist to Workspace state
   const handleGenerateQuoteSlip = () => {
+    if (!clientName.trim()) {
+      alert('Please enter a Client Name before generating the quote slip.');
+      return;
+    }
+    if (!calculation.sumInsured || calculation.sumInsured <= 0) {
+      alert('Please enter a valid Sum Insured before generating the quote slip.');
+      return;
+    }
+    if (calculation.netPremium <= 0) {
+      alert('Please configure peril rates (Flexa, STFI, or EQ) before generating the quote slip.');
+      return;
+    }
+
     const newQuoteRecord = addQuote({
       client_id: `client-${Date.now()}`,
       client_name: clientName,
@@ -633,6 +646,7 @@ Total Final Premium: ₹ ${formatINRWithDecimals(calculation.totalFinalPremium)}
                     type="text"
                     value={clientName}
                     onChange={(e) => setClientName(e.target.value)}
+                    placeholder="e.g. Acme Industries Ltd"
                     className="w-full pl-8 pr-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                 </div>
@@ -647,6 +661,7 @@ Total Final Premium: ₹ ${formatINRWithDecimals(calculation.totalFinalPremium)}
                     type="text"
                     value={clientGst}
                     onChange={(e) => setClientGst(e.target.value.toUpperCase())}
+                    placeholder="e.g. 27AAACA1234A1Z5"
                     className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                 </div>
@@ -683,7 +698,7 @@ Total Final Premium: ₹ ${formatINRWithDecimals(calculation.totalFinalPremium)}
                   Sum Insured (₹) <span className="text-red-500">*</span>
                 </label>
                 <span className="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400">
-                  {formatINR(sumInsured)}
+                  {sumInsured > 0 ? formatINR(sumInsured) : '₹0'}
                 </span>
               </div>
 
@@ -696,7 +711,8 @@ Total Final Premium: ₹ ${formatINRWithDecimals(calculation.totalFinalPremium)}
                   min="0"
                   step="50000"
                   value={sumInsured || ''}
-                  onChange={(e) => setSumInsured(Math.max(0, Number(e.target.value)))}
+                  onChange={(e) => setSumInsured(e.target.value === '' ? 0 : Math.max(0, Number(e.target.value)))}
+                  placeholder="e.g. 50,00,000"
                   className="w-full pl-8 pr-3 py-2 text-sm font-mono font-bold rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
               </div>
@@ -741,8 +757,9 @@ Total Final Premium: ₹ ${formatINRWithDecimals(calculation.totalFinalPremium)}
                     type="number"
                     min="0"
                     step="0.01"
-                    value={flexaRate}
-                    onChange={(e) => setFlexaRate(Math.max(0, Number(e.target.value)))}
+                    value={flexaRate || ''}
+                    onChange={(e) => setFlexaRate(e.target.value === '' ? 0 : Math.max(0, Number(e.target.value)))}
+                    placeholder="0.00"
                     className="w-full px-2.5 py-1.5 text-xs font-mono font-bold rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                   <span className="text-[9px] text-slate-400 mt-0.5 block">Standard Fire</span>
@@ -757,8 +774,9 @@ Total Final Premium: ₹ ${formatINRWithDecimals(calculation.totalFinalPremium)}
                     type="number"
                     min="0"
                     step="0.01"
-                    value={stfiRate}
-                    onChange={(e) => setStfiRate(Math.max(0, Number(e.target.value)))}
+                    value={stfiRate || ''}
+                    onChange={(e) => setStfiRate(e.target.value === '' ? 0 : Math.max(0, Number(e.target.value)))}
+                    placeholder="0.00"
                     className="w-full px-2.5 py-1.5 text-xs font-mono font-bold rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                   <span className="text-[9px] text-slate-400 mt-0.5 block">Storm / Flood</span>
@@ -773,8 +791,9 @@ Total Final Premium: ₹ ${formatINRWithDecimals(calculation.totalFinalPremium)}
                     type="number"
                     min="0"
                     step="0.01"
-                    value={eqRate}
-                    onChange={(e) => setEqRate(Math.max(0, Number(e.target.value)))}
+                    value={eqRate || ''}
+                    onChange={(e) => setEqRate(e.target.value === '' ? 0 : Math.max(0, Number(e.target.value)))}
+                    placeholder="0.00"
                     className="w-full px-2.5 py-1.5 text-xs font-mono font-bold rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                   <span className="text-[9px] text-slate-400 mt-0.5 block">Earthquake</span>
@@ -800,8 +819,9 @@ Total Final Premium: ₹ ${formatINRWithDecimals(calculation.totalFinalPremium)}
                     min="0"
                     max="100"
                     step="1"
-                    value={loadings}
-                    onChange={(e) => setLoadings(Math.max(0, Number(e.target.value)))}
+                    value={loadings || ''}
+                    onChange={(e) => setLoadings(e.target.value === '' ? 0 : Math.max(0, Number(e.target.value)))}
+                    placeholder="0"
                     className="w-full px-3 py-1.5 text-xs font-mono font-bold rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                   <Percent className="w-3 h-3 text-slate-400 absolute right-2.5 top-2.5 pointer-events-none" />
@@ -834,8 +854,9 @@ Total Final Premium: ₹ ${formatINRWithDecimals(calculation.totalFinalPremium)}
                     min="0"
                     max="100"
                     step="1"
-                    value={discounts}
-                    onChange={(e) => setDiscounts(Math.max(0, Number(e.target.value)))}
+                    value={discounts || ''}
+                    onChange={(e) => setDiscounts(e.target.value === '' ? 0 : Math.max(0, Number(e.target.value)))}
+                    placeholder="0"
                     className="w-full px-3 py-1.5 text-xs font-mono font-bold rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
                   />
                   <Percent className="w-3 h-3 text-slate-400 absolute right-2.5 top-2.5 pointer-events-none" />
