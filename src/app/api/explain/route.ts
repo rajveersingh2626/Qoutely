@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          error: result.error || 'Failed to generate underwriting rationale.',
+          error: (result as any).error || 'Failed to generate underwriting rationale.',
         },
         { status: 422 }
       );

@@ -25,6 +25,10 @@ import {
   Terminal,
   UploadCloud,
   Zap,
+  MessageSquare,
+  Send,
+  CornerDownRight,
+  Check,
 } from 'lucide-react';
 import { useWorkspace } from '@/context/WorkspaceContext';
 import { Header } from '@/components/layout/Header';
@@ -72,6 +76,9 @@ export default function AIAnalysisPage() {
   const [isRunning, setIsRunning] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showJsonRaw, setShowJsonRaw] = useState(false);
+  const [followUpAnswer, setFollowUpAnswer] = useState('');
+  const [isReplyingFollowUp, setIsReplyingFollowUp] = useState(false);
+  const [clarifications, setClarifications] = useState<Array<{ q: string; a: string }>>([]);
   const [executionMeta, setExecutionMeta] = useState<{ model: string; latency_ms: number; live: boolean }>({
     model: 'gemini-3.5-flash',
     latency_ms: 320,
@@ -83,15 +90,22 @@ export default function AIAnalysisPage() {
     setInputText(SAMPLE_RFQS[idx].text);
   };
 
-  const handleRunAnalysis = async () => {
-    setIsRunning(true);
+  const handleRunAnalysis = async (customAnswer?: string) => {
+    if (customAnswer) {
+      setIsReplyingFollowUp(true);
+    } else {
+      setIsRunning(true);
+    }
     const start = Date.now();
 
     try {
       const res = await fetch('/api/classify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ business_description: inputText }),
+        body: JSON.stringify({
+          business_description: inputText,
+          follow_up_answer: customAnswer || undefined,
+        }),
       });
 
       if (res.ok) {
@@ -113,10 +127,23 @@ export default function AIAnalysisPage() {
             hazard_flags: json.data.hazard_flags || [],
             missing_fields: json.data.missing_fields || [],
             confidence_score: topCandidates[0]?.confidence || 0.94,
+            clarification_question: json.data.clarification_question || null,
+            suggested_quick_answers: json.data.suggested_quick_answers || [],
+            suggested_discount_percent: json.data.suggested_discount_percent || 0,
+            suggested_loading_percent: json.data.suggested_loading_percent || 0,
           });
 
           if (topCandidates[0]?.code) {
             setSelectedCandidateCode(topCandidates[0].code);
+          }
+
+          if (customAnswer && analysisResult?.clarification_question) {
+            setClarifications((prev) => [
+              ...prev,
+              { q: analysisResult.clarification_question!, a: customAnswer },
+            ]);
+            setInputText((prev) => `${prev}\n[Clarification: ${customAnswer}]`);
+            setFollowUpAnswer('');
           }
 
           setExecutionMeta({
@@ -126,6 +153,7 @@ export default function AIAnalysisPage() {
           });
 
           setIsRunning(false);
+          setIsReplyingFollowUp(false);
           return;
         }
       }
@@ -394,7 +422,7 @@ export default function AIAnalysisPage() {
               )}
 
               <button
-                onClick={handleRunAnalysis}
+                onClick={() => handleRunAnalysis()}
                 disabled={isRunning}
                 className="w-full py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-md shadow-emerald-500/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
               >
@@ -535,6 +563,122 @@ export default function AIAnalysisPage() {
                     'Matches commercial engineering and machine tooling processes. Under AIFT 2001 Section IV Rules, cold metalworking operations qualify for standard baseline rating with fire hydrant and electrical maintenance warranty discounts.'}
                 </p>
               </div>
+
+              {/* Interactive Underwriter Clarification Dialogue */}
+              {analysisResult.clarification_question && (
+                <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-50/80 to-purple-50/60 dark:from-indigo-950/40 dark:to-purple-950/30 border border-indigo-200/80 dark:border-indigo-800/60 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 text-indigo-700 dark:text-indigo-300 text-xs font-bold uppercase tracking-wider">
+                      <MessageSquare className="w-3.5 h-3.5 text-indigo-600" />
+                      <span>Underwriting Follow-up Dialogue</span>
+                    </div>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/80 text-indigo-700 dark:text-indigo-300 font-semibold border border-indigo-200 dark:border-indigo-800">
+                      Gap Clarification
+                    </span>
+                  </div>
+
+                  {analysisResult.missing_fields && analysisResult.missing_fields.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-1 text-[10px]">
+                      <span className="text-slate-500 dark:text-slate-400 font-medium">Missing disclosures:</span>
+                      {analysisResult.missing_fields.map((field, idx) => (
+                        <span
+                          key={idx}
+                          className="px-1.5 py-0.5 rounded bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-900 font-medium text-[10px]"
+                        >
+                          {field}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-indigo-100 dark:border-indigo-900/60 shadow-xs space-y-2.5">
+                    <div className="flex items-start gap-2">
+                      <HelpCircle className="w-4 h-4 text-indigo-600 mt-0.5 flex-shrink-0" />
+                      <p className="text-xs font-semibold text-slate-900 dark:text-white leading-snug">
+                        {analysisResult.clarification_question}
+                      </p>
+                    </div>
+
+                    {/* Clickable Quick Answer Suggestions */}
+                    {analysisResult.suggested_quick_answers && analysisResult.suggested_quick_answers.length > 0 && (
+                      <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-1.5">
+                        <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
+                          Quick Answers (Tap to refine risk):
+                        </span>
+                        <div className="flex flex-col gap-1.5">
+                          {analysisResult.suggested_quick_answers.map((answer, idx) => (
+                            <button
+                              key={idx}
+                              type="button"
+                              disabled={isReplyingFollowUp}
+                              onClick={() => handleRunAnalysis(answer)}
+                              className="w-full text-left px-2.5 py-1.5 rounded-lg bg-indigo-50/70 hover:bg-indigo-100 dark:bg-indigo-950/50 dark:hover:bg-indigo-900/60 border border-indigo-200/60 dark:border-indigo-800 text-[11px] font-medium text-indigo-900 dark:text-indigo-200 transition-all flex items-center justify-between group disabled:opacity-50"
+                            >
+                              <span>{answer}</span>
+                              <CornerDownRight className="w-3 h-3 text-indigo-400 group-hover:text-indigo-600 transition-transform group-hover:translate-x-0.5" />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Inline Reply Input Box */}
+                    <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center gap-1.5">
+                      <input
+                        type="text"
+                        value={followUpAnswer}
+                        onChange={(e) => setFollowUpAnswer(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && followUpAnswer.trim() && !isReplyingFollowUp) {
+                            e.preventDefault();
+                            handleRunAnalysis(followUpAnswer.trim());
+                          }
+                        }}
+                        placeholder="Type custom clarification (e.g. 2 hydrants on site)..."
+                        className="flex-1 px-2.5 py-1.5 text-xs rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-sans"
+                      />
+                      <button
+                        type="button"
+                        disabled={!followUpAnswer.trim() || isReplyingFollowUp}
+                        onClick={() => handleRunAnalysis(followUpAnswer.trim())}
+                        className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs font-semibold flex items-center gap-1 transition-colors flex-shrink-0"
+                      >
+                        {isReplyingFollowUp ? (
+                          <RefreshCw className="w-3 h-3 animate-spin" />
+                        ) : (
+                          <>
+                            <Send className="w-3 h-3" />
+                            <span>Reply</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Clarification Notes History */}
+                  {clarifications.length > 0 && (
+                    <div className="space-y-1.5 pt-1">
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
+                        Confirmed Clarifications:
+                      </span>
+                      {clarifications.map((item, idx) => (
+                        <div
+                          key={idx}
+                          className="px-2.5 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 text-[11px] text-emerald-800 dark:text-emerald-300 flex items-start gap-1.5"
+                        >
+                          <Check className="w-3.5 h-3.5 text-emerald-600 mt-0.5 flex-shrink-0" />
+                          <div>
+                            <span className="font-semibold">{item.a}</span>
+                            <p className="text-[10px] text-emerald-600 dark:text-emerald-400">
+                              Included in underwriting risk context.
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Alternative Candidate Occupancies */}
               {analysisResult.occupancy_candidates.length > 1 && (

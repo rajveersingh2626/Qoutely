@@ -25,6 +25,10 @@ import {
   Shield,
   Layers,
   ChevronDown,
+  HelpCircle,
+  MessageSquare,
+  Send,
+  CornerDownRight,
 } from 'lucide-react';
 import { useWorkspace } from '@/context/WorkspaceContext';
 import { Header } from '@/components/layout/Header';
@@ -48,6 +52,11 @@ interface AIExtractionResponse {
   suggestedEqRate?: number;
   riskTier?: 'Low' | 'Medium' | 'High';
   reasoning?: string;
+  clarificationQuestion?: string | null;
+  suggestedQuickAnswers?: string[];
+  missingFields?: string[];
+  suggestedDiscountPercent?: number;
+  suggestedLoadingPercent?: number;
 }
 
 const SAMPLE_PROPOSALS = [
@@ -91,11 +100,14 @@ export default function NewQuoteWorkspacePage() {
   const [eqZone, setEqZone] = useState('Zone 3 (Moderate Damage Risk)');
   const [businessDescription, setBusinessDescription] = useState('');
 
-  // 2. AI Extraction State
+  // 2. AI Extraction & Clarification State
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [aiResult, setAiResult] = useState<AIExtractionResponse | null>(null);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
   const [aiAppliedNotification, setAiAppliedNotification] = useState(false);
+  const [followUpInput, setFollowUpInput] = useState('');
+  const [isAnsweringFollowUp, setIsAnsweringFollowUp] = useState(false);
+  const [clarificationHistory, setClarificationHistory] = useState<Array<{ q: string; a: string }>>([]);
 
   // 3. Deterministic Engine Form State (Controlled inputs, clean un-prefilled UX)
   const [sumInsured, setSumInsured] = useState<number>(0);
@@ -151,21 +163,30 @@ export default function NewQuoteWorkspacePage() {
     });
   }, [sumInsured, flexaRate, stfiRate, eqRate, discounts, loadings]);
 
-  // STEP 1: Live AI Risk Classification handler hitting /api/classify (Gemini 3.8 Flash)
-  const handleAnalyzeProposal = async () => {
-    if (!businessDescription.trim()) {
+  // STEP 1: Live AI Risk Classification & Follow-up Dialogue handler hitting /api/classify
+  const handleAnalyzeProposal = async (customAnswer?: string) => {
+    const textToAnalyze = businessDescription.trim();
+    if (!textToAnalyze) {
       setAnalysisError('Please enter a business description to analyze.');
       return;
     }
 
-    setIsAnalyzing(true);
+    if (customAnswer) {
+      setIsAnsweringFollowUp(true);
+    } else {
+      setIsAnalyzing(true);
+    }
     setAnalysisError(null);
 
     try {
       const response = await fetch('/api/classify', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ business_description: businessDescription }),
+        body: JSON.stringify({
+          business_description: textToAnalyze,
+          district: eqZone,
+          follow_up_answer: customAnswer || undefined,
+        }),
       });
 
       if (!response.ok) {
@@ -181,6 +202,9 @@ export default function NewQuoteWorkspacePage() {
         const stfi = matched ? (matched.stfi_rate || 0.15) : 0.15;
         const eq = matched ? (matched.eq_rate || 0.10) : 0.10;
 
+        const discountPct = resJson.data?.suggested_discount_percent || 0;
+        const loadingPct = resJson.data?.suggested_loading_percent || 0;
+
         setAiResult({
           occupancyCode: topCand.code,
           occupancyDescription: topCand.description,
@@ -191,12 +215,34 @@ export default function NewQuoteWorkspacePage() {
           suggestedEqRate: eq,
           riskTier: matched?.category === 1 ? 'Low' : 'Medium',
           reasoning: topCand.reason || 'Classified via Gemini 3.8 Flash grounded in AIFT 2001 and IIB Schedule 3.',
+          clarificationQuestion: resJson.data?.clarification_question || null,
+          suggestedQuickAnswers: resJson.data?.suggested_quick_answers || [],
+          missingFields: resJson.data?.missing_fields || [],
+          suggestedDiscountPercent: discountPct,
+          suggestedLoadingPercent: loadingPct,
         });
 
         // Auto-apply suggested rates
         setFlexaRate(flexa);
         setStfiRate(stfi);
         setEqRate(eq);
+
+        // Deterministically apply discount or loading if extracted
+        if (discountPct > 0) {
+          setDiscounts(discountPct);
+        }
+        if (loadingPct > 0) {
+          setLoadings(loadingPct);
+        }
+
+        if (customAnswer && aiResult?.clarificationQuestion) {
+          setClarificationHistory((prev) => [
+            ...prev,
+            { q: aiResult.clarificationQuestion!, a: customAnswer },
+          ]);
+          setBusinessDescription((prev) => `${prev}\n[Underwriter Clarification: ${customAnswer}]`);
+          setFollowUpInput('');
+        }
 
         setAiAppliedNotification(true);
         setTimeout(() => setAiAppliedNotification(false), 3500);
@@ -205,6 +251,7 @@ export default function NewQuoteWorkspacePage() {
       setAnalysisError(err.message || 'Error executing AI risk extraction.');
     } finally {
       setIsAnalyzing(false);
+      setIsAnsweringFollowUp(false);
     }
   };
 
@@ -488,7 +535,7 @@ Total Final Premium: ₹ ${formatINRWithDecimals(calculation.totalFinalPremium)}
             {/* Analyze Risk Button */}
             <button
               type="button"
-              onClick={handleAnalyzeProposal}
+              onClick={() => handleAnalyzeProposal()}
               disabled={isAnalyzing}
               className="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold text-xs shadow-soft flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -606,6 +653,122 @@ Total Final Premium: ₹ ${formatINRWithDecimals(calculation.totalFinalPremium)}
                   <span>Apply AI Rates</span>
                 </button>
               </div>
+
+              {/* Interactive Underwriter Follow-up Clarification Dialogue */}
+              {aiResult.clarificationQuestion && (
+                <div className="pt-4 border-t border-blue-200/60 dark:border-blue-900/60 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 text-indigo-700 dark:text-indigo-300 text-xs font-bold uppercase tracking-wider">
+                      <MessageSquare className="w-3.5 h-3.5 text-indigo-600" />
+                      <span>Underwriting Follow-up Dialogue</span>
+                    </div>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/80 text-indigo-700 dark:text-indigo-300 font-semibold border border-indigo-200 dark:border-indigo-800">
+                      Live Clarification
+                    </span>
+                  </div>
+
+                  {aiResult.missingFields && aiResult.missingFields.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-1 text-[10px]">
+                      <span className="text-slate-500 dark:text-slate-400 font-medium">Missing data:</span>
+                      {aiResult.missingFields.map((field, idx) => (
+                        <span
+                          key={idx}
+                          className="px-1.5 py-0.5 rounded bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-900 font-medium text-[10px]"
+                        >
+                          {field}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-indigo-100 dark:border-indigo-900/60 shadow-xs space-y-2.5">
+                    <div className="flex items-start gap-2">
+                      <HelpCircle className="w-4 h-4 text-indigo-600 mt-0.5 flex-shrink-0" />
+                      <p className="text-xs font-semibold text-slate-900 dark:text-white leading-snug">
+                        {aiResult.clarificationQuestion}
+                      </p>
+                    </div>
+
+                    {/* Clickable Quick Answer Suggestions */}
+                    {aiResult.suggestedQuickAnswers && aiResult.suggestedQuickAnswers.length > 0 && (
+                      <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-1.5">
+                        <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
+                          Quick Answers (Tap to update & re-rate):
+                        </span>
+                        <div className="flex flex-col gap-1.5">
+                          {aiResult.suggestedQuickAnswers.map((answer, idx) => (
+                            <button
+                              key={idx}
+                              type="button"
+                              disabled={isAnsweringFollowUp}
+                              onClick={() => handleAnalyzeProposal(answer)}
+                              className="w-full text-left px-2.5 py-1.5 rounded-lg bg-indigo-50/70 hover:bg-indigo-100 dark:bg-indigo-950/50 dark:hover:bg-indigo-900/60 border border-indigo-200/60 dark:border-indigo-800 text-[11px] font-medium text-indigo-900 dark:text-indigo-200 transition-all flex items-center justify-between group disabled:opacity-50"
+                            >
+                              <span>{answer}</span>
+                              <CornerDownRight className="w-3 h-3 text-indigo-400 group-hover:text-indigo-600 transition-transform group-hover:translate-x-0.5" />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Inline Reply Input Box */}
+                    <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center gap-1.5">
+                      <input
+                        type="text"
+                        value={followUpInput}
+                        onChange={(e) => setFollowUpInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && followUpInput.trim() && !isAnsweringFollowUp) {
+                            e.preventDefault();
+                            handleAnalyzeProposal(followUpInput.trim());
+                          }
+                        }}
+                        placeholder="Type custom clarification (e.g. 2 hydrants on site)..."
+                        className="flex-1 px-2.5 py-1.5 text-xs rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-sans"
+                      />
+                      <button
+                        type="button"
+                        disabled={!followUpInput.trim() || isAnsweringFollowUp}
+                        onClick={() => handleAnalyzeProposal(followUpInput.trim())}
+                        className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs font-semibold flex items-center gap-1 transition-colors flex-shrink-0"
+                      >
+                        {isAnsweringFollowUp ? (
+                          <RefreshCw className="w-3 h-3 animate-spin" />
+                        ) : (
+                          <>
+                            <Send className="w-3 h-3" />
+                            <span>Reply</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Resolved Clarification Notes */}
+                  {clarificationHistory.length > 0 && (
+                    <div className="space-y-1.5 pt-1">
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
+                        Confirmed Clarifications:
+                      </span>
+                      {clarificationHistory.map((item, idx) => (
+                        <div
+                          key={idx}
+                          className="px-2.5 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 text-[11px] text-emerald-800 dark:text-emerald-300 flex items-start gap-1.5"
+                        >
+                          <Check className="w-3.5 h-3.5 text-emerald-600 mt-0.5 flex-shrink-0" />
+                          <div>
+                            <span className="font-semibold">{item.a}</span>
+                            <p className="text-[10px] text-emerald-600 dark:text-emerald-400">
+                              Enriched into proposal & verified against statutory tariff rates.
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </div>

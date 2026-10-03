@@ -151,6 +151,10 @@ export interface AIAnalysisResult {
   hazard_flags: string[];
   missing_fields: string[];
   confidence_score: number;
+  clarification_question?: string | null;
+  suggested_quick_answers?: string[];
+  suggested_discount_percent?: number;
+  suggested_loading_percent?: number;
 }
 
 export interface Quote {

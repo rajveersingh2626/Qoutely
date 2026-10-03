@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { business_description, district } = body;
+    const { business_description, district, follow_up_answer } = body;
 
     if (!business_description || typeof business_description !== 'string') {
       return NextResponse.json(
@@ -20,6 +20,7 @@ export async function POST(req: NextRequest) {
     const result = await classifyOccupancy(
       business_description,
       district,
+      follow_up_answer,
       auth.workspace_id,
       auth.user.id
     );
