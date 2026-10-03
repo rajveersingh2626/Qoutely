@@ -483,7 +483,9 @@ export default function AIAnalysisPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300">
-                    {Math.round((activeCandidate.confidence || 0.95) * 100)}% Confidence
+                    {(activeCandidate.confidence > 1
+                      ? Math.min(99, Math.round(activeCandidate.confidence))
+                      : Math.min(99, Math.round((activeCandidate.confidence || 0.95) * 100)))}% Confidence
                   </span>
                 </div>
               </div>
@@ -710,7 +712,9 @@ export default function AIAnalysisPage() {
                           </div>
                           <div className="flex items-center gap-2">
                             <span className="text-[11px] text-slate-400">
-                              {Math.round((cand.confidence || 0.85) * 100)}%
+                              {(cand.confidence > 1
+                                ? Math.min(99, Math.round(cand.confidence))
+                                : Math.min(99, Math.round((cand.confidence || 0.85) * 100)))}%
                             </span>
                             <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
                               Select

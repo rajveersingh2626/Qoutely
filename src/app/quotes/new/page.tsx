@@ -585,7 +585,9 @@ Total Final Premium: ₹ ${formatINRWithDecimals(calculation.totalFinalPremium)}
                   <span>AI Occupancy Match</span>
                 </div>
                 <div className="px-2.5 py-0.5 rounded-full bg-blue-600 text-white text-[11px] font-mono font-bold shadow-xs">
-                  {Math.round(aiResult.confidenceScore * 100)}% Confidence
+                  {aiResult.confidenceScore > 1
+                    ? Math.min(99, Math.round(aiResult.confidenceScore))
+                    : Math.min(99, Math.round(aiResult.confidenceScore * 100))}% Confidence
                 </div>
               </div>
 
