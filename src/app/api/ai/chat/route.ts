@@ -3,13 +3,7 @@ import { GoogleGenAI } from '@google/genai';
 import { getAuthenticatedUser } from '@/lib/api-auth';
 import { searchOccupanciesRAG, matchDistrictEQZone } from '@/lib/rag';
 
-function getGeminiClient(): { client: GoogleGenAI | null; hasKey: boolean } {
-  const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-  if (!apiKey || apiKey.trim() === '' || apiKey === 'YOUR_GEMINI_API_KEY') {
-    return { client: null, hasKey: false };
-  }
-  return { client: new GoogleGenAI({ apiKey }), hasKey: true };
-}
+import { getGeminiClient, PRIMARY_GEMINI_MODEL, FALLBACK_GEMINI_MODEL } from '@/lib/ai';
 
 export async function POST(req: NextRequest) {
   // Optional auth verification with demo fallback
@@ -54,15 +48,29 @@ ${eqMatch ? `Seismic Lookup: District "${eqMatch.district}" in "${eqMatch.state}
 ${ragOccupancies.topCandidates.length > 0 ? `Top Matched IIB Occupancies: ${ragOccupancies.topCandidates.map(c => `Code ${c.code} (${c.description}) [Loss cost: ${c.baseLossCostStock}‰, Hazard: ${c.hazardRating}]`).join('; ')}` : ''}
 `;
 
-        const response = await client.models.generateContent({
-          model: 'gemini-2.5-flash',
-          contents: `${systemPrompt}\n\n${ragContext}\n\nUser Question: "${query}"`,
-          config: {
-            responseMimeType: 'application/json',
-          },
-        });
+        let responseText = '';
+        try {
+          const response = await client.models.generateContent({
+            model: PRIMARY_GEMINI_MODEL,
+            contents: `${systemPrompt}\n\n${ragContext}\n\nUser Question: "${query}"`,
+            config: {
+              responseMimeType: 'application/json',
+            },
+          });
+          responseText = response.text || '{}';
+        } catch (mErr: any) {
+          console.warn(`Chat model ${PRIMARY_GEMINI_MODEL} failed, falling back to ${FALLBACK_GEMINI_MODEL}:`, mErr?.message);
+          const response = await client.models.generateContent({
+            model: FALLBACK_GEMINI_MODEL,
+            contents: `${systemPrompt}\n\n${ragContext}\n\nUser Question: "${query}"`,
+            config: {
+              responseMimeType: 'application/json',
+            },
+          });
+          responseText = response.text || '{}';
+        }
 
-        const parsed = JSON.parse(response.text || '{}');
+        const parsed = JSON.parse(responseText || '{}');
         return NextResponse.json({
           reply: parsed.reply || 'Underwriting consultation response generated.',
           citation: parsed.citation || { doc: 'AIFT 2001', section: 'General Rules' },

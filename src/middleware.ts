@@ -55,24 +55,12 @@ export async function middleware(request: NextRequest) {
   // Create a mutable response so Supabase can refresh and set cookies
   let response = NextResponse.next({ request });
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const DEFAULT_SUPABASE_URL = 'https://vcmcueyzjuostebnlmcm.supabase.co';
+  const DEFAULT_SUPABASE_ANON_KEY = 'sb_publishable_2YLsp3r5yL1toZ4PUHzS1g_truC17O_';
 
-  // If Supabase is not configured, block all protected routes
-  if (
-    !supabaseUrl ||
-    !supabaseAnonKey ||
-    supabaseUrl.includes('placeholder') ||
-    supabaseAnonKey.includes('placeholder')
-  ) {
-    const isProtectedRoute = PROTECTED_PREFIXES.some((prefix) => pathname.startsWith(prefix));
-    if (isProtectedRoute) {
-      const loginUrl = new URL('/login', request.url);
-      loginUrl.searchParams.set('error', 'service_unavailable');
-      return NextResponse.redirect(loginUrl);
-    }
-    return response;
-  }
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || DEFAULT_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON_KEY;
+
 
   // Initialize Supabase SSR client — it reads and refreshes cookies automatically
   const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {

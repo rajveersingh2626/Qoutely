@@ -121,6 +121,34 @@ export default function NewQuoteWorkspacePage() {
   const [savedQuoteId, setSavedQuoteId] = useState<string | null>(null);
   const [isCopied, setIsCopied] = useState(false);
 
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const codeParam = params.get('code');
+      const clientParam = params.get('client');
+      const descParam = params.get('desc');
+      if (clientParam) setClientName(clientParam);
+      if (descParam) setBusinessDescription(descParam);
+      if (codeParam) {
+        const matched = OCCUPANCIES.find((o) => o.code === codeParam);
+        if (matched) {
+          setFlexaRate(matched.flexa_rate);
+          setAiResult({
+            occupancyCode: matched.code,
+            occupancyDescription: matched.description,
+            matchedKeywords: [matched.code, matched.category_tag],
+            confidenceScore: 0.98,
+            suggestedFlexaRate: matched.flexa_rate,
+            suggestedStfiRate: matched.stfi_rate || 0.15,
+            suggestedEqRate: matched.eq_rate || 0.10,
+            riskTier: matched.category === 1 ? 'Low' : 'Medium',
+            reasoning: `Pre-classified under statutory IIB Schedule 3 Code ${matched.code}.`,
+          });
+        }
+      }
+    }
+  }, []);
+
   // STEP 2: Pure deterministic calculation execution via calculatePremium(data)
   const calculation = useMemo(() => {
     return calculatePremium({

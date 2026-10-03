@@ -197,18 +197,46 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
 
   useEffect(() => {
+    // Initial immediate hydration from localStorage if available
+    if (typeof window !== 'undefined') {
+      try {
+        const cachedUser = localStorage.getItem('quotely_user');
+        const cachedWs = localStorage.getItem('quotely_workspace');
+        if (cachedUser) {
+          const parsed = JSON.parse(cachedUser);
+          if (parsed && parsed.id) setCurrentUser(parsed);
+        }
+        if (cachedWs) {
+          const parsedWs = JSON.parse(cachedWs);
+          if (parsedWs && parsedWs.id) setCurrentWorkspace(parsedWs);
+        }
+      } catch {
+        // Ignore JSON parse errors
+      }
+    }
+
     refreshData();
-    // Hydrate current user from server session cookie
+
+    // Revalidate and hydrate current user from server session cookie
     fetch('/api/auth/session')
       .then((res) => res.json())
       .then((data) => {
         if (data.authenticated && data.user) {
           setCurrentUser(data.user);
-          if (data.workspace) setCurrentWorkspace(data.workspace);
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('quotely_user', JSON.stringify(data.user));
+          }
+          if (data.workspace) {
+            setCurrentWorkspace(data.workspace);
+            if (typeof window !== 'undefined') {
+              localStorage.setItem('quotely_workspace', JSON.stringify(data.workspace));
+            }
+          }
         }
       })
       .catch(() => {});
   }, [refreshData]);
+
 
   const logAction = (
     action: AuditLog['action'],
@@ -264,6 +292,9 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const memberProfile = members.find((m) => m.user_id === userId)?.user;
     if (memberProfile) {
       setCurrentUser(memberProfile);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('quotely_user', JSON.stringify(memberProfile));
+      }
     }
   };
 

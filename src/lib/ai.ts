@@ -69,15 +69,46 @@ export function getAIRequestLogs(): AIRequestLog[] {
   return [...requestLogsCache];
 }
 
+export const PRIMARY_GEMINI_MODEL = 'gemini-3.8-flash';
+export const FALLBACK_GEMINI_MODEL = 'gemini-1.5-flash';
+
 /**
- * Initializes Google GenAI client
+ * Initializes Google GenAI client with environment key
  */
-function getGeminiClient(): { client: GoogleGenAI | null; hasKey: boolean } {
-  const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+export function getGeminiClient(): { client: GoogleGenAI | null; hasKey: boolean } {
+  const apiKey =
+    process.env.GEMINI_API_KEY ||
+    process.env.NEXT_PUBLIC_GEMINI_API_KEY;
   if (!apiKey || apiKey.trim() === '' || apiKey === 'YOUR_GEMINI_API_KEY') {
     return { client: null, hasKey: false };
   }
   return { client: new GoogleGenAI({ apiKey }), hasKey: true };
+}
+
+/**
+ * Resilient caller that defaults to gemini-3.8-flash with automatic fallback
+ */
+async function callGeminiGenerate(
+  client: GoogleGenAI,
+  contents: any,
+  config?: any
+): Promise<{ text: string; modelUsed: string }> {
+  try {
+    const res = await client.models.generateContent({
+      model: PRIMARY_GEMINI_MODEL,
+      contents,
+      config,
+    });
+    return { text: res.text || '{}', modelUsed: PRIMARY_GEMINI_MODEL };
+  } catch (err: any) {
+    console.warn(`Model ${PRIMARY_GEMINI_MODEL} failed, trying ${FALLBACK_GEMINI_MODEL}:`, err?.message);
+    const fallbackRes = await client.models.generateContent({
+      model: FALLBACK_GEMINI_MODEL,
+      contents,
+      config,
+    });
+    return { text: fallbackRes.text || '{}', modelUsed: FALLBACK_GEMINI_MODEL };
+  }
 }
 
 export interface ExtractInputPayload {
@@ -97,7 +128,7 @@ export async function extractProposal(
 ) {
   const startTime = Date.now();
   const { client, hasKey } = getGeminiClient();
-  const modelName = 'gemini-2.0-flash';
+  let modelName = PRIMARY_GEMINI_MODEL;
 
   const rawText = typeof input === 'string' ? input : (input.content || '');
   const base64 = typeof input === 'object' ? input.base64 : undefined;
@@ -183,15 +214,13 @@ ${fileName ? `\nDocument filename: ${fileName}` : ''}`;
     }
     contents.push(prompt);
 
-    const response = await client.models.generateContent({
-      model: modelName,
-      contents: contents.length === 1 ? contents[0] : contents,
-      config: {
-        responseMimeType: 'application/json',
-      },
-    });
+    const { text: responseText, modelUsed } = await callGeminiGenerate(
+      client,
+      contents.length === 1 ? contents[0] : contents,
+      { responseMimeType: 'application/json' }
+    );
+    modelName = modelUsed;
 
-    const responseText = response.text || '{}';
     const parsed = JSON.parse(responseText);
     const latency = Date.now() - startTime;
     const inputTokens = Math.max(50, Math.round(prompt.length / 4) + (base64 ? 300 : 0));
@@ -281,7 +310,7 @@ export async function classifyOccupancy(businessDescription: string, district?: 
   const ragResult = searchOccupanciesRAG(businessDescription);
   const eqMatch = district ? matchDistrictEQZone(district) : null;
   const { client, hasKey } = getGeminiClient();
-  const modelName = 'gemini-2.0-flash';
+  let modelName = PRIMARY_GEMINI_MODEL;
 
   const prompt = `You are Quotely's senior underwriting classifier under the All India Fire Tariff (AIFT 2001) and IIB Loss Cost Guidelines.
 
@@ -326,15 +355,13 @@ Return ONLY valid JSON matching this schema:
   }
 
   try {
-    const response = await client.models.generateContent({
-      model: modelName,
-      contents: prompt,
-      config: {
-        responseMimeType: 'application/json'
-      }
-    });
+    const { text: responseText, modelUsed } = await callGeminiGenerate(
+      client,
+      prompt,
+      { responseMimeType: 'application/json' }
+    );
+    modelName = modelUsed;
 
-    const responseText = response.text || '{}';
     const parsed = JSON.parse(responseText);
     const latency = Date.now() - startTime;
     const inputTokens = Math.round(prompt.length / 4);
@@ -385,7 +412,7 @@ Return ONLY valid JSON matching this schema:
 export async function explainRecommendation(occupancyCode: string, businessDescription: string, workspaceId?: string, userId?: string) {
   const startTime = Date.now();
   const { client, hasKey } = getGeminiClient();
-  const modelName = 'gemini-2.0-flash';
+  let modelName = PRIMARY_GEMINI_MODEL;
 
   if (!hasKey || !client) {
     return {
@@ -417,15 +444,13 @@ Return ONLY valid JSON matching this schema:
 }`;
 
   try {
-    const response = await client.models.generateContent({
-      model: modelName,
-      contents: prompt,
-      config: {
-        responseMimeType: 'application/json'
-      }
-    });
+    const { text: responseText, modelUsed } = await callGeminiGenerate(
+      client,
+      prompt,
+      { responseMimeType: 'application/json' }
+    );
+    modelName = modelUsed;
 
-    const responseText = response.text || '{}';
     const parsed = JSON.parse(responseText);
     const latency = Date.now() - startTime;
     const inputTokens = Math.round(prompt.length / 4);
@@ -464,7 +489,7 @@ Return ONLY valid JSON matching this schema:
 export async function summarizeProposal(proposalData: any, workspaceId?: string, userId?: string) {
   const startTime = Date.now();
   const { client, hasKey } = getGeminiClient();
-  const modelName = 'gemini-2.0-flash';
+  let modelName = PRIMARY_GEMINI_MODEL;
 
   if (!hasKey || !client) {
     return {
@@ -487,15 +512,13 @@ Return ONLY valid JSON matching this schema:
 }`;
 
   try {
-    const response = await client.models.generateContent({
-      model: modelName,
-      contents: prompt,
-      config: {
-        responseMimeType: 'application/json'
-      }
-    });
+    const { text: responseText, modelUsed } = await callGeminiGenerate(
+      client,
+      prompt,
+      { responseMimeType: 'application/json' }
+    );
+    modelName = modelUsed;
 
-    const responseText = response.text || '{}';
     const parsed = JSON.parse(responseText);
     const latency = Date.now() - startTime;
     const inputTokens = Math.round(prompt.length / 4);
@@ -534,7 +557,7 @@ Return ONLY valid JSON matching this schema:
 export async function testAIConnection() {
   const startTime = Date.now();
   const { client, hasKey } = getGeminiClient();
-  const modelName = 'gemini-2.0-flash';
+  let modelName = PRIMARY_GEMINI_MODEL;
 
   if (!hasKey || !client) {
     return {
@@ -546,23 +569,21 @@ export async function testAIConnection() {
       sample_response: {
         status: 'warning',
         mode: 'deterministic_rag',
-        message: 'No live API key detected. Set GEMINI_API_KEY to activate live Gemini 2.5 Flash inference.'
+        message: 'No live API key detected. Set GEMINI_API_KEY to activate live Gemini Flash inference.'
       }
     };
   }
 
   try {
-    const testPrompt = 'Respond with JSON only: {"status": "ok", "service": "Quotely AI Underwriting Engine", "model": "gemini-2.0-flash", "timestamp": "' + new Date().toISOString() + '"}';
-    const response = await client.models.generateContent({
-      model: modelName,
-      contents: testPrompt,
-      config: {
-        responseMimeType: 'application/json'
-      }
-    });
+    const testPrompt = 'Respond with JSON only: {"status": "ok", "service": "Quotely AI Underwriting Engine", "model": "' + PRIMARY_GEMINI_MODEL + '", "timestamp": "' + new Date().toISOString() + '"}';
+    const { text: responseText, modelUsed } = await callGeminiGenerate(
+      client,
+      testPrompt,
+      { responseMimeType: 'application/json' }
+    );
+    modelName = modelUsed;
 
     const latency = Date.now() - startTime;
-    const responseText = response.text || '{}';
     const parsed = JSON.parse(responseText);
 
     await logAIRequest({
@@ -589,7 +610,7 @@ export async function testAIConnection() {
       model: modelName,
       latency_ms: latency,
       is_mocked: true,
-      error: err.message || 'Error communicating with Gemini 2.5 Flash API.',
+      error: err.message || 'Error communicating with Gemini API.',
       sample_response: null
     };
   }

@@ -124,8 +124,8 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* 4 Core KPI Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* 3 Core KPI Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 gap-4">
           {/* Card 1 */}
           <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-card card-hover">
             <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-3">
@@ -183,26 +183,6 @@ export default function DashboardPage() {
               </span>
             </div>
             <p className="text-[11px] text-slate-400 mt-1">Underwriter queue</p>
-          </div>
-
-          {/* Card 4 */}
-          <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-card card-hover">
-            <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-3">
-              <span className="text-xs font-semibold">Total Premium (Current Month)</span>
-              <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-                <Shield className="w-4 h-4" />
-              </div>
-            </div>
-            <div className="flex items-baseline justify-between">
-              <span className="text-2xl font-bold text-slate-900 dark:text-white">
-                {formatINR(totalPremiumMonth || 211810)}
-              </span>
-              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
-                <TrendingUp className="w-3.5 h-3.5" />
-                +24% MoM
-              </span>
-            </div>
-            <p className="text-[11px] text-slate-400 mt-1">Net underwritten risk premium</p>
           </div>
         </div>
 

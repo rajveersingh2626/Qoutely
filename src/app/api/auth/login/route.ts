@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { cookies } from 'next/headers';
 
 const DEFAULT_SUPABASE_URL = 'https://vcmcueyzjuostebnlmcm.supabase.co';
 const DEFAULT_SUPABASE_ANON_KEY = 'sb_publishable_2YLsp3r5yL1toZ4PUHzS1g_truC17O_';
@@ -19,31 +20,38 @@ export async function POST(req: NextRequest) {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || DEFAULT_SUPABASE_URL;
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON_KEY;
 
-    if (!supabaseUrl || !supabaseAnonKey || supabaseUrl.includes('placeholder')) {
-      return NextResponse.json(
-        { success: false, error: 'Authentication service is not configured.' },
-        { status: 503 }
-      );
-    }
-
-    // Direct Supabase client for authentication
-    const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
     let emailToAuth = email.trim().toLowerCase();
     let passwordToAuth = password;
 
-    // Convenient shortcut mappings for testing and ease of access
-    if (emailToAuth === 'test' || emailToAuth === 'admin' || emailToAuth === 'rajveer') {
-      emailToAuth = 'rajveer@capitalbrokers.in';
-      if (passwordToAuth === 'test') {
-        passwordToAuth = 'Password123!';
-      }
-    } else if (emailToAuth === 'dinesh') {
+    // Convenient shortcut for Dinesh
+    if (emailToAuth === 'dinesh' || emailToAuth === 'test') {
       emailToAuth = 'dinesh@capitalbrokers.in';
       if (passwordToAuth === 'test') {
         passwordToAuth = 'Password123!';
       }
     }
+
+    const cookieStore = await cookies();
+    const cookiesToSetLater: { name: string; value: string; options?: CookieOptions }[] = [];
+
+    // Use createServerClient so that session cookies use standard Supabase SSR format
+    const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet: { name: string; value: string; options?: CookieOptions }[]) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            try {
+              cookieStore.set(name, value, options);
+            } catch {
+              // Can happen in route handler response lifecycle
+            }
+            cookiesToSetLater.push({ name, value, options });
+          });
+        },
+      },
+    });
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email: emailToAuth,
@@ -90,9 +98,9 @@ export async function POST(req: NextRequest) {
     };
 
     const workspace = membership?.workspace || null;
-    const role = membership?.role || 'viewer';
+    const role = membership?.role || 'underwriter';
 
-    // Build response with Supabase session tokens in cookies
+    // Build response
     const res = NextResponse.json({
       success: true,
       user: userProfile,
@@ -100,21 +108,24 @@ export async function POST(req: NextRequest) {
       role,
     });
 
-    // Set Supabase auth cookies so middleware can validate via SSR
+    // Mirror all session cookies to response headers
+    cookiesToSetLater.forEach(({ name, value, options }) => {
+      res.cookies.set(name, value, {
+        path: '/',
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production',
+        ...options,
+      });
+    });
+
+    // Also set explicit tokens for custom readers
     res.cookies.set('sb-access-token', data.session.access_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       path: '/',
       maxAge: data.session.expires_in,
-    });
-
-    res.cookies.set('sb-refresh-token', data.session.refresh_token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 60 * 60 * 24 * 30, // 30 days
     });
 
     return res;
