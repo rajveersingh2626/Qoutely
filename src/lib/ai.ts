@@ -313,6 +313,35 @@ ${fileName ? `\nDocument filename: ${fileName}` : ''}`;
 /**
  * Endpoint 2: Classify Occupancy with RAG Grounding & Interactive Clarification Dialogues
  */
+/**
+ * Helper to determine broad product category
+ */
+export function inferProductCategory(text: string): string {
+  const lower = (text || '').toLowerCase();
+  if (/plastic|polymer|pvc|hdpe|ldpe|polypropylene|moulding|extrusion|polythene/i.test(lower)) return 'Plastics';
+  if (/textile|cloth|cotton|yarn|spinning|weaving|garment|fabric|apparel/i.test(lower)) return 'Textiles';
+  if (/chemical|acid|solvent|alkali|fertilizer|paint|resin|petrochemical/i.test(lower)) return 'Chemicals';
+  if (/pharma|drug|medicine|tablet|cleanroom|biotech|capsule/i.test(lower)) return 'Pharmaceuticals';
+  if (/metal|steel|iron|aluminium|copper|cnc|lathe|foundry|forging|casting|machin/i.test(lower)) return 'Metalworking & Engineering';
+  if (/food|grain|flour|oil|biscuit|bakery|sugar|spice|confectionery|edible/i.test(lower)) return 'Food Processing';
+  if (/wood|timber|sawmill|furniture|plywood|carpentry/i.test(lower)) return 'Woodworking';
+  if (/paper|cardboard|printing|packaging|carton/i.test(lower)) return 'Paper & Packaging';
+  if (/warehous|godown|storage|depot|silo|cold storage|stockist/i.test(lower)) return 'Storage & Warehousing';
+  if (/shop|retail|showroom|store|supermarket|merchant|trading/i.test(lower)) return 'Retail & Commercial';
+  if (/electronic|electrical|appliance|pcb|semiconductor|battery/i.test(lower)) return 'Electronics & Electrical';
+  return 'Manufacturing';
+}
+
+/**
+ * Endpoint 2: Classify Occupancy with Strict Category-First RAG Verification
+ *
+ * Enforces a strict two-step verification process:
+ * 1. AI first determines the product_category (e.g., Plastics, Textiles, Manufacturing).
+ * 2. It searches database context for that specific category.
+ * 3. If a highly confident match is found, it returns the occupancy_code.
+ * 4. If the prompt is too vague or operation type is ambiguous (e.g. manufacturing vs storage),
+ *    it does NOT guess or default to code 1024. It sets occupancy_code to null and returns clarifying_question.
+ */
 export async function classifyOccupancy(
   businessDescription: string,
   district?: string,
@@ -322,52 +351,93 @@ export async function classifyOccupancy(
 ) {
   const startTime = Date.now();
   const searchDesc = followUpAnswer ? `${businessDescription} ${followUpAnswer}` : businessDescription;
+  const inferredCat = inferProductCategory(searchDesc);
   const ragResult = searchOccupanciesRAG(searchDesc);
   const eqMatch = district ? matchDistrictEQZone(district) : null;
   const { client, hasKey } = getGeminiClient();
   let modelName = PRIMARY_GEMINI_MODEL;
 
-  const prompt = `You are Quotely's senior underwriting classifier under the All India Fire Tariff (AIFT 2001) and IIB Loss Cost Guidelines.
+  // Check if user input is too vague to determine whether it's manufacturing, storage, or retail
+  const descLower = searchDesc.toLowerCase();
+  const tokens = descLower.replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter((t) => t.length > 2);
+  const isStorage = /warehous|godown|storage|silo|cold storage|depot/i.test(descLower);
+  const isTrading = /retail|shop|showroom|store|dealer|distributor/i.test(descLower);
+  const isManufacturing = /manufactur|factory|plant|fabricat|moulding|extrusion|spinning|weaving|processing|assembl|workshop/i.test(descLower);
+  const hasSpecificOperation = isManufacturing || isStorage || isTrading;
 
-STEP 1: VALIDATE RELEVANCE
-Check if the following business description is a real, legitimate commercial enterprise, manufacturing operation, storage facility, or insurable business risk:
+  const isObviouslyVague = !followUpAnswer && (tokens.length <= 3 || !hasSpecificOperation);
+
+  const prompt = `You are Quotely's senior commercial insurance underwriter adhering to the All India Fire Tariff (AIFT 2001) and IIB Loss Cost Guidelines.
+
+CRITICAL INSTRUCTION: ENFORCE STRICT AIFT 2001 STATUTORY HIERARCHY & TWO-STEP VERIFICATION:
+
+STEP 1: DETERMINE AIFT TARIFF SECTION & BROAD TRADE SECTOR
+Classify the business under official AIFT 2001 Sections:
+- "aift_section":
+  • "Section III": Dwellings, Offices, Hotels, Shops, Hospitals, Educational & Institutional (Non-Industrial / Commercial)
+  • "Section IV": Industrial / Manufacturing Risks (All manufacturing, processing, workshop tooling, parts fabrication)
+  • "Section V": Utilities Located Outside Industrial Compounds (Water works, power houses, analytical labs)
+  • "Section VI": Storage Risks Outside Industrial Compounds (Godowns, warehouses, silos, open storage)
+  • "Section VII": Tank Farms / Gas Holders Outside Industrial Compounds (Liquified gases, petrol/oil tanks)
+- "product_category": Broad trade group (e.g., Plastics & Polymers, Textiles & Garments, Chemicals & Petrochemicals, Metalworking & Engineering, Food & Agro Processing, Wood & Timber, Paper & Printing, Storage & Warehousing, Retail & Commercial).
+- If the risk is Storage (Section VI), determine "storage_hazard_category":
+  • "Non-Hazardous" (Code 4001: non-combustible materials)
+  • "Category I" (Code 4002: Moderate combustibility solids — grain, timber, dry paper, cotton bales, solid plastics, packaged FMCG)
+  • "Category II" (Code 4003: Flammable solids, synthetic resins, paints)
+  • "Category III" (Code 4004: Volatile solvents, hazardous chemicals, nitrates)
+- If the text is gibberish, keyboard mash (e.g., "asdf"), or spam, set "is_valid_occupancy": false.
+
+STEP 2: SEARCH DATABASE CONTEXT FOR THAT SPECIFIC CATEGORY & ASSIGN STATUTORY RISK CATEGORY
+Here is the official IIB Schedule 3 database context retrieved for this category:
+${JSON.stringify(
+  ragResult.topCandidates.map((c) => ({
+    code: c.code,
+    description: c.description,
+    section: c.section,
+    category: c.category, // Statutory Category 1, 2, 3, or 4
+    loss_cost: c.loss_cost,
+  })),
+  null,
+  2
+)}
+
+AIFT STATUTORY RISK CATEGORIES (1 TO 4):
+- Category 1: Low Hazard / Standard (Dwellings, Offices, Libraries, Healthcare, Non-Hazardous Storage, Light Engineering, Weaving)
+- Category 2: Normal Industrial (Cold metalworking, Engineering workshops, Plastics moulding, Silent risks)
+- Category 3: Higher Industrial Hazard (Chemical processing, Paints, Rubber goods)
+- Category 4: Highest Hazard / Severe Flammables / Hazardous Storage (Category I, II, III Hazardous Goods Storage, Fireworks, Solvents, Tank farms)
+
+STRICT TWO-STEP VERIFICATION RULES (PREVENT CODE 1024 HALLUCINATION):
+1. NEVER guess or default to code 1024 (Shops dealing in hazardous goods) or any arbitrary fallback code.
+2. If the user prompt is vague (e.g., "we do plastics", "textiles", "chemical products", "plastics trading") or does NOT clearly specify the exact operation (e.g., whether they manufacture raw material, mould products, store goods in a godown, or run a retail shop):
+   - You MUST set "occupancy_code": null.
+   - You MUST NOT guess.
+   - You MUST output a targeted "clarifying_question" (e.g., "Do you manufacture the plastic products on-site (AIFT Section IV), or store/distribute them in a godown (AIFT Section VI)?").
+   - You MUST provide 2 to 4 "suggested_quick_answers" (e.g., ["We manufacture plastic components on-site (Section IV)", "Storage and distribution warehouse only (Section VI)", "Retail shop selling plastic goods (Section III)"]).
+3. ONLY if the user description clearly and unambiguously states the exact operational process AND there is a highly confident match in the database context:
+   - Return the verified "occupancy_code" (e.g., "2104" for plastic goods manufacturing, or "4002" for Category I hazardous goods storage).
+   - Set "aift_section": Section (e.g., "Section IV" or "Section VI").
+   - Set "aift_category": 1, 2, 3, or 4 (matching statutory tariff category).
+   - Set "clarifying_question": null.
+   - Set "confidence": "high".
+
+User's Business Description:
 "${businessDescription}"
-${followUpAnswer ? `\nFollow-up clarification provided by underwriter / user:\n"${followUpAnswer}"\n` : ''}
-
-If the text is gibberish, spam, keyboard smash (e.g. "asdfghjkl", "qwerty"), random words, completely unrelated content (e.g. food recipe, poetry, casual chat), or contains no recognizable business activity:
-Set "is_valid_occupancy": false and set "rejection_reason": "The provided business description does not correspond to an insurable commercial enterprise, manufacturing operation, or trade occupancy."
-
-STEP 2: CLASSIFICATION (only if is_valid_occupancy is true)
-Review the candidate IIB Schedule 3 occupancies retrieved from tariff records:
-Retrieved Candidates from IIB Schedule 3:
-${JSON.stringify(ragResult.topCandidates, null, 2)}
-
-Provide the final candidate rankings. NEVER invent occupancy codes not present in the candidates.
-
-STEP 3: IDENTIFY GAPS & INTERACTIVE FOLLOW-UP QUESTIONS
-Analyze what underwriting variables are still ambiguous or missing in the business description (such as fire hydrant / automatic sprinkler protection, building construction class, basement storage, storage in open, hazardous solvent handling, or distance to waterbodies).
-- "clarification_question": If the input lacks specific fire safety or hazard details, ask a polite, precise underwriter question to clarify. If already clear, set to a question asking to confirm fire protection features.
-- "suggested_quick_answers": 2 to 4 clickable short response options (e.g. ["Certified automatic sprinkler system installed", "Manual extinguishers only, no sprinklers", "Raw materials stored in open yard", "Basement storage with drainage pumps"]).
-- "missing_fields": list of 1 to 4 missing underwriting parameters (e.g. ["Fire protection systems", "Basement usage", "Solvent storage"]).
-- "suggested_discount_percent": 0, 5, 10, or 15 (if follow-up answer or description reveals certified fire protection such as sprinklers/hydrants).
-- "suggested_loading_percent": 0, 5, 10, or 15 (if follow-up answer or description reveals high-risk exposure such as open yard storage, basement storage, or hazardous solvents).
+${followUpAnswer ? `Follow-up Clarification from User:\n"${followUpAnswer}"` : ''}
 
 Return ONLY valid JSON matching this schema:
 {
   "is_valid_occupancy": boolean,
   "rejection_reason": string | null,
-  "business_summary": string,
-  "keywords": string[],
-  "occupancy_candidates": [
-    {
-      "code": string,
-      "description": string,
-      "confidence": number,
-      "reason": string
-    }
-  ],
-  "confidence_tier": "auto_select" | "top_three" | "requires_clarification",
-  "clarification_question": string | null,
+  "product_category": string | null,
+  "aift_section": "Section III" | "Section IV" | "Section V" | "Section VI" | "Section VII" | null,
+  "aift_category": 1 | 2 | 3 | 4 | null,
+  "storage_hazard_category": "Non-Hazardous" | "Category I" | "Category II" | "Category III" | null,
+  "occupancy_code": string | null,
+  "occupancy_description": string | null,
+  "confidence": "high" | "medium" | "low" | "none",
+  "reasoning": string,
+  "clarifying_question": string | null,
   "suggested_quick_answers": string[],
   "missing_fields": string[],
   "hazard_flags": string[],
@@ -375,38 +445,91 @@ Return ONLY valid JSON matching this schema:
   "suggested_loading_percent": number
 }`;
 
-  if (!hasKey || !client) {
-    if (ragResult.primaryCandidate) {
-      const top = ragResult.primaryCandidate;
+  // Grounded Deterministic Fallback if AI Key is missing or offline
+  const generateDeterministicResponse = () => {
+    if (isObviouslyVague) {
       return {
         success: true,
         data: {
           is_valid_occupancy: true,
           rejection_reason: null,
-          business_summary: businessDescription.slice(0, 140),
-          keywords: [top.code, String(top.category || 'commercial'), 'statutory-tariff'],
-          occupancy_candidates: ragResult.topCandidates,
-          confidence_tier: 'top_three',
-          clarification_question: 'Does the facility have certified fire hydrant systems or automatic sprinkler protection?',
+          product_category: inferredCat,
+          aift_section: isStorage ? 'Section VI' : (isTrading ? 'Section III' : 'Section IV'),
+          aift_category: null,
+          storage_hazard_category: isStorage ? 'Category I' : null,
+          occupancy_code: null,
+          occupancy_description: null,
+          confidence: 'low' as const,
+          reasoning: `Identified trade sector "${inferredCat}". However, statutory underwriting under AIFT 2001 strictly distinguishes between manufacturing (Section IV), warehousing/storage (Section VI), and commercial trade (Section III) with differing Risk Categories (Category 1–4). Operational clarification is required before assigning an occupancy code.`,
+          clarifying_question: `Do you manufacture the ${inferredCat.toLowerCase()} (AIFT Section IV) or store/distribute it in a warehouse (AIFT Section VI)?`,
+          clarification_question: `Do you manufacture the ${inferredCat.toLowerCase()} (AIFT Section IV) or store/distribute it in a warehouse (AIFT Section VI)?`,
           suggested_quick_answers: [
-            'Certified fire sprinkler system installed',
-            'Manual fire extinguishers only',
-            'Basement storage present',
-            'Raw materials stored in open yard'
+            `We manufacture ${inferredCat.toLowerCase()} products on-site (Section IV)`,
+            `Storage warehouse / godown only (Section VI)`,
+            `Wholesale and retail shop (Section III)`,
           ],
-          missing_fields: ['Fire protection systems', 'Basement storage status'],
+          missing_fields: ['Operational activity (AIFT Section IV manufacturing vs Section VI storage vs Section III retail)'],
           hazard_flags: [],
           suggested_discount_percent: 0,
           suggested_loading_percent: 0,
+          occupancy_candidates: [],
           eq_zone: eqMatch,
         },
-        meta: { model: 'iib-rag-grounded-fallback', latency_ms: Date.now() - startTime, cost_usd: 0, is_mocked: false }
+        meta: { model: 'iib-category-deterministic', latency_ms: Date.now() - startTime, cost_usd: 0, is_mocked: false },
       };
     }
+
+    const top = ragResult.primaryCandidate;
+    const isCode1024Hallucination = top?.code === '1024' && !/shop|retail/i.test(inferredCat);
+    const resolvedCode = isCode1024Hallucination ? null : (top?.code || null);
+    const resolvedSection = top?.section ? (top.section.startsWith('Section') ? top.section : `Section ${top.section}`) : 'Section IV';
+    const resolvedCategory = top?.category ? Number(top.category) : 1;
+    const resolvedStorageHazard = resolvedCode === '4001'
+      ? 'Non-Hazardous'
+      : resolvedCode === '4002'
+      ? 'Category I'
+      : resolvedCode === '4003'
+      ? 'Category II'
+      : resolvedCode === '4004'
+      ? 'Category III'
+      : null;
+
     return {
-      success: false,
-      error: 'Gemini AI service is unavailable: GEMINI_API_KEY is not configured.',
+      success: true,
+      data: {
+        is_valid_occupancy: true,
+        rejection_reason: null,
+        product_category: inferredCat,
+        aift_section: resolvedSection,
+        aift_category: resolvedCategory,
+        storage_hazard_category: resolvedStorageHazard,
+        occupancy_code: resolvedCode,
+        occupancy_description: resolvedCode ? (top?.description || null) : null,
+        confidence: resolvedCode ? ('high' as const) : ('low' as const),
+        reasoning: resolvedCode
+          ? `Verified match under AIFT ${resolvedSection} (Category ${resolvedCategory}) grounded in IIB Schedule 3 statutory loss costs.`
+          : `Category "${inferredCat}" requires specific operational clarification.`,
+        clarifying_question: resolvedCode ? null : `Do you manufacture the ${inferredCat.toLowerCase()} (Section IV) or store it (Section VI)?`,
+        clarification_question: resolvedCode ? null : `Do you manufacture the ${inferredCat.toLowerCase()} (Section IV) or store it (Section VI)?`,
+        suggested_quick_answers: [
+          `Certified fire sprinkler system installed`,
+          `Manual fire extinguishers only`,
+          `Basement storage present`,
+          `Raw materials stored in open yard`,
+        ],
+        missing_fields: resolvedCode ? [] : ['Specific operational process'],
+        hazard_flags: [],
+        suggested_discount_percent: 0,
+        suggested_loading_percent: 0,
+        occupancy_candidates: resolvedCode && top ? [top] : [],
+        eq_zone: eqMatch,
+      },
+      meta: { model: 'iib-category-deterministic', latency_ms: Date.now() - startTime, cost_usd: 0, is_mocked: false },
     };
+  };
+
+  if (!hasKey || !client) {
+    return generateDeterministicResponse();
   }
 
   try {
@@ -432,61 +555,99 @@ Return ONLY valid JSON matching this schema:
       output_tokens: outputTokens,
       cost_usd: cost,
       latency_ms: latency,
-      is_mocked: false
+      is_mocked: false,
     });
 
     if (parsed.is_valid_occupancy === false) {
       return {
         success: false,
         is_valid_occupancy: false,
-        error: parsed.rejection_reason || "The provided business description does not correspond to an insurable commercial enterprise or occupancy.",
-        meta: { model: modelName, latency_ms: latency, cost_usd: cost, is_mocked: false }
+        error:
+          parsed.rejection_reason ||
+          'The provided business description does not correspond to an insurable commercial enterprise or occupancy.',
+        meta: { model: modelName, latency_ms: latency, cost_usd: cost, is_mocked: false },
       };
     }
+
+    const category = parsed.product_category || inferredCat;
+
+    // Strict Hallucination Guard: Prevent AI from defaulting to code 1024 for non-retail categories
+    let finalCode: string | null = parsed.occupancy_code || null;
+    let clarifyingQuestion: string | null = parsed.clarifying_question || null;
+
+    if (finalCode === '1024' && !/shop|retail/i.test(category) && !/shop|retail/i.test(searchDesc)) {
+      finalCode = null;
+      clarifyingQuestion = `Do you manufacture the ${category.toLowerCase()} or just store/retail it?`;
+    }
+
+    // If description is obviously vague and no follow-up was provided, enforce nullable code
+    if (isObviouslyVague && !followUpAnswer) {
+      finalCode = null;
+      if (!clarifyingQuestion) {
+        clarifyingQuestion = `Do you manufacture the ${category.toLowerCase()} or just store/distribute it?`;
+      }
+    }
+
+    // Build matching candidate record if code is confirmed
+    let candidates: any[] = [];
+    const dbMatch = finalCode
+      ? ragResult.topCandidates.find((c) => c.code === finalCode) || ragResult.primaryCandidate
+      : null;
+
+    if (finalCode && dbMatch) {
+      candidates = [{
+        code: finalCode,
+        description: parsed.occupancy_description || dbMatch.description,
+        confidence: parsed.confidence === 'high' ? 0.95 : 0.85,
+        reason: parsed.reasoning || dbMatch.reason,
+        loss_cost: dbMatch.loss_cost,
+        category: dbMatch.category,
+      }];
+    }
+
+    const resolvedSection = dbMatch?.section
+      ? (dbMatch.section.startsWith('Section') ? dbMatch.section : `Section ${dbMatch.section}`)
+      : (parsed.aift_section || null);
+
+    const resolvedCategory = dbMatch?.category
+      ? Number(dbMatch.category)
+      : (parsed.aift_category ? Number(parsed.aift_category) : null);
+
+    const resolvedStorageHazard = finalCode === '4001'
+      ? 'Non-Hazardous'
+      : finalCode === '4002'
+      ? 'Category I'
+      : finalCode === '4003'
+      ? 'Category II'
+      : finalCode === '4004'
+      ? 'Category III'
+      : (parsed.storage_hazard_category || null);
 
     return {
       success: true,
       data: {
         ...parsed,
-        eq_zone: eqMatch
+        product_category: category,
+        aift_section: resolvedSection,
+        aift_category: resolvedCategory,
+        storage_hazard_category: resolvedStorageHazard,
+        occupancy_code: finalCode,
+        occupancy_description: finalCode ? (parsed.occupancy_description || candidates[0]?.description || null) : null,
+        clarifying_question: clarifyingQuestion,
+        clarification_question: clarifyingQuestion, // Mirror for backward compatibility
+        occupancy_candidates: candidates,
+        eq_zone: eqMatch,
       },
-      meta: { model: modelName, latency_ms: latency, cost_usd: cost, is_mocked: false }
+      meta: { model: modelName, latency_ms: latency, cost_usd: cost, is_mocked: false },
     };
   } catch (err: any) {
-    console.warn('Gemini classify failed, using grounded RAG fallback:', err);
-    if (ragResult.primaryCandidate) {
-      const top = ragResult.primaryCandidate;
-      return {
-        success: true,
-        data: {
-          is_valid_occupancy: true,
-          rejection_reason: null,
-          business_summary: businessDescription.slice(0, 140),
-          keywords: [top.code, String(top.category || 'commercial'), 'statutory-tariff'],
-          occupancy_candidates: ragResult.topCandidates,
-          confidence_tier: 'top_three',
-          clarification_question: 'Does the facility have certified fire hydrant systems or automatic sprinkler protection?',
-          suggested_quick_answers: [
-            'Certified fire sprinkler system installed',
-            'Manual fire extinguishers only',
-            'Basement storage present',
-            'Raw materials stored in open yard'
-          ],
-          missing_fields: ['Fire protection systems', 'Basement storage status'],
-          hazard_flags: [],
-          suggested_discount_percent: 0,
-          suggested_loading_percent: 0,
-          eq_zone: eqMatch,
-        },
-        meta: { model: 'iib-rag-grounded-fallback', latency_ms: Date.now() - startTime, cost_usd: 0, is_mocked: false }
-      };
-    }
-    return {
-      success: false,
-      error: `Occupancy classification failed: ${err.message || 'Error processing business description'}`
-    };
+    console.warn('Gemini classify failed, using category-grounded fallback:', err);
+    return generateDeterministicResponse();
   }
 }
+
+
+
 
 /**
  * Endpoint 3: Explain Underwriting Decisions

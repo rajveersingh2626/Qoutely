@@ -69,6 +69,22 @@ const nextConfig: NextConfig = {
     dirs: ['src'],
   },
 
+  // Automatic redirect for common spelling typo (qoutes -> quotes)
+  async redirects() {
+    return [
+      {
+        source: '/qoutes',
+        destination: '/quotes',
+        permanent: true,
+      },
+      {
+        source: '/qoutes/:path*',
+        destination: '/quotes/:path*',
+        permanent: true,
+      },
+    ];
+  },
+
   // Security headers applied to all routes
   async headers() {
     return [

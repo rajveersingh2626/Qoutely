@@ -447,3 +447,105 @@ export function matchDistrictEQZone(districtQuery: string): { district: string; 
 
   return null;
 }
+
+/**
+ * Searches the rich AIFT 2001, IIB Schedule 3, and Market Rules knowledge base.
+ */
+export function searchTariffRules(query: string): {
+  clauses: Array<{ id: string; title: string; category: string; description: string; source_doc: string }>;
+  warranties: Array<{ code: string; name: string; text: string; occupancy_code: string }>;
+  products: Array<{ code: string; name: string; sum_insured_limit: string; deductible_scale: string; built_in_covers: string[] }>;
+  sections: Array<{ section: string; title: string; scope: string }>;
+  computationSteps: string[];
+} {
+  const q = (query || '').toLowerCase();
+  const qTokens = tokenize(q);
+
+  const matchedClauses = (tariffData.clauses || []).filter((cl: any) => {
+    const text = `${cl.id} ${cl.title} ${cl.category} ${cl.description} ${cl.applicable_to}`.toLowerCase();
+    return qTokens.some(t => text.includes(t)) || text.includes(q);
+  });
+
+  const matchedWarranties = (tariffData.warranties || []).filter((w: any) => {
+    const text = `${w.code} ${w.name} ${w.text} ${w.occupancy_code}`.toLowerCase();
+    return qTokens.some(t => text.includes(t)) || text.includes(q);
+  });
+
+  const matchedProducts = (tariffData.products || []).filter((p: any) => {
+    const text = `${p.code} ${p.name} ${p.target_market} ${p.sum_insured_limit}`.toLowerCase();
+    return qTokens.some(t => text.includes(t)) || text.includes(q);
+  });
+
+  const matchedSections = (tariffData.sections || []).filter((s: any) => {
+    const text = `${s.section} ${s.title} ${s.scope}`.toLowerCase();
+    return qTokens.some(t => text.includes(t)) || text.includes(q);
+  });
+
+  return {
+    clauses: matchedClauses,
+    warranties: matchedWarranties,
+    products: matchedProducts,
+    sections: matchedSections,
+    computationSteps: tariffData.rate_computation_sequence || [],
+  };
+}
+
+/**
+ * Returns all statutory warranties that apply to a specific occupancy code and section.
+ */
+export function getApplicableWarranties(occupancyCode: string, section?: string): Array<{
+  code: string;
+  name: string;
+  text: string;
+  occupancy_code: string;
+}> {
+  const code = (occupancyCode || '').trim();
+  const sec = (section || '').toUpperCase();
+
+  const allWarranties = tariffData.warranties || [];
+  return allWarranties.filter((w: any) => {
+    if (w.occupancy_code === 'ALL') return true;
+    if (w.occupancy_code === code) return true;
+    if (code.startsWith('400') && w.code.startsWith('WARR-400')) {
+      return w.occupancy_code === code;
+    }
+    if (sec === 'VI' && (w.code === 'WARR-DRAIN' || w.code === 'WARR-SECURITY-CCTV')) {
+      return true;
+    }
+    return false;
+  });
+}
+
+/**
+ * Resolves compulsory deductible scale based on product and Sum Insured.
+ */
+export function getCompulsoryDeductible(productType: string, sumInsured: number): {
+  product: string;
+  normalDeductible: string;
+  aogDeductible: string;
+  description: string;
+} {
+  const pt = productType.toUpperCase();
+  if (pt.includes('BSUS') || pt.includes('FLEXI_BS') || sumInsured <= 50000000) {
+    return {
+      product: 'Bharat Sookshma Udyam Suraksha (BSUS)',
+      normalDeductible: sumInsured <= 10000000 ? '₹5,000' : '₹10,000',
+      aogDeductible: sumInsured <= 10000000 ? '₹5,000' : '₹10,000',
+      description: 'Compulsory excess: ₹5,000 for Sum Insured up to ₹10 Lakhs; ₹10,000 for Sum Insured up to ₹5 Crores.',
+    };
+  } else if (pt.includes('BLUS') || pt.includes('FLEXI_BL') || sumInsured <= 500000000) {
+    return {
+      product: 'Bharat Laghu Udyam Suraksha (BLUS)',
+      normalDeductible: '5% of claim amount (min ₹10,000 - ₹25,000)',
+      aogDeductible: '5% of claim amount (min ₹25,000)',
+      description: 'Compulsory excess: 5% of claim amount subject to minimum ₹10,000 / ₹25,000 for material damage and ₹25,000 for AOG/STFI.',
+    };
+  } else {
+    return {
+      product: 'Standard Fire and Special Perils (SFSP)',
+      normalDeductible: '5% of claim amount (min ₹5,00,000)',
+      aogDeductible: '10% of claim amount (min ₹10,00,000)',
+      description: 'Compulsory excess: 5% of claim amount (min ₹5,00,000) for material damage; 10% (min ₹10,00,000) for AOG perils.',
+    };
+  }
+}

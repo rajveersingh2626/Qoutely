@@ -588,27 +588,28 @@ export default function MarketingLandingPage() {
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-bold text-white">Starter</h3>
-                  <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700">
-                    Coming Soon
+                  <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    Solo Desk
                   </span>
                 </div>
-                <div className="text-3xl font-extrabold text-white mb-1">₹999 <span className="text-xs font-medium text-slate-400">/month</span></div>
-                <p className="text-xs text-slate-400 mb-6">For independent insurance advisors & solo brokers.</p>
+                <div className="text-3xl font-extrabold text-white mb-1">₹549 <span className="text-xs font-medium text-slate-400">/month</span></div>
+                <p className="text-xs text-slate-400 mb-6">For independent insurance advisors & solo broker desks.</p>
 
                 <div className="space-y-3 text-xs text-slate-300">
-                  <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400" /> 1 Broker Seat</div>
-                  <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400" /> 100 Quotes / month</div>
-                  <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400" /> AI OCR Extraction</div>
-                  <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400" /> Standard PDF Quote Slips</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> 1 Broker Seat</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> 100 Quotes / month</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> AI Occupancy Matching & 2-Step RAG</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> AIFT 2001 Statutory Tariff Calculator</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> Standard PDF Quote Slips</div>
                 </div>
               </div>
 
-              <button
-                onClick={() => setWaitlistModalOpen(true)}
-                className="mt-8 w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition-colors"
+              <a
+                href="mailto:sales@quotely.com?subject=Inquiry%20-%20Starter%20Plan%20(%E2%82%B9549/mo)"
+                className="mt-8 w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition-colors text-center inline-block"
               >
-                Join Waitlist
-              </button>
+                Contact Sales
+              </a>
             </div>
 
             {/* Professional (Highlighted) */}
@@ -621,28 +622,28 @@ export default function MarketingLandingPage() {
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-bold text-white">Professional</h3>
                   <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                    Active
+                    Brokerage Firm
                   </span>
                 </div>
-                <div className="text-3xl font-extrabold text-white mb-1">₹4,999 <span className="text-xs font-medium text-slate-400">/month</span></div>
-                <p className="text-xs text-slate-400 mb-6">For high-volume brokerage firms & underwriting desks.</p>
+                <div className="text-3xl font-extrabold text-white mb-1">₹1,499 <span className="text-xs font-medium text-slate-400">/month</span></div>
+                <p className="text-xs text-slate-400 mb-6">For high-volume brokerage firms needing batch OCR & payout tracking.</p>
 
                 <div className="space-y-3 text-xs text-slate-300">
-                  <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400" /> Unlimited Users & Seats</div>
-                  <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400" /> Unlimited Quotes & Storage</div>
-                  <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400" /> Gemini 2.5 Flash RAG Ingestion</div>
-                  <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400" /> Full Client CRM & Claim Timelines</div>
-                  <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400" /> Immutable Audit Logs & Export</div>
-                  <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400" /> Complete Tariff Knowledge Base</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> Unlimited Users & Multi-Seat Workspace</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> Unlimited Quotes & Sovereign Storage</div>
+                  <div className="flex items-center gap-2 font-semibold text-emerald-300"><CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> Bulk Document Processing (Batch OCR)</div>
+                  <div className="flex items-center gap-2 font-semibold text-emerald-300"><CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> Corporate Payout Reconciler & Commissions</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> Multi-Role RBAC (Owner, Underwriter, Viewer)</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> Full Client CRM, Claim Timelines & Audit Logs</div>
                 </div>
               </div>
 
-              <Link
-                href="/app/dashboard"
-                className="mt-8 w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold text-center shadow-lg shadow-emerald-500/25 transition-all"
+              <a
+                href="mailto:sales@quotely.com?subject=Inquiry%20-%20Professional%20Plan%20(%E2%82%B91,499/mo)"
+                className="mt-8 w-full py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold text-center shadow-lg shadow-emerald-500/25 transition-all inline-block"
               >
-                Get Early Access
-              </Link>
+                Contact Sales
+              </a>
             </div>
 
             {/* Enterprise */}
@@ -658,19 +659,19 @@ export default function MarketingLandingPage() {
                 <p className="text-xs text-slate-400 mb-6">For national brokerage houses & composite agencies.</p>
 
                 <div className="space-y-3 text-xs text-slate-300">
-                  <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400" /> Dedicated Cloud VPC or On-Prem</div>
-                  <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400" /> Core Broker Management (BMS) Sync</div>
-                  <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400" /> Custom Tariff Loadings & Insurer Connectors</div>
-                  <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400" /> 24/7 SLA & Dedicated Underwriting Lead</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> Dedicated Cloud VPC or On-Premise</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> Core Broker Management (BMS) Sync & API</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> Custom Tariff Loadings & Insurer Connectors</div>
+                  <div className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" /> 24/7 SLA & Dedicated Underwriting Lead</div>
                 </div>
               </div>
 
-              <button
-                onClick={() => setWaitlistModalOpen(true)}
-                className="mt-8 w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition-colors"
+              <a
+                href="mailto:sales@quotely.com?subject=Inquiry%20-%20Enterprise%20Custom%20Plan"
+                className="mt-8 w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition-colors text-center inline-block"
               >
-                Talk to Sales
-              </button>
+                Contact Sales
+              </a>
             </div>
           </div>
 

@@ -140,6 +140,7 @@ export interface OccupancyCandidate {
   description: string;
   confidence: number;
   reason: string;
+  section?: string;
   loss_cost?: number;
   category?: number;
 }
@@ -147,11 +148,18 @@ export interface OccupancyCandidate {
 export interface AIAnalysisResult {
   business_summary: string;
   keywords: string[];
+  product_category?: string | null;
+  aift_section?: string | null; // 'Section III' | 'Section IV' | 'Section V' | 'Section VI' | 'Section VII'
+  aift_category?: number | null; // 1 | 2 | 3 | 4
+  storage_hazard_category?: string | null; // 'Non-Hazardous' | 'Category I' | 'Category II' | 'Category III'
+  occupancy_code?: string | null;
+  occupancy_description?: string | null;
   occupancy_candidates: OccupancyCandidate[];
   hazard_flags: string[];
   missing_fields: string[];
   confidence_score: number;
   clarification_question?: string | null;
+  clarifying_question?: string | null;
   suggested_quick_answers?: string[];
   suggested_discount_percent?: number;
   suggested_loading_percent?: number;

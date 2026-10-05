@@ -2,18 +2,15 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextRequest, NextResponse } from 'next/server';
 
 /**
- * Quotely Auth Middleware — Software 1.0 Route Guard
+ * Quotely Route Protection & Auth Lock Middleware
  *
- * Protects all internal SaaS routes under /app/* and other authenticated paths.
- * - Unauthenticated users hitting a protected route → redirected to /login
- * - Authenticated users hitting /login or forgot-password → redirected to /app/dashboard
- * - /super-admin route requires super_admin flag checked server-side
- * - /api/* routes, public marketing page (/), and Supabase auth callbacks are always allowed.
+ * Intercepts requests to /dashboard and all protected SaaS routes.
+ * If there is no active Supabase auth session, redirects strictly to /login.
  */
 
 const PROTECTED_PREFIXES = [
-  '/app',
   '/dashboard',
+  '/app',
   '/quotes',
   '/clients',
   '/settings',
@@ -32,27 +29,19 @@ const PROTECTED_PREFIXES = [
 
 const AUTH_ROUTES = ['/login', '/forgot-password', '/reset-password'];
 
-const ALWAYS_PUBLIC = [
-  '/api/',
-  '/_next/',
-  '/favicon',
-  '/logo',
-  '/robots.txt',
-  '/sitemap.xml',
-  '/',
-  '/auth/',
-  '/accept-invitation',
-];
-
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Always allow public paths
-  if (ALWAYS_PUBLIC.some((p) => pathname === p || pathname.startsWith(p))) {
+  // Explicitly bypass public endpoints, marketing landing page (/), and auth callbacks
+  if (
+    pathname.startsWith('/api/') ||
+    pathname.startsWith('/auth/') ||
+    pathname === '/accept-invitation' ||
+    pathname === '/'
+  ) {
     return NextResponse.next({ request });
   }
 
-  // Create a mutable response so Supabase can refresh and set cookies
   let response = NextResponse.next({ request });
 
   const DEFAULT_SUPABASE_URL = 'https://vcmcueyzjuostebnlmcm.supabase.co';
@@ -61,8 +50,7 @@ export async function middleware(request: NextRequest) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || DEFAULT_SUPABASE_URL;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON_KEY;
 
-
-  // Initialize Supabase SSR client — it reads and refreshes cookies automatically
+  // Initialize Supabase SSR client
   const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
       getAll() {
@@ -78,25 +66,36 @@ export async function middleware(request: NextRequest) {
     },
   });
 
-  // Validate session — getUser() verifies the JWT signature server-side (secure)
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Verify server-side user session
+  let user = null;
+  try {
+    const { data } = await supabase.auth.getUser();
+    user = data.user;
+  } catch {
+    user = null;
+  }
 
-  const isAuthenticated = !!user;
-  const isProtectedRoute = PROTECTED_PREFIXES.some((prefix) => pathname.startsWith(prefix));
-  const isAuthRoute = AUTH_ROUTES.some((route) => pathname.startsWith(route));
+  // Fallback cookie check for sb-access-token if direct JWT was set
+  const hasFallbackToken = !!request.cookies.get('sb-access-token')?.value;
+  const isAuthenticated = !!user || hasFallbackToken;
 
-  // Redirect unauthenticated users away from protected routes
+  const isProtectedRoute = PROTECTED_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
+  );
+  const isAuthRoute = AUTH_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`)
+  );
+
+  // Unauthenticated user attempting to access dashboard or protected routes -> strictly redirect to /login
   if (isProtectedRoute && !isAuthenticated) {
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('redirectTo', pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  // Redirect already-authenticated users away from auth pages
+  // Already authenticated user visiting /login -> redirect to /dashboard
   if (isAuthRoute && isAuthenticated) {
-    return NextResponse.redirect(new URL('/app/dashboard', request.url));
+    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 
   return response;
@@ -108,8 +107,8 @@ export const config = {
      * Match all request paths EXCEPT:
      * - _next/static (static files)
      * - _next/image (image optimization)
-     * - favicon.ico, logo files, and other public assets
+     * - favicon.ico, logo files, images, fonts
      */
-    '/((?!_next/static|_next/image|favicon.ico|logo|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|woff|woff2)$).*)',
   ],
 };

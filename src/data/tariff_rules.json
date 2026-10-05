@@ -1,28 +1,133 @@
 {
+  "sections": [
+    {
+      "section": "I",
+      "title": "General Rules and Regulations",
+      "scope": "Applicable to all sections of AIFT 2001. Covers policy forms, valuation bases (Market Value vs Reinstatement Value), co-insurance, cancellations, floater/declaration policies, claims experience, fire extinguishing appliance discounts, silent risk rules, compulsory/voluntary deductibles, and the statutory rate computation sequence (Rule 21)."
+    },
+    {
+      "section": "II",
+      "title": "Standard Fire and Special Perils (SFSP) Policy",
+      "scope": "Defines the 12 statutory perils, standard general exclusions, general conditions, agreed bank clause, designation of property, and basic deductible thresholds."
+    },
+    {
+      "section": "III",
+      "title": "Dwellings, Offices, Hotels, Shops, Hospitals & Educational Institutions",
+      "scope": "Mercantile and non-industrial commercial occupancies. Base peril rates range from 0.15‰ to 0.75‰. Base earthquake rate is 0.15‰ for Zone IV (Tariff Zone 2), 0.10‰ for Zone III, 0.05‰ for Zone II."
+    },
+    {
+      "section": "IV",
+      "title": "Industrial and Manufacturing Risks",
+      "scope": "Factories, workshops, mills, chemical refineries, processing plants. Classified into Risk Categories 1, 2, 3, and 4 based on fire hazard, storage of flammables, and industrial processes. Base STFI is 0.25‰; base EQ is 0.25‰ for Zone IV."
+    },
+    {
+      "section": "V",
+      "title": "Utilities Outside Industrial Compounds",
+      "scope": "Power generation plants, water pumping stations, electrical substations, transmission lines located outside manufacturing compounds."
+    },
+    {
+      "section": "VI",
+      "title": "Storage Risks Outside Industrial Compounds",
+      "scope": "Godowns, warehouses, silos, and open storage. Delineated strictly by storage hazard: Non-hazardous (Code 4001, 1.00‰), Category I Hazardous (Code 4002, 2.50‰), Category II Hazardous (Code 4003, 4.50‰), Category III Hazardous (Code 4004, 5.50‰), Transporters' godowns (Code 4008, 5.50‰), Coir waste (Code 4005, 12.00‰), Cold storages (Code 4006, 2.50‰). Deletion of STFI: 0.25‰ for godowns, 1.50‰ for open."
+    },
+    {
+      "section": "VII",
+      "title": "Tank Farms and Gas Holders",
+      "scope": "Bulk above-ground and underground storage of petroleum products, chemicals, liquefied gases, and gas holders outside industrial compounds."
+    },
+    {
+      "section": "VIII",
+      "title": "Add-on Covers and Endorsements",
+      "scope": "Permissible endorsements including Architects & Surveyors Fees, Debris Removal, Spontaneous Combustion, Escalation, Floater, Terrorism Pool Cover, and Voluntary Deductibles."
+    }
+  ],
+  "products": [
+    {
+      "code": "BSUS",
+      "name": "Bharat Sookshma Udyam Suraksha",
+      "sum_insured_limit": "Sum Insured up to ₹5 Crore (₹50,000,000) at one location across all insurable assets",
+      "target_market": "Micro enterprises, small retail shops, standalone clinics, single godowns",
+      "built_in_covers": [
+        "Architects, Surveyors & Consulting Engineers Fees up to 5% of admitted claim",
+        "Cost of Removal of Debris up to 2% of admitted claim",
+        "Loss of rent and rent for alternative accommodation",
+        "Automatic increase in Sum Insured (10% limit)",
+        "Stock values fluctuating up to 10% waiver"
+      ],
+      "deductible_scale": "₹5,000 for each and every loss for Sum Insured up to ₹10 Lakhs; ₹10,000 for each and every loss for Sum Insured > ₹10 Lakhs up to ₹5 Crores.",
+      "irda_guideline": "Mandatory standard policy wording w.e.f. April 1, 2021 replacing standard SFSP for micro risks."
+    },
+    {
+      "code": "BLUS",
+      "name": "Bharat Laghu Udyam Suraksha",
+      "sum_insured_limit": "Sum Insured exceeding ₹5 Crore up to ₹50 Crore (₹500,000,000) at one location",
+      "target_market": "Small to medium enterprises (SMEs), mid-size factories, multi-storey godowns, commercial complexes",
+      "built_in_covers": [
+        "Architects, Surveyors & Consulting Engineers Fees up to 5% of admitted claim",
+        "Cost of Removal of Debris up to 2% of admitted claim",
+        "Temporary removal of stocks up to 10% for processing/fabrication for up to 60 days",
+        "Additions, alterations and extensions up to 15% of building and P&M Sum Insured"
+      ],
+      "deductible_scale": "5% of claim amount subject to minimum ₹10,000 up to ₹25,000 for non-AOG perils; 5% subject to min ₹25,000 for Act of God (AOG/STFI/EQ) perils.",
+      "irda_guideline": "Mandatory standard policy wording w.e.f. April 1, 2021 replacing SFSP for small-to-mid manufacturing and commercial risks."
+    },
+    {
+      "code": "SFSP",
+      "name": "Standard Fire and Special Perils Policy",
+      "sum_insured_limit": "Sum Insured exceeding ₹50 Crore (₹500,000,000) across all locations",
+      "target_market": "Large corporate conglomerates, mega manufacturing complexes, multi-location logistics hubs",
+      "built_in_covers": ["Standard 12 perils; add-ons available by specific endorsement only."],
+      "deductible_scale": "Material Damage: 5% of claim amount subject to minimum ₹5,00,000; Act of God (AOG/STFI/EQ): 10% of claim amount subject to minimum ₹10,00,000.",
+      "irda_guideline": "Standard TAC / IIB tariff structure with large-risk underwriting flexibilities."
+    }
+  ],
+  "standard_perils": [
+    { "peril_id": 1, "name": "Fire", "description": "Destruction or damage by fire, excluding its own fermentation, natural heating or spontaneous combustion, or burning by order of any public authority." },
+    { "peril_id": 2, "name": "Lightning", "description": "Direct damage by atmospheric lightning strikes." },
+    { "peril_id": 3, "name": "Explosion / Implosion", "description": "Excluding loss or damage caused by boilers or economizers operated by steam under pressure belonging to or under control of the insured." },
+    { "peril_id": 4, "name": "Aircraft Damage", "description": "Loss, destruction or damage caused by aircraft, other aerial or space devices and articles dropped therefrom." },
+    { "peril_id": 5, "name": "Riot, Strike and Malicious Damage (RSMD)", "description": "Direct damage caused by the act of any person taking part together with others in any disturbance of the public peace, or malicious act of any individual." },
+    { "peril_id": 6, "name": "Storm, Cyclone, Typhoon, Tempest, Hurricane, Tornado, Flood and Inundation (STFI)", "description": "Natural storm water, inundation, river overflowing, cyclone, cloudburst and tempest damage." },
+    { "peril_id": 7, "name": "Impact Damage", "description": "Damage caused by impact by any rail/road vehicle or animal by direct contact, excluding vehicles/animals belonging to or under control of the insured or their employees." },
+    { "peril_id": 8, "name": "Subsidence and Landslide including Rockslide", "description": "Destruction or damage caused by subsidence of part of the site on which the property stands or landslide/rockslide, excluding coastal or river erosion, demolition, or structural repairs." },
+    { "peril_id": 9, "name": "Bursting and/or Overflowing of Water Tanks, Apparatus and Pipes", "description": "Loss or damage caused by accidental burst or leakage of water tanks, pipes or apparatus." },
+    { "peril_id": 10, "name": "Missile Testing Operations", "description": "Damage caused by missile testing operations conducted by government authorities." },
+    { "peril_id": 11, "name": "Leakage from Automatic Sprinkler Installations", "description": "Loss resulting from accidental discharge or leakage from TAC-approved automatic sprinkler installation, excluding damage during repairs or structural alterations." },
+    { "peril_id": 12, "name": "Bush Fire", "description": "Damage caused by burning bush or undergrowth, excluding forest fire." }
+  ],
+  "statutory_exclusions": [
+    "War, invasion, civil war, rebellion, revolution, military power, martial law.",
+    "Ionising radiations or contamination by radioactivity from nuclear fuel or waste.",
+    "Pollution or contamination unless resulting directly from an insured peril.",
+    "Loss of earnings, loss by delay, loss of market, or other consequential/indirect loss.",
+    "Theft or burglary during or after the occurrence of any insured peril.",
+    "Spontaneous combustion unless specifically opted and endorsed on payment of extra premium.",
+    "Deductible / Excess specified in the schedule."
+  ],
   "clauses": [
     {
       "id": "agreed-bank-clause",
       "title": "Agreed Bank Clause",
       "category": "Standard Financial Clause",
       "applicable_to": "All hypothecated assets (Stock, Plant & Machinery, Buildings)",
-      "description": "It is hereby declared and agreed (1) That upon any monies becoming payable under this policy the same shall be paid by the Company to the Bank and such receipt of the said Bank shall be complete discharge to the Company.",
-      "source_doc": "AIFT 2001 Section I, General Rules"
+      "description": "It is hereby declared and agreed that upon any monies becoming payable under this policy the same shall be paid by the Company to the Bank and such receipt of the said Bank shall be a complete discharge to the Company.",
+      "source_doc": "AIFT 2001 Section I, Rule 10"
     },
     {
       "id": "designation-of-property",
       "title": "Designation of Property Clause",
       "category": "Valuation & Description",
       "applicable_to": "Commercial contents, plant, fixtures, stocks",
-      "description": "For the purpose of determining, where necessary, the item under which any property is insured, the insurers agree to accept the designation under which the property has been entered in the insured's books.",
+      "description": "For the purpose of determining, where necessary, the item under which any property is insured, the insurers agree to accept the designation under which the property has been entered in the insured's books of account.",
       "source_doc": "AIFT 2001 Section I, Rule 8"
     },
     {
       "id": "architects-surveyors-fees",
       "title": "Architects, Surveyors and Consulting Engineers Fees (up to 5%)",
       "category": "Add-on / Built-in Cover",
-      "applicable_to": "Bharat Sookshma & Bharat Laghu Udyam Suraksha",
+      "applicable_to": "Bharat Sookshma & Bharat Laghu Udyam Suraksha, SFSP",
       "description": "Cover includes fees of architects, surveyors, and consulting engineers necessarily incurred in reinstatement of property consequent upon damage, up to 5% of the admitted claim amount.",
-      "source_doc": "IRDAI Bharat Sookshma Udyam Suraksha Policy Wordings, Clause 4.1"
+      "source_doc": "AIFT Section VIII / BSUS Policy Wordings, Clause 4.1"
     },
     {
       "id": "removal-of-debris",
@@ -30,15 +135,15 @@
       "category": "Add-on / Built-in Cover",
       "applicable_to": "Buildings & Contents",
       "description": "Costs necessarily incurred by the Insured in the removal of debris from the premises of the Insured following loss or damage up to 2% of the admitted claim amount.",
-      "source_doc": "IRDAI Bharat Sookshma Udyam Suraksha Policy Wordings, Clause 4.2"
+      "source_doc": "AIFT Section VIII / BSUS Policy Wordings, Clause 4.2"
     },
     {
       "id": "temporary-removal-stocks",
       "title": "Temporary Removal of Stocks (up to 10%)",
       "category": "Floater / Stock Extension",
       "applicable_to": "Raw Materials & Finished Goods",
-      "description": "Covers temporary removal of stocks up to 10% of total Sum Insured to other premises for fabrication, processing, or temporary holding for a period not exceeding 60 days.",
-      "source_doc": "AIFT 2001 Endorsement 21"
+      "description": "Covers temporary removal of stocks up to 10% of total Sum Insured on stock to other premises for fabrication, processing, or temporary holding for a period not exceeding 60 days.",
+      "source_doc": "AIFT 2001 Endorsement 21 / BLUS Built-in Cover"
     },
     {
       "id": "terrorism-clause",
@@ -54,53 +159,214 @@
       "category": "Rating Endorsement",
       "applicable_to": "Stocks at multiple locations",
       "description": "When stocks are stored in two or more identifiable locations within the same town/city or state, insurance may be issued on a Floater basis subject to a 10% loading on the highest applicable tariff rate.",
-      "source_doc": "AIFT 2001 Section I, Rule 11"
+      "source_doc": "AIFT 2001 Section I, Rule 13"
+    },
+    {
+      "id": "reinstatement-value-clause",
+      "title": "Reinstatement Value Clause (RVC)",
+      "category": "Valuation Basis",
+      "applicable_to": "Buildings, Plant & Machinery, Furniture & Fixtures (excluding Stocks)",
+      "description": "In the event of the property being destroyed or damaged, the basis upon which the amount payable under the policy is to be calculated shall be the reinstatement of the property, without deduction for depreciation.",
+      "source_doc": "AIFT 2001 Section I, Rule 8"
+    },
+    {
+      "id": "escalation-clause",
+      "title": "Escalation Clause (up to 50%)",
+      "category": "Sum Insured Enhancement",
+      "applicable_to": "Buildings, Plant & Machinery",
+      "description": "The Sums Insured shall increase each day by an amount representing 1/365th of the specified percentage (up to 50%) of the Sums Insured at inception, upon payment of 50% of the normal tariff rate on the escalation percentage.",
+      "source_doc": "AIFT 2001 Section I, Rule 12"
+    },
+    {
+      "id": "omission-to-insure-additions",
+      "title": "Omission to Insure Additions, Alterations or Extensions Clause (up to 5%)",
+      "category": "Automatic Cover Extension",
+      "applicable_to": "Buildings and Plant & Machinery",
+      "description": "Covers buildings and/or machinery, plant and other contents which the insured may erect or acquire or for which they may become responsible, up to 5% of the Sum Insured.",
+      "source_doc": "AIFT 2001 Section VIII, Endorsement 15"
+    },
+    {
+      "id": "spontaneous-combustion-endorsement",
+      "title": "Spontaneous Combustion Endorsement",
+      "category": "Peril Extension",
+      "applicable_to": "Agricultural produce, coal, oilseeds, cotton, hay",
+      "description": "Deletes the general exclusion relating to fire caused by its own fermentation, natural heating or spontaneous combustion, subject to payment of the prescribed tariff extra.",
+      "source_doc": "AIFT 2001 Section VIII, Endorsement 1"
     }
   ],
   "warranties": [
     {
-      "code": "WARR-CAT1",
+      "code": "WARR-4001",
+      "name": "Non-Hazardous Storage Warranty",
+      "text": "Warranted that during the currency of this policy, no hazardous goods listed under Category I, Category II, Category III, Coir waste, Coir fibre, and Caddies shall be stored or brought into the insured premises.",
+      "occupancy_code": "4001"
+    },
+    {
+      "code": "WARR-4002",
       "name": "Category I Storage Warranty",
-      "text": "Warranted that during the currency of this policy, no hazardous goods listed under Category II, Category III, Coir waste, Coir fibre, and Caddies shall be stored or brought into the premises.",
+      "text": "Warranted that during the currency of this policy, no hazardous goods listed under Category II, Category III, Coir waste, Coir fibre, and Caddies shall be stored or brought into the insured premises.",
       "occupancy_code": "4002"
     },
     {
+      "code": "WARR-4003",
+      "name": "Category II Storage Warranty",
+      "text": "Warranted that during the currency of this policy, no hazardous goods listed under Category III, Coir waste, Coir fibre, and Caddies shall be stored or brought into the insured premises.",
+      "occupancy_code": "4003"
+    },
+    {
+      "code": "WARR-4004",
+      "name": "Category III Storage Warranty",
+      "text": "Warranted that during the currency of this policy, no Coir waste, Coir fibre, and Caddies shall be stored or brought into the insured premises.",
+      "occupancy_code": "4004"
+    },
+    {
       "code": "WARR-ELECTRICAL",
-      "name": "Electrical Equipment Warranty",
-      "text": "Warranted that all electrical installations conform to the Indian Electricity Rules, 1956, and that periodic thermal imaging or insulation resistance certification is maintained.",
+      "name": "Electrical Equipment & Installation Warranty",
+      "text": "Warranted that all electrical installations conform strictly to the Indian Electricity Rules, 1956, and that periodic insulation resistance / thermal imaging testing is conducted by a licensed electrical contractor.",
       "occupancy_code": "ALL"
     },
     {
-      "code": "WARR-FIRE-PROT",
-      "name": "Fire Protection Appliances Warranty",
-      "text": "Warranted that all fire fighting appliances (hydrants, hoses, portable extinguishers) are maintained in full operational order under annual maintenance contracts (AMC).",
+      "code": "WARR-FEA",
+      "name": "Fire Extinguishing Appliances (FEA) Warranty",
+      "text": "Warranted that all fire fighting appliances (hydrants, small bore hose reels, mobile extinguishers, trailer pumps) are maintained in efficient working order at all times under an Annual Maintenance Contract (AMC) with an authorized external fire engineering agency.",
       "occupancy_code": "ALL"
+    },
+    {
+      "code": "WARR-DRAIN",
+      "name": "Storm Water Drainage & Plinth Warranty",
+      "text": "Warranted that the finished floor level (plinth) of all storage blocks and manufacturing sheds is maintained at least 1.5 feet (450 mm) above the surrounding finished ground level with operational storm water drainage outlets.",
+      "occupancy_code": "ALL"
+    },
+    {
+      "code": "WARR-SILENT",
+      "name": "Silent Risk Warranty",
+      "text": "Warranted that all manufacturing operations and processing are completely suspended, all power and fuel supplies to process equipment are isolated/disconnected, and only storage and routine security vigilance are maintained.",
+      "occupancy_code": "SILENT"
+    },
+    {
+      "code": "WARR-OPEN",
+      "name": "Open Storage Warranty",
+      "text": "Warranted that all goods stored in the open are stacked on raised wooden/concrete pallets, adequately covered with waterproof and flame-retardant tarpaulins securely tied down, with a clear separation of at least 15 meters from any combustible waste.",
+      "occupancy_code": "4007"
+    },
+    {
+      "code": "WARR-COLD",
+      "name": "Cold Storage Machinery & Temperature Warranty",
+      "text": "Warranted that refrigeration compressors and cooling towers are inspected annually by qualified refrigeration engineers, continuous temperature logs are maintained, and automatic standby power generators are operational.",
+      "occupancy_code": "4006"
+    },
+    {
+      "code": "WARR-SECURITY-CCTV",
+      "name": "24x7 Security & CCTV Surveillance Warranty",
+      "text": "Warranted that round-the-clock trained security guards are deployed at all access gates and perimeter boundaries, and CCTV surveillance cameras covering entry/exit points and yard storage are operational with minimum 30 days footage backup.",
+      "occupancy_code": "ALL"
+    },
+    {
+      "code": "WARR-SPRINKLER",
+      "name": "Automatic Sprinkler System Warranty",
+      "text": "Warranted that the automatic sprinkler installation is designed and installed in compliance with TAC regulations, that water supplies are dedicated and uninterrupted, and that quarterly alarm valve flow tests are recorded.",
+      "occupancy_code": "SPRINKLER"
     }
+  ],
+  "voluntary_deductible_scale": [
+    {
+      "deductible_amount_aog_inr": 1000000,
+      "deductible_amount_other_inr": 200000,
+      "discount_percent_aog": 5,
+      "discount_percent_other": 2,
+      "description": "₹10 Lakh AOG (min) / ₹2 Lakh other perils -> 5% AOG discount, 2% other perils discount"
+    },
+    {
+      "deductible_amount_aog_inr": 2000000,
+      "deductible_amount_other_inr": 400000,
+      "discount_percent_aog": 10,
+      "discount_percent_other": 4,
+      "description": "₹20 Lakh AOG (min) / ₹4 Lakh other perils -> 10% AOG discount, 4% other perils discount"
+    },
+    {
+      "deductible_amount_aog_inr": 3000000,
+      "deductible_amount_other_inr": 600000,
+      "discount_percent_aog": 15,
+      "discount_percent_other": 6,
+      "description": "₹30 Lakh AOG (min) / ₹6 Lakh other perils -> 15% AOG discount, 6% other perils discount"
+    },
+    {
+      "deductible_amount_aog_inr": 6000000,
+      "deductible_amount_other_inr": 800000,
+      "discount_percent_aog": 30,
+      "discount_percent_other": 8,
+      "description": "₹60 Lakh AOG (min) / ₹8 Lakh other perils -> 30% AOG discount, 8% other perils discount"
+    },
+    {
+      "deductible_amount_aog_inr": 10000000,
+      "deductible_amount_other_inr": 1000000,
+      "discount_percent_aog": 50,
+      "discount_percent_other": 10,
+      "description": "₹100 Lakh AOG (min) / ₹10 Lakh other perils -> 50% AOG discount, 10% other perils discount"
+    }
+  ],
+  "fea_discounts": [
+    { "type": "Hand Appliances & Trailer Pumps / Fire Engines", "discount_percent": 2.5 },
+    { "type": "Hand Appliances & Hydrant System", "discount_percent": 5.0 },
+    { "type": "Hand Appliances & Independent Sprinkler / Fixed Water Spray System", "discount_percent": 7.5 },
+    { "type": "Hand Appliances, Hydrant System & Independent Sprinkler System", "discount_percent": 10.0 }
+  ],
+  "claims_experience_scale": [
+    { "incurred_claims_ratio": "Up to 5%", "discount_percent": 15, "loading_percent": 0 },
+    { "incurred_claims_ratio": "Above 5% & up to 10%", "discount_percent": 10, "loading_percent": 0 },
+    { "incurred_claims_ratio": "Above 10% & up to 15%", "discount_percent": 5, "loading_percent": 0 },
+    { "incurred_claims_ratio": "Above 15% & up to 30%", "discount_percent": 0, "loading_percent": 0 },
+    { "incurred_claims_ratio": "Above 30% & up to 40%", "discount_percent": 0, "loading_percent": 2.5 },
+    { "incurred_claims_ratio": "Above 40% & up to 55%", "discount_percent": 0, "loading_percent": 5.0 },
+    { "incurred_claims_ratio": "Above 55% & up to 75%", "discount_percent": 0, "loading_percent": 10.0 },
+    { "incurred_claims_ratio": "Above 75% & up to 100%", "discount_percent": 0, "loading_percent": 15.0 },
+    { "incurred_claims_ratio": "Above 100%", "discount_percent": 0, "loading_percent": 25.0 }
+  ],
+  "rate_computation_sequence": [
+    "Step 1: Determine Basic Rate from IIB Schedule 3 / AIFT 2001 based on Occupancy Code and Section.",
+    "Step 2: Apply 5% Reduction for Sprinklered blocks if applicable (for risks rateable under Sections III, IV, V, VI).",
+    "Step 3: Reduction in rates for deletion of STFI and/or RSMTD perils, if opted out.",
+    "Step 4: Add Tariff extra for 'Kutcha' Construction (+4.00‰), if applicable (applied on 1-2-3).",
+    "Step 5: Apply Discount/Loading for Claims Experience based on preceding 36-month claims ratio.",
+    "Step 6: Apply Discount for Fire Extinguishing Appliances (FEA) on protected blocks.",
+    "Step 7: Apply Discount for Voluntary Deductible on total premium calculated on the basis of final rate."
   ],
   "hazard_categories": [
     {
       "category": 1,
-      "name": "Category 1 Hazardous Goods",
+      "name": "Category 1 Hazardous Goods (Low Hazard)",
       "rate_adjustment": -0.25,
-      "description": "Low hazard storage: Food products, cereals, pulses, packaged grains, metal ingots, canned items, electrical domestic goods, stationery without pyrotechnics."
+      "max_feature_discount": 0.50,
+      "description": "Food products, cereals, pulses, packaged grains, metal ingots, canned items, electrical domestic goods, stationery without pyrotechnics.",
+      "section_vi_code": "4002",
+      "tolerance_rule": "The presence of hazardous goods of higher category not exceeding 5% of total stock value may be ignored."
     },
     {
       "category": 2,
-      "name": "Category 2 Hazardous Goods",
-      "rate_adjustment": -0.1,
-      "description": "Moderate hazard storage: Edible oils (vegetable oil, almond oil, coconut oil in sealed tin/plastic containers), textiles, paper in reams, wood furniture, soaps."
+      "name": "Category 2 Hazardous Goods (Moderate Hazard)",
+      "rate_adjustment": -0.10,
+      "max_feature_discount": 0.50,
+      "description": "Edible oils (vegetable oil, almond oil, coconut oil in sealed tin/plastic containers), textiles, paper in reams, wood furniture, soaps.",
+      "section_vi_code": "4003",
+      "tolerance_rule": "The presence of hazardous goods of higher category not exceeding 5% of total stock value may be ignored."
     },
     {
       "category": 3,
-      "name": "Category 3 Hazardous Goods",
+      "name": "Category 3 Hazardous Goods (High Hazard)",
       "rate_adjustment": 0.25,
-      "description": "High hazard storage: Flammable liquids with flash point between 32°C and 65°C, paints, varnishes, tires, rubber compounds, synthetic polymers."
+      "max_feature_discount": 0.30,
+      "description": "Flammable liquids with flash point between 32°C and 65°C, paints, varnishes, tires, rubber compounds, synthetic polymers.",
+      "section_vi_code": "4004",
+      "tolerance_rule": "The presence of hazardous goods of higher category not exceeding 5% of total stock value may be ignored."
     },
     {
       "category": 4,
-      "name": "Category 4 Hazardous Goods",
-      "rate_adjustment": 1.6,
-      "description": "Extreme hazard storage: Flammable liquids with flash point below 32°C (solvents, LPG, spirits, nitrocellulose, celluloid goods, match factories, fireworks)."
+      "name": "Category 4 Hazardous Goods (Extreme Hazard)",
+      "rate_adjustment": 1.60,
+      "max_feature_discount": 0.55,
+      "description": "Flammable liquids with flash point below 32°C (solvents, LPG, spirits, nitrocellulose, celluloid goods, match factories, fireworks).",
+      "section_vi_code": "4004",
+      "tolerance_rule": "Strict prohibition; any presence invalidates lower rating."
     }
   ]
 }

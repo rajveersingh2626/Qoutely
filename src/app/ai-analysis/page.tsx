@@ -118,29 +118,42 @@ export default function AIAnalysisPage() {
             reason: c.reason || '',
             loss_cost: c.loss_cost,
             category: c.category,
+            section: c.section,
           }));
 
+          const confirmedCode = json.data.occupancy_code || topCandidates[0]?.code || null;
+          const clarifyQ = json.data.clarifying_question || json.data.clarification_question || null;
+
           setAnalysisResult({
-            business_summary: json.data.business_summary || '',
+            business_summary: json.data.business_summary || json.data.reasoning || '',
             keywords: json.data.keywords || [],
+            product_category: json.data.product_category || null,
+            aift_section: json.data.aift_section || (topCandidates[0]?.section ? `Section ${topCandidates[0].section}` : null),
+            aift_category: json.data.aift_category || (topCandidates[0]?.category ? Number(topCandidates[0].category) : null),
+            storage_hazard_category: json.data.storage_hazard_category || null,
+            occupancy_code: confirmedCode,
+            occupancy_description: json.data.occupancy_description || topCandidates[0]?.description || null,
             occupancy_candidates: topCandidates,
             hazard_flags: json.data.hazard_flags || [],
             missing_fields: json.data.missing_fields || [],
             confidence_score: topCandidates[0]?.confidence || 0.94,
-            clarification_question: json.data.clarification_question || null,
+            clarification_question: clarifyQ,
+            clarifying_question: clarifyQ,
             suggested_quick_answers: json.data.suggested_quick_answers || [],
             suggested_discount_percent: json.data.suggested_discount_percent || 0,
             suggested_loading_percent: json.data.suggested_loading_percent || 0,
           });
 
-          if (topCandidates[0]?.code) {
-            setSelectedCandidateCode(topCandidates[0].code);
+          if (confirmedCode) {
+            setSelectedCandidateCode(confirmedCode);
+          } else {
+            setSelectedCandidateCode('');
           }
 
-          if (customAnswer && analysisResult?.clarification_question) {
+          if (customAnswer && (analysisResult?.clarification_question || clarifyQ)) {
             setClarifications((prev) => [
               ...prev,
-              { q: analysisResult.clarification_question!, a: customAnswer },
+              { q: (analysisResult?.clarification_question || clarifyQ)!, a: customAnswer },
             ]);
             setInputText((prev) => `${prev}\n[Clarification: ${customAnswer}]`);
             setFollowUpAnswer('');
@@ -451,7 +464,7 @@ export default function AIAnalysisPage() {
 
           {/* Right Column: Underwriting Results Workbench (7 cols) */}
           <div className="lg:col-span-7 space-y-4">
-            {!analysisResult || !activeCandidate ? (
+            {!analysisResult ? (
               <div className="p-8 md:p-12 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-card flex flex-col items-center justify-center text-center space-y-4 min-h-[460px]">
                 <div className="w-16 h-16 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shadow-inner">
                   <Sparkles className="w-8 h-8" />
@@ -468,6 +481,117 @@ export default function AIAnalysisPage() {
                     <span className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 font-mono">✓ AIFT 2001 Clamped</span>
                     <span className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 font-mono">✓ Zero Hallucination Math</span>
                   </div>
+                </div>
+              </div>
+            ) : !analysisResult.occupancy_code || !activeCandidate ? (
+              /* Phase 4: UI Handling for Nullable AI (Amber-500 Warning Box) */
+              <div className="p-6 md:p-8 rounded-3xl bg-amber-50/90 dark:bg-amber-950/30 border-2 border-amber-500/80 dark:border-amber-600 shadow-sm space-y-6">
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-amber-500/10 dark:bg-amber-500/20 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                    <AlertTriangle className="w-6 h-6 text-amber-600 dark:text-amber-400" />
+                  </div>
+                  <div className="space-y-1.5 flex-1">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <h3 className="text-base font-bold text-amber-950 dark:text-amber-100 tracking-tight">
+                        Underwriting Clarification Required
+                      </h3>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        {analysisResult.aift_section && (
+                          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-200/80 dark:bg-amber-900/80 text-amber-900 dark:text-amber-200 border border-amber-300 dark:border-amber-700">
+                            {analysisResult.aift_section}
+                          </span>
+                        )}
+                        {analysisResult.product_category && (
+                          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-200/80 dark:bg-amber-900/80 text-amber-900 dark:text-amber-200 border border-amber-300 dark:border-amber-700">
+                            Sector: {analysisResult.product_category}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <p className="text-xs text-amber-900/90 dark:text-amber-200/90 leading-relaxed">
+                      The prompt or trade description is ambiguous. Statutory fire underwriting rules under AIFT 2001 strictly differentiate between manufacturing, storage/warehousing, and retail trade. Automated guessing is blocked to prevent tariff misclassifications.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Clarifying Question Callout */}
+                <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-amber-300 dark:border-amber-800/80 shadow-xs space-y-3">
+                  <div className="flex items-start gap-2.5">
+                    <HelpCircle className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400 block mb-0.5">
+                        Statutory Underwriter Inquiry
+                      </span>
+                      <p className="text-sm font-semibold text-slate-900 dark:text-white leading-snug">
+                        {analysisResult.clarification_question || analysisResult.clarifying_question || 'Do you manufacture the product or just store/distribute it?'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Quick Answer Buttons */}
+                  {analysisResult.suggested_quick_answers && analysisResult.suggested_quick_answers.length > 0 && (
+                    <div className="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2">
+                      <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 dark:text-slate-500">
+                        Quick Answers (Tap to refine risk):
+                      </span>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {analysisResult.suggested_quick_answers.map((answer, idx) => (
+                          <button
+                            key={idx}
+                            type="button"
+                            disabled={isReplyingFollowUp}
+                            onClick={() => handleRunAnalysis(answer)}
+                            className="text-left px-3 py-2 rounded-xl bg-amber-50/80 hover:bg-amber-100 dark:bg-amber-950/50 dark:hover:bg-amber-900/60 border border-amber-200 dark:border-amber-800/80 text-xs font-medium text-amber-950 dark:text-amber-200 transition-all flex items-center justify-between group disabled:opacity-50 cursor-pointer"
+                          >
+                            <span className="truncate pr-2">{answer}</span>
+                            <CornerDownRight className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Follow-up Clarification Input Field */}
+                  <div className="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2">
+                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block">
+                      Type operational clarification:
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={followUpAnswer}
+                        onChange={(e) => setFollowUpAnswer(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && followUpAnswer.trim() && !isReplyingFollowUp) {
+                            e.preventDefault();
+                            handleRunAnalysis(followUpAnswer.trim());
+                          }
+                        }}
+                        placeholder="e.g. We manufacture plastic components using injection moulding..."
+                        className="flex-1 px-3.5 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500 font-sans"
+                      />
+                      <button
+                        type="button"
+                        disabled={!followUpAnswer.trim() || isReplyingFollowUp}
+                        onClick={() => handleRunAnalysis(followUpAnswer.trim())}
+                        className="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 disabled:opacity-50 text-white text-xs font-bold shadow-xs transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer"
+                      >
+                        {isReplyingFollowUp ? (
+                          <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                          <>
+                            <Send className="w-3.5 h-3.5" />
+                            <span>Clarify</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-amber-100/60 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-900 flex items-center gap-2 text-xs text-amber-900 dark:text-amber-200 font-medium">
+                  <Shield className="w-4 h-4 text-amber-700 dark:text-amber-400 shrink-0" />
+                  <span>Statutory Quote generation is locked until a verified IIB Schedule 3 occupancy code is confirmed.</span>
                 </div>
               </div>
             ) : (
@@ -498,7 +622,10 @@ export default function AIAnalysisPage() {
                       Code {activeCandidate.code}
                     </span>
                     <span className="text-xs font-bold px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
-                      IIB Schedule 3
+                      {activeCandidate.section ? (activeCandidate.section.startsWith('Section') ? activeCandidate.section : `AIFT Section ${activeCandidate.section}`) : 'IIB Schedule 3'}
+                    </span>
+                    <span className="text-xs font-bold px-2 py-0.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                      AIFT Category {activeCandidate.category || 1}
                     </span>
                   </div>
                   <h3 className="text-base font-bold text-slate-900 dark:text-white leading-snug">

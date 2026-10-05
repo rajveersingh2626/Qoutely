@@ -35,6 +35,7 @@ import {
   Square,
   BadgePercent,
   FileCheck,
+  AlertTriangle,
 } from 'lucide-react';
 import { useWorkspace } from '@/context/WorkspaceContext';
 import { Header } from '@/components/layout/Header';
@@ -50,14 +51,18 @@ import { downloadQuoteSlipPDF } from '@/lib/pdf-generator';
 import { Quote } from '@/types/database';
 
 interface AIExtractionResponse {
-  occupancyCode: string;
-  occupancyDescription: string;
+  occupancyCode: string | null;
+  occupancyDescription?: string | null;
+  productCategory?: string | null;
+  aiftSection?: string | null;
+  aiftCategory?: number | null;
+  storageHazardCategory?: string | null;
   matchedKeywords: string[];
   confidenceScore: number;
   suggestedFlexaRate?: number;
   suggestedStfiRate?: number;
   suggestedEqRate?: number;
-  riskTier?: 'Low' | 'Medium' | 'High';
+  riskTier?: string;
   reasoning?: string;
   clarificationQuestion?: string | null;
   suggestedQuickAnswers?: string[];
@@ -297,58 +302,105 @@ export default function NewQuoteWorkspacePage() {
       }
 
       const resJson = await response.json();
-      const topCand = resJson.data?.occupancy_candidates?.[0];
-      if (topCand) {
-        const matched = OCCUPANCIES.find((o) => o.code === topCand.code);
-        const flexa = matched ? matched.flexa_rate : (topCand.loss_cost || 0.65);
-        const stfi = matched ? (matched.stfi_rate || 0.15) : 0.15;
-        const eq = matched ? (matched.eq_rate || 0.10) : 0.10;
+      const data = resJson.data;
+      const returnedCode = data?.occupancy_code || null;
+      const topCand = data?.occupancy_candidates?.[0];
 
-        const discountPct = resJson.data?.suggested_discount_percent || 0;
-        const loadingPct = resJson.data?.suggested_loading_percent || 0;
-
+      if (!returnedCode) {
+        // AI could not confidently match code or input is vague -> require clarification
         setAiResult({
-          occupancyCode: topCand.code,
-          occupancyDescription: topCand.description,
-          matchedKeywords: resJson.data.keywords || [topCand.code],
-          confidenceScore: topCand.confidence || 0.95,
-          suggestedFlexaRate: flexa,
-          suggestedStfiRate: stfi,
-          suggestedEqRate: eq,
-          riskTier: matched?.category === 1 ? 'Low' : 'Medium',
-          reasoning: topCand.reason || 'Classified via Gemini 3.8 Flash grounded in AIFT 2001 and IIB Schedule 3.',
-          clarificationQuestion: resJson.data?.clarification_question || null,
-          suggestedQuickAnswers: resJson.data?.suggested_quick_answers || [],
-          missingFields: resJson.data?.missing_fields || [],
-          suggestedDiscountPercent: discountPct,
-          suggestedLoadingPercent: loadingPct,
+          occupancyCode: null,
+          occupancyDescription: null,
+          productCategory: data?.product_category || 'Commercial',
+          aiftSection: data?.aift_section || null,
+          aiftCategory: data?.aift_category || null,
+          storageHazardCategory: data?.storage_hazard_category || null,
+          matchedKeywords: data?.keywords || [],
+          confidenceScore: 0.5,
+          suggestedFlexaRate: 0,
+          suggestedStfiRate: 0,
+          suggestedEqRate: 0,
+          riskTier: 'Clarification Required',
+          reasoning: data?.reasoning || 'Operational description is too vague. Clarification required before assigning code.',
+          clarificationQuestion: data?.clarifying_question || data?.clarification_question || 'Do you manufacture the product or just store/distribute it?',
+          suggestedQuickAnswers: data?.suggested_quick_answers || [],
+          missingFields: data?.missing_fields || ['Operational process'],
+          suggestedDiscountPercent: 0,
+          suggestedLoadingPercent: 0,
         });
 
-        // Auto-apply suggested rates
-        setFlexaRate(flexa);
-        setStfiRate(stfi);
-        setEqRate(eq);
-
-        // Deterministically apply discount or loading if extracted
-        if (discountPct > 0) {
-          setDiscounts(discountPct);
-        }
-        if (loadingPct > 0) {
-          setLoadings(loadingPct);
-        }
-
-        if (customAnswer && aiResult?.clarificationQuestion) {
+        if (customAnswer) {
           setClarificationHistory((prev) => [
             ...prev,
-            { q: aiResult.clarificationQuestion!, a: customAnswer },
+            { q: aiResult?.clarificationQuestion || 'Clarification', a: customAnswer },
           ]);
-          setBusinessDescription((prev) => `${prev}\n[Underwriter Clarification: ${customAnswer}]`);
+          setBusinessDescription((prev) => `${prev}\n[Clarification: ${customAnswer}]`);
           setFollowUpInput('');
         }
-
-        setAiAppliedNotification(true);
-        setTimeout(() => setAiAppliedNotification(false), 3500);
+        return;
       }
+
+      // Verified occupancy code confirmed
+      const matched = OCCUPANCIES.find((o) => o.code === returnedCode) || (topCand ? {
+        code: topCand.code,
+        description: topCand.description,
+        flexa_rate: topCand.loss_cost || 0.65,
+        stfi_rate: 0.15,
+        eq_rate: 0.10,
+        section: topCand.section || 'IV',
+        category: topCand.category || 2,
+      } : null);
+
+      const flexa = matched ? matched.flexa_rate : (topCand?.loss_cost || 0.65);
+      const stfi = matched ? (matched.stfi_rate || 0.15) : 0.15;
+      const eq = matched ? (matched.eq_rate || 0.10) : 0.10;
+
+      const discountPct = data?.suggested_discount_percent || 0;
+      const loadingPct = data?.suggested_loading_percent || 0;
+
+      const resolvedCat = data?.aift_category || matched?.category || 1;
+      const resolvedSec = data?.aift_section || (matched?.section ? (matched.section.startsWith('Section') ? matched.section : `Section ${matched.section}`) : 'Section IV');
+
+      setAiResult({
+        occupancyCode: returnedCode,
+        occupancyDescription: data?.occupancy_description || matched?.description || topCand?.description || `Occupancy ${returnedCode}`,
+        productCategory: data?.product_category || 'Commercial',
+        aiftSection: resolvedSec,
+        aiftCategory: resolvedCat,
+        storageHazardCategory: data?.storage_hazard_category || null,
+        matchedKeywords: data?.keywords || [returnedCode],
+        confidenceScore: topCand?.confidence || 0.95,
+        suggestedFlexaRate: flexa,
+        suggestedStfiRate: stfi,
+        suggestedEqRate: eq,
+        riskTier: resolvedCat === 1 ? 'Low Hazard (Cat 1)' : (resolvedCat === 2 ? 'Normal (Cat 2)' : `High Hazard (Cat ${resolvedCat})`),
+        reasoning: data?.reasoning || topCand?.reason || 'Verified statutory occupancy classification.',
+        clarificationQuestion: null,
+        suggestedQuickAnswers: [],
+        missingFields: [],
+        suggestedDiscountPercent: discountPct,
+        suggestedLoadingPercent: loadingPct,
+      });
+
+      // Auto-apply suggested rates
+      setFlexaRate(flexa);
+      setStfiRate(stfi);
+      setEqRate(eq);
+
+      if (discountPct > 0) setDiscounts(discountPct);
+      if (loadingPct > 0) setLoadings(loadingPct);
+
+      if (customAnswer) {
+        setClarificationHistory((prev) => [
+          ...prev,
+          { q: aiResult?.clarificationQuestion || 'Clarification', a: customAnswer },
+        ]);
+        setBusinessDescription((prev) => `${prev}\n[Underwriter Clarification: ${customAnswer}]`);
+        setFollowUpInput('');
+      }
+
+      setAiAppliedNotification(true);
+      setTimeout(() => setAiAppliedNotification(false), 3500);
     } catch (err: any) {
       setAnalysisError(err.message || 'Error executing AI risk extraction.');
     } finally {
@@ -720,67 +772,148 @@ Total Final Premium: ₹ ${formatINRWithDecimals(calculation.totalFinalPremium)}
             </div>
           )}
 
-          {/* AI Match Card — Visually Distinct Royal Blue Theme */}
-          {aiResult && (
-            <div className="rounded-[20px] p-5 bg-blue-50/70 dark:bg-blue-950/40 border-2 border-blue-500/30 shadow-soft space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-blue-700 dark:text-blue-300 text-xs font-bold uppercase tracking-wider">
-                  <ShieldCheck className="w-4 h-4 text-blue-600" />
-                  <span>AI Occupancy Match</span>
-                </div>
-                <div className="px-2.5 py-0.5 rounded-full bg-blue-600 text-white text-[11px] font-mono font-bold shadow-xs">
-                  {aiResult.confidenceScore > 1
-                    ? Math.min(99, Math.round(aiResult.confidenceScore))
-                    : Math.min(99, Math.round(aiResult.confidenceScore * 100))}% Confidence
+          {/* Phase 4: UI Handling for Nullable AI */}
+          {aiResult && !aiResult.occupancyCode && (
+            <div className="rounded-xl p-5 bg-amber-50/90 dark:bg-amber-950/40 border border-amber-400 dark:border-amber-600 shadow-xs space-y-4">
+              <div className="flex items-start gap-3">
+                <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
+                <div className="space-y-1">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-amber-900 dark:text-amber-300 mr-1">
+                      Clarification Required
+                    </h4>
+                    {aiResult.aiftSection && (
+                      <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-amber-200/80 dark:bg-amber-900/80 text-amber-900 dark:text-amber-200 border border-amber-300 dark:border-amber-700">
+                        {aiResult.aiftSection}
+                      </span>
+                    )}
+                    {aiResult.productCategory && (
+                      <span className="text-[11px] font-medium px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200">
+                        Sector: {aiResult.productCategory}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs font-semibold text-amber-950 dark:text-amber-100 leading-snug">
+                    {aiResult.clarificationQuestion || 'The operational process is too vague to assign an occupancy code.'}
+                  </p>
+                  {aiResult.reasoning && (
+                    <p className="text-[11px] text-amber-800 dark:text-amber-300/90 leading-relaxed">
+                      {aiResult.reasoning}
+                    </p>
+                  )}
                 </div>
               </div>
 
-              {/* Occupancy details */}
-              <div className="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-blue-100 dark:border-blue-900/60 shadow-xs space-y-2">
-                <div className="flex items-center gap-2">
-                  <span className="px-2 py-0.5 rounded font-mono font-bold text-xs bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
-                    Code: {aiResult.occupancyCode}
+              {/* Clickable Quick Answers */}
+              {aiResult.suggestedQuickAnswers && aiResult.suggestedQuickAnswers.length > 0 && (
+                <div className="space-y-1.5 pt-1 border-t border-amber-200/80 dark:border-amber-800/60">
+                  <span className="text-[10px] uppercase font-bold tracking-wider text-amber-800 dark:text-amber-400">
+                    Quick Clarifications (Tap to apply):
                   </span>
-                  {aiResult.riskTier && (
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
-                      Tier: {aiResult.riskTier} Risk
+                  <div className="flex flex-col gap-1.5">
+                    {aiResult.suggestedQuickAnswers.map((answer, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        disabled={isAnsweringFollowUp}
+                        onClick={() => handleAnalyzeProposal(answer)}
+                        className="w-full text-left px-3 py-2 rounded-lg bg-white dark:bg-slate-900 border border-amber-300 dark:border-amber-700/80 hover:bg-amber-100/70 dark:hover:bg-amber-900/50 text-xs font-medium text-amber-900 dark:text-amber-200 transition-colors flex items-center justify-between"
+                      >
+                        <span>{answer}</span>
+                        <CornerDownRight className="w-3.5 h-3.5 text-amber-500" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Mandatory Clarification Input */}
+              <div className="pt-2 border-t border-amber-200/80 dark:border-amber-800/60 space-y-2">
+                <label className="text-xs font-semibold text-amber-900 dark:text-amber-200 block">
+                  Please type your clarification before proceeding:
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={followUpInput}
+                    onChange={(e) => setFollowUpInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && followUpInput.trim() && !isAnsweringFollowUp) {
+                        e.preventDefault();
+                        handleAnalyzeProposal(followUpInput.trim());
+                      }
+                    }}
+                    placeholder="e.g. We manufacture plastic containers on-site..."
+                    className="flex-1 px-3 py-2 text-xs rounded-lg border border-amber-300 dark:border-amber-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-500 font-medium"
+                  />
+                  <button
+                    type="button"
+                    disabled={!followUpInput.trim() || isAnsweringFollowUp}
+                    onClick={() => handleAnalyzeProposal(followUpInput.trim())}
+                    className="px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-semibold shadow-xs transition-colors disabled:opacity-50 cursor-pointer flex items-center gap-1.5"
+                  >
+                    {isAnsweringFollowUp ? (
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Send className="w-3.5 h-3.5" />
+                    )}
+                    <span>Submit</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Confirmed Occupancy Code — Clean Stripe/Linear Theme */}
+          {aiResult && aiResult.occupancyCode && (
+            <div className="rounded-xl p-5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="text-xs font-mono font-bold px-2.5 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
+                    Code {aiResult.occupancyCode}
+                  </span>
+                  <span className="text-xs font-bold px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                    {aiResult.aiftSection || 'AIFT 2001'}
+                  </span>
+                  {aiResult.aiftCategory && (
+                    <span className="text-xs font-bold px-2 py-0.5 rounded-lg bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+                      Category {aiResult.aiftCategory}
+                    </span>
+                  )}
+                  {aiResult.storageHazardCategory && (
+                    <span className="text-xs font-semibold px-2 py-0.5 rounded-lg bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                      {aiResult.storageHazardCategory}
+                    </span>
+                  )}
+                  {aiResult.productCategory && (
+                    <span className="text-xs font-medium text-slate-500">
+                      {aiResult.productCategory}
                     </span>
                   )}
                 </div>
+                <span className="text-xs font-mono text-emerald-600 dark:text-emerald-400 font-medium">
+                  {aiResult.confidenceScore > 1
+                    ? Math.min(99, Math.round(aiResult.confidenceScore))
+                    : Math.min(99, Math.round(aiResult.confidenceScore * 100))}% Match
+                </span>
+              </div>
 
-                <p className="text-xs font-bold text-slate-900 dark:text-white leading-snug">
+              <div>
+                <h3 className="text-sm font-semibold text-slate-900 dark:text-white leading-snug">
                   {aiResult.occupancyDescription}
-                </p>
-
+                </h3>
                 {aiResult.reasoning && (
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed border-t border-slate-100 dark:border-slate-800 pt-2">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed">
                     {aiResult.reasoning}
                   </p>
                 )}
               </div>
 
-              {/* Matched Keywords */}
-              <div className="space-y-1.5">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-blue-800 dark:text-blue-300">
-                  Extracted Risk Keywords:
-                </span>
-                <div className="flex flex-wrap gap-1.5">
-                  {aiResult.matchedKeywords.map((kw, i) => (
-                    <span
-                      key={i}
-                      className="px-2 py-0.5 rounded-md text-[10px] font-mono font-medium bg-blue-100/80 dark:bg-blue-900/60 text-blue-800 dark:text-blue-200 border border-blue-200/80 dark:border-blue-800"
-                    >
-                      #{kw}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Suggested Rates Sub-strip & Action */}
-              <div className="pt-2 border-t border-blue-200/60 dark:border-blue-900/60 flex items-center justify-between">
-                <div className="text-[11px] text-blue-900 dark:text-blue-200">
-                  <span className="font-semibold">Suggested Base: </span>
-                  <span className="font-mono font-bold">
+              {/* Rates Sub-strip & Action */}
+              <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <div className="text-xs text-slate-600 dark:text-slate-300">
+                  <span className="text-slate-400">Suggested Peril Rate: </span>
+                  <span className="font-mono font-bold text-slate-900 dark:text-white">
                     {(
                       (aiResult.suggestedFlexaRate || 0.65) +
                       (aiResult.suggestedStfiRate || 0.15) +
@@ -793,128 +926,35 @@ Total Final Premium: ₹ ${formatINRWithDecimals(calculation.totalFinalPremium)}
                 <button
                   type="button"
                   onClick={handleApplyAiRates}
-                  className="px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold shadow-xs transition-colors flex items-center gap-1"
+                  className="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium shadow-xs transition-colors flex items-center gap-1.5"
                 >
-                  <Check className="w-3 h-3" />
-                  <span>Apply AI Rates</span>
+                  <Check className="w-3.5 h-3.5" />
+                  <span>Apply Rates</span>
                 </button>
               </div>
+            </div>
+          )}
 
-              {/* Interactive Underwriter Follow-up Clarification Dialogue */}
-              {aiResult.clarificationQuestion && (
-                <div className="pt-4 border-t border-blue-200/60 dark:border-blue-900/60 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1.5 text-indigo-700 dark:text-indigo-300 text-xs font-bold uppercase tracking-wider">
-                      <MessageSquare className="w-3.5 h-3.5 text-indigo-600" />
-                      <span>Underwriting Follow-up Dialogue</span>
-                    </div>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-900/80 text-indigo-700 dark:text-indigo-300 font-semibold border border-indigo-200 dark:border-indigo-800">
-                      Live Clarification
-                    </span>
+          {/* Resolved Clarification Notes */}
+          {clarificationHistory.length > 0 && (
+            <div className="space-y-1.5 pt-1">
+              <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
+                Confirmed Clarifications:
+              </span>
+              {clarificationHistory.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="px-2.5 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 text-[11px] text-emerald-800 dark:text-emerald-300 flex items-start gap-1.5"
+                >
+                  <Check className="w-3.5 h-3.5 text-emerald-600 mt-0.5 flex-shrink-0" />
+                  <div>
+                    <span className="font-semibold">{item.a}</span>
+                    <p className="text-[10px] text-emerald-600 dark:text-emerald-400">
+                      Enriched into proposal & verified against statutory tariff rates.
+                    </p>
                   </div>
-
-                  {aiResult.missingFields && aiResult.missingFields.length > 0 && (
-                    <div className="flex flex-wrap items-center gap-1 text-[10px]">
-                      <span className="text-slate-500 dark:text-slate-400 font-medium">Missing data:</span>
-                      {aiResult.missingFields.map((field, idx) => (
-                        <span
-                          key={idx}
-                          className="px-1.5 py-0.5 rounded bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-900 font-medium text-[10px]"
-                        >
-                          {field}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  <div className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-indigo-100 dark:border-indigo-900/60 shadow-xs space-y-2.5">
-                    <div className="flex items-start gap-2">
-                      <HelpCircle className="w-4 h-4 text-indigo-600 mt-0.5 flex-shrink-0" />
-                      <p className="text-xs font-semibold text-slate-900 dark:text-white leading-snug">
-                        {aiResult.clarificationQuestion}
-                      </p>
-                    </div>
-
-                    {/* Clickable Quick Answer Suggestions */}
-                    {aiResult.suggestedQuickAnswers && aiResult.suggestedQuickAnswers.length > 0 && (
-                      <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-1.5">
-                        <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
-                          Quick Answers (Tap to update & re-rate):
-                        </span>
-                        <div className="flex flex-col gap-1.5">
-                          {aiResult.suggestedQuickAnswers.map((answer, idx) => (
-                            <button
-                              key={idx}
-                              type="button"
-                              disabled={isAnsweringFollowUp}
-                              onClick={() => handleAnalyzeProposal(answer)}
-                              className="w-full text-left px-2.5 py-1.5 rounded-lg bg-indigo-50/70 hover:bg-indigo-100 dark:bg-indigo-950/50 dark:hover:bg-indigo-900/60 border border-indigo-200/60 dark:border-indigo-800 text-[11px] font-medium text-indigo-900 dark:text-indigo-200 transition-all flex items-center justify-between group disabled:opacity-50"
-                            >
-                              <span>{answer}</span>
-                              <CornerDownRight className="w-3 h-3 text-indigo-400 group-hover:text-indigo-600 transition-transform group-hover:translate-x-0.5" />
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Inline Reply Input Box */}
-                    <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center gap-1.5">
-                      <input
-                        type="text"
-                        value={followUpInput}
-                        onChange={(e) => setFollowUpInput(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' && followUpInput.trim() && !isAnsweringFollowUp) {
-                            e.preventDefault();
-                            handleAnalyzeProposal(followUpInput.trim());
-                          }
-                        }}
-                        placeholder="Type custom clarification (e.g. 2 hydrants on site)..."
-                        className="flex-1 px-2.5 py-1.5 text-xs rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-sans"
-                      />
-                      <button
-                        type="button"
-                        disabled={!followUpInput.trim() || isAnsweringFollowUp}
-                        onClick={() => handleAnalyzeProposal(followUpInput.trim())}
-                        className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-xs font-semibold flex items-center gap-1 transition-colors flex-shrink-0"
-                      >
-                        {isAnsweringFollowUp ? (
-                          <RefreshCw className="w-3 h-3 animate-spin" />
-                        ) : (
-                          <>
-                            <Send className="w-3 h-3" />
-                            <span>Reply</span>
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Resolved Clarification Notes */}
-                  {clarificationHistory.length > 0 && (
-                    <div className="space-y-1.5 pt-1">
-                      <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
-                        Confirmed Clarifications:
-                      </span>
-                      {clarificationHistory.map((item, idx) => (
-                        <div
-                          key={idx}
-                          className="px-2.5 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 text-[11px] text-emerald-800 dark:text-emerald-300 flex items-start gap-1.5"
-                        >
-                          <Check className="w-3.5 h-3.5 text-emerald-600 mt-0.5 flex-shrink-0" />
-                          <div>
-                            <span className="font-semibold">{item.a}</span>
-                            <p className="text-[10px] text-emerald-600 dark:text-emerald-400">
-                              Enriched into proposal & verified against statutory tariff rates.
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
                 </div>
-              )}
+              ))}
             </div>
           )}
         </div>

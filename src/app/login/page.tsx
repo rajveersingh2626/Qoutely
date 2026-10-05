@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   ArrowRight,
   Lock,
@@ -10,8 +10,10 @@ import {
 } from 'lucide-react';
 import { useWorkspace } from '@/context/WorkspaceContext';
 
-export default function LoginPage() {
+function LoginFormContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams?.get('redirectTo') || '/dashboard';
   const { switchUser } = useWorkspace();
 
   const [email, setEmail] = useState('');
@@ -20,27 +22,26 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // If already logged in, automatically redirect to dashboard
+  // If already logged in, automatically redirect to target
   useEffect(() => {
     fetch('/api/auth/session')
       .then((res) => res.json())
       .then((data) => {
         if (data.authenticated && data.user) {
-          router.replace('/dashboard');
+          router.replace(redirectTo);
         }
       })
       .catch(() => {});
-  }, [router]);
+  }, [router, redirectTo]);
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const executeLogin = async (loginEmail: string, loginPass: string) => {
     setIsLoading(true);
     setError(null);
     try {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim(), password: password.trim() }),
+        body: JSON.stringify({ email: loginEmail.trim(), password: loginPass.trim() }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.success) {
@@ -49,16 +50,22 @@ export default function LoginPage() {
       if (data.user?.id) {
         switchUser(data.user.id);
       }
-      router.push('/dashboard');
+      router.push(redirectTo);
     } catch (err: any) {
       setError(err.message || 'Login failed');
       setIsLoading(false);
     }
   };
 
-  const handleQuickDinesh = () => {
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await executeLogin(email, password);
+  };
+
+  const handleQuickDinesh = async () => {
     setEmail('dinesh@capitalbrokers.in');
     setPassword('Password123!');
+    await executeLogin('dinesh@capitalbrokers.in', 'Password123!');
   };
 
   return (
@@ -85,7 +92,7 @@ export default function LoginPage() {
             className="w-full py-2.5 px-4 rounded-2xl bg-emerald-50 hover:bg-emerald-100/80 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer"
           >
             <User className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-            <span>Dinesh</span>
+            <span>Dinesh (1-Click Sign In)</span>
           </button>
         </div>
 
@@ -166,5 +173,19 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen w-full flex items-center justify-center bg-slate-50 dark:bg-slate-950 text-xs text-slate-400">
+          Loading broker login...
+        </div>
+      }
+    >
+      <LoginFormContent />
+    </Suspense>
   );
 }
