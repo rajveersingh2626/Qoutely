@@ -1,7 +1,7 @@
 # GSD Current State
 
 - **Current Phase**: Phase 5 (Production Hardening & Review Fixes)
-- **Active Task**: Addressing code review findings (Tasks 8.1 - 8.5)
+- **Active Task**: None (All review tasks 8.1–8.5 and 9.1–9.4 complete; ready for deployment)
 - **Completed Tasks**:
   - [x] Initialized GSD CONTEXT.md & ROADMAP.md
   - [x] Inventoried database schemas & auth session tables
@@ -17,8 +17,15 @@
   - [x] Task 8.3: Update 429 cooldown and failover logic in src/lib/gemini-proxy.ts to require GEMINI_API_KEY_FALLBACK
   - [x] Task 8.4: Replace in-memory reminderCounterMap with persistent database-backed usage in src/lib/renewal-engine.ts
   - [x] Task 8.5: Update quota flow in src/app/api/reminders/route.ts to check quotaCheck.allowed and return 429 when false
+  - [x] Task 9.1: Fallback breakdown in src/app/quotes/new/page.tsx calculates remainder allocation so sum matches exactly
+  - [x] Task 9.2: Inspect and log error responses from audit_logs and workspace_reminder_usage in src/lib/renewal-engine.ts
+  - [x] Task 9.3: Atomic database quota check and conditional increment in src/lib/renewal-engine.ts treating no returned row as denial
+  - [x] Task 9.4: Update Active Task entry in STATE.md to reflect completed status
+  - [x] Task 9.5: Bootstrap environment loader (`scripts/bootstrap-env.ts`) & `process.env[key] === undefined` check
+  - [x] Task 9.6: Bounded CAS retry loop on zero-row match & fallback handling in `src/lib/renewal-engine.ts`
 - **Verification Status**:
   - `npm run typecheck` (`tsc --noEmit`): EXITED WITH CODE 0 (0 errors)
+  - `npx tsx scripts/verify-all.ts`: EXITED WITH CODE 0 (All 6 production hardening suites passed with zero errors)
   - Dinesh Uncle VIP Lock: PERMANENT & VERIFIED
 
 

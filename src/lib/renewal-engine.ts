@@ -249,7 +249,7 @@ export async function recordReminderDispatchInDb(
       (typeof user === 'object' ? user?.id : null) || '10000000-0000-0000-0000-000000000004';
 
     // 1. Record immutable audit log entry in PostgreSQL (atomic append)
-    await client.from('audit_logs').insert({
+    const { error: auditErr } = await client.from('audit_logs').insert({
       workspace_id: workspaceId,
       user_id: userId,
       action: 'renewal_reminder_dispatched',
@@ -263,10 +263,13 @@ export async function recordReminderDispatchInDb(
       },
       timestamp: new Date().toISOString(),
     });
+    if (auditErr) {
+      console.warn('[RenewalEngine] Failed to insert audit log entry:', auditErr);
+    }
 
     // 2. Upsert into workspace_reminder_usage if table exists
     if (typeof newCount === 'number') {
-      await client.from('workspace_reminder_usage').upsert(
+      const { error: upsertErr } = await client.from('workspace_reminder_usage').upsert(
         {
           workspace_id: workspaceId,
           billing_month: month,
@@ -275,9 +278,129 @@ export async function recordReminderDispatchInDb(
         },
         { onConflict: 'workspace_id,billing_month' }
       );
+      if (upsertErr) {
+        console.warn('[RenewalEngine] Failed to upsert workspace_reminder_usage:', upsertErr);
+      }
     }
   } catch (err) {
     console.warn('[RenewalEngine] Failed to persist reminder usage to DB:', err);
+  }
+}
+
+export async function atomicIncrementReminderUsage(
+  workspaceId: string,
+  billingMonth: string = getCurrentBillingMonth(),
+  maxLimit: number = Infinity
+): Promise<{ allowed: boolean; newCount: number }> {
+  const client = getDbClient();
+  const quotaKey = `${workspaceId}:${billingMonth}`;
+
+  const handleFallback = () => {
+    const fallbackCount = reminderCounterMap.get(quotaKey) || 0;
+    if (Number.isFinite(maxLimit) && fallbackCount >= maxLimit) {
+      return { allowed: false, newCount: fallbackCount };
+    }
+    const next = fallbackCount + 1;
+    reminderCounterMap.set(quotaKey, next);
+    return { allowed: true, newCount: next };
+  };
+
+  if (!client) {
+    return handleFallback();
+  }
+
+  try {
+    // 1. Ensure initial row exists for this workspace & billing month
+    const { error: seedErr } = await client.from('workspace_reminder_usage').upsert(
+      {
+        workspace_id: workspaceId,
+        billing_month: billingMonth,
+        count: 0,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: 'workspace_id,billing_month', ignoreDuplicates: true }
+    );
+    if (seedErr) {
+      console.warn('[RenewalEngine] Note on ensuring usage row:', seedErr);
+    }
+
+    const MAX_RETRIES = 3;
+    let currentCount: number | null = null;
+
+    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+      // 2. Fetch current count if not refreshed from previous attempt
+      if (currentCount === null) {
+        const { data: row, error: fetchErr } = await client
+          .from('workspace_reminder_usage')
+          .select('count')
+          .eq('workspace_id', workspaceId)
+          .eq('billing_month', billingMonth)
+          .maybeSingle();
+
+        if (fetchErr) {
+          console.warn('[RenewalEngine] Error fetching current reminder usage, using fallback:', fetchErr);
+          return handleFallback();
+        }
+
+        currentCount = row?.count ?? 0;
+      }
+
+      // Fast-path denial if currentCount already reaches or exceeds maxLimit
+      if (Number.isFinite(maxLimit) && currentCount >= maxLimit) {
+        reminderCounterMap.set(quotaKey, currentCount);
+        return { allowed: false, newCount: currentCount };
+      }
+
+      // 3. Atomically increment only when quota permits
+      let updateQuery = client
+        .from('workspace_reminder_usage')
+        .update({
+          count: currentCount + 1,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('workspace_id', workspaceId)
+        .eq('billing_month', billingMonth)
+        .eq('count', currentCount);
+
+      if (Number.isFinite(maxLimit)) {
+        updateQuery = updateQuery.lt('count', maxLimit);
+      }
+
+      const { data: updatedRows, error: updateErr } = await updateQuery.select('count');
+
+      // Database error during update -> handle via fallback
+      if (updateErr) {
+        console.warn('[RenewalEngine] Atomic increment update error, using fallback:', updateErr);
+        return handleFallback();
+      }
+
+      // Successful update returning updated row
+      if (updatedRows && updatedRows.length > 0) {
+        const newCount = updatedRows[0].count;
+        reminderCounterMap.set(quotaKey, newCount);
+        return { allowed: true, newCount };
+      }
+
+      // Zero-row match (successful conditional update that matched 0 rows)
+      // Read fresh count from database
+      const freshCount = await getDbWorkspaceReminderUsage(workspaceId, billingMonth);
+      reminderCounterMap.set(quotaKey, freshCount);
+
+      // Deny only when the fresh count is at or above maxLimit
+      if (Number.isFinite(maxLimit) && freshCount >= maxLimit) {
+        return { allowed: false, newCount: freshCount };
+      }
+
+      // Bounded retry with refreshed count
+      currentCount = freshCount;
+    }
+
+    // Keep denial for a successful conditional update that returns no rows after bounded limit
+    const finalCount = reminderCounterMap.get(quotaKey) ?? (await getDbWorkspaceReminderUsage(workspaceId, billingMonth));
+    return { allowed: false, newCount: finalCount };
+  } catch (err) {
+    console.warn('[RenewalEngine] atomicIncrementReminderUsage exception, using memory fallback:', err);
+    return handleFallback();
   }
 }
 
@@ -381,26 +504,27 @@ export function verifyAndIncrementReminderQuota(
   return (async (): Promise<ReminderQuotaStatus> => {
     const user = userOrCount;
     const workspaceTier = (workspaceTierOrUser || 'professional') as SubscriptionTier;
+    const month = getCurrentBillingMonth();
     const quotaKey = getMonthlyQuotaKey(workspaceId);
 
     const isVip = isDineshUncle(user);
     const planLimits = getEffectivePlanLimits(user, workspaceTier);
 
-    // Read current count from persistent DB
-    const current = await getDbWorkspaceReminderUsage(workspaceId);
-    reminderCounterMap.set(quotaKey, current);
-
     if (isVip || planLimits.unlimitedQuota) {
+      let count = reminderCounterMap.get(quotaKey) || 0;
       if (!options?.dryRun) {
-        reminderCounterMap.set(quotaKey, current + 1);
-        await recordReminderDispatchInDb(workspaceId, user, options?.policy, current + 1);
+        const incResult = await atomicIncrementReminderUsage(workspaceId, month, Infinity);
+        count = incResult.newCount;
+        await recordReminderDispatchInDb(workspaceId, user, options?.policy);
+      } else {
+        count = await getDbWorkspaceReminderUsage(workspaceId, month);
       }
 
       return {
         allowed: true,
         tier: 'enterprise',
         planName: isVip ? 'Enterprise VIP (Dinesh Uncle Lock)' : 'Enterprise Tier',
-        currentCount: options?.dryRun ? current : current + 1,
+        currentCount: count,
         maxLimit: Infinity,
         isUnlimited: true,
         isVipBypass: true,
@@ -408,33 +532,59 @@ export function verifyAndIncrementReminderQuota(
       };
     }
 
-    if (current >= planLimits.maxReminders) {
+    if (options?.dryRun) {
+      const current = await getDbWorkspaceReminderUsage(workspaceId, month);
+      if (current >= planLimits.maxReminders) {
+        return {
+          allowed: false,
+          tier: planLimits.tier,
+          planName: planLimits.planName,
+          currentCount: current,
+          maxLimit: planLimits.maxReminders,
+          isUnlimited: false,
+          isVipBypass: false,
+          message: `Automated reminder monthly quota exceeded (${current}/${planLimits.maxReminders}). Upgrade to Professional or Enterprise tier to unlock additional reminder volume.`,
+        };
+      }
       return {
-        allowed: false,
+        allowed: true,
         tier: planLimits.tier,
         planName: planLimits.planName,
         currentCount: current,
         maxLimit: planLimits.maxReminders,
         isUnlimited: false,
         isVipBypass: false,
-        message: `Automated reminder monthly quota exceeded (${current}/${planLimits.maxReminders}). Upgrade to Professional or Enterprise tier to unlock additional reminder volume.`,
+        message: `Reminder recorded (${current}/${planLimits.maxReminders}).`,
       };
     }
 
-    if (!options?.dryRun) {
-      reminderCounterMap.set(quotaKey, current + 1);
-      await recordReminderDispatchInDb(workspaceId, user, options?.policy, current + 1);
+    // Atomically increment with database check: increment only when count < maxLimit, treating no returned row as denial
+    const incResult = await atomicIncrementReminderUsage(workspaceId, month, planLimits.maxReminders);
+
+    if (!incResult.allowed) {
+      return {
+        allowed: false,
+        tier: planLimits.tier,
+        planName: planLimits.planName,
+        currentCount: incResult.newCount,
+        maxLimit: planLimits.maxReminders,
+        isUnlimited: false,
+        isVipBypass: false,
+        message: `Automated reminder monthly quota exceeded (${incResult.newCount}/${planLimits.maxReminders}). Upgrade to Professional or Enterprise tier to unlock additional reminder volume.`,
+      };
     }
+
+    await recordReminderDispatchInDb(workspaceId, user, options?.policy);
 
     return {
       allowed: true,
       tier: planLimits.tier,
       planName: planLimits.planName,
-      currentCount: options?.dryRun ? current : current + 1,
+      currentCount: incResult.newCount,
       maxLimit: planLimits.maxReminders,
       isUnlimited: false,
       isVipBypass: false,
-      message: `Reminder recorded (${options?.dryRun ? current : current + 1}/${planLimits.maxReminders}).`,
+      message: `Reminder recorded (${incResult.newCount}/${planLimits.maxReminders}).`,
     };
   })();
 }

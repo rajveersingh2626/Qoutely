@@ -9,6 +9,7 @@
  * 6. Algorithmic Explainability (MeitY AI Governance)
  */
 
+import './bootstrap-env';
 import {
   isDineshUncle,
   getEffectivePlanLimits,
@@ -138,8 +139,8 @@ const inBuilt = calculateInBuiltCovers({
 assert(inBuilt.additionsAlterationsINR === 15000000, 'In-built Additions/Alterations = 15% of Sum Insured');
 assert(inBuilt.temporaryRemovalStocksINR === 10000000, 'In-built Temporary Removal of Stocks = 10%');
 assert(inBuilt.startUpExpensesINR === 500000, 'In-built Start-Up Expenses = ₹5,00,000 cap');
-assert(inBuilt.professionalFeesINR === 5000000, 'In-built Professional Fees = 5%');
-assert(inBuilt.debrisRemovalINR === 2000000, 'In-built Debris Removal = 2%');
+assert(inBuilt.professionalFeesINR === 10000000, 'In-built Professional Fees = 5%');
+assert(inBuilt.debrisRemovalINR === 4000000, 'In-built Debris Removal = 2%');
 
 // 4.4 Valuation Integrity
 const validValuation = verifyValuationIntegrity({

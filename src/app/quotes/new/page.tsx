@@ -484,13 +484,18 @@ export default function NewQuoteWorkspacePage() {
       wizardData && wizardData.sumInsuredBreakdown.total === calculation.sumInsured;
     const effectiveRouting = routeCommercialFireProduct(calculation.sumInsured);
 
+    const bldg = Math.round(calculation.sumInsured * 0.3);
+    const pm = Math.round(calculation.sumInsured * 0.5);
+    const ff = Math.round(calculation.sumInsured * 0.05);
+    const stocks = Math.max(0, calculation.sumInsured - bldg - pm - ff);
+
     const savedBreakdown = isWizardConsistent
       ? wizardData.sumInsuredBreakdown
       : {
-          building: Math.round(calculation.sumInsured * 0.3),
-          plant_machinery: Math.round(calculation.sumInsured * 0.5),
-          furniture_fixtures: Math.round(calculation.sumInsured * 0.05),
-          stocks: Math.round(calculation.sumInsured * 0.15),
+          building: bldg,
+          plant_machinery: pm,
+          furniture_fixtures: ff,
+          stocks,
           others: 0,
           total: calculation.sumInsured,
         };
@@ -561,13 +566,18 @@ export default function NewQuoteWorkspacePage() {
       wizardData && wizardData.sumInsuredBreakdown.total === calculation.sumInsured;
     const effectiveRouting = routeCommercialFireProduct(calculation.sumInsured);
 
+    const bldg = Math.round(calculation.sumInsured * 0.3);
+    const pm = Math.round(calculation.sumInsured * 0.5);
+    const ff = Math.round(calculation.sumInsured * 0.05);
+    const stocks = Math.max(0, calculation.sumInsured - bldg - pm - ff);
+
     const savedBreakdown = isWizardConsistent
       ? wizardData.sumInsuredBreakdown
       : {
-          building: Math.round(calculation.sumInsured * 0.3),
-          plant_machinery: Math.round(calculation.sumInsured * 0.5),
-          furniture_fixtures: Math.round(calculation.sumInsured * 0.05),
-          stocks: Math.round(calculation.sumInsured * 0.15),
+          building: bldg,
+          plant_machinery: pm,
+          furniture_fixtures: ff,
+          stocks,
           others: 0,
           total: calculation.sumInsured,
         };

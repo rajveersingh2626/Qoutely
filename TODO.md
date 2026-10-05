@@ -23,4 +23,8 @@
 - [x] Task 8.3: Update 429 cooldown and failover logic in src/lib/gemini-proxy.ts to require GEMINI_API_KEY_FALLBACK
 - [x] Task 8.4: Replace in-memory reminderCounterMap with persistent database-backed usage in src/lib/renewal-engine.ts
 - [x] Task 8.5: Update quota flow in src/app/api/reminders/route.ts to check quotaCheck.allowed and return 429 when false
+- [x] Task 9.1: Calculate stocks as remainder in fallback breakdowns in src/app/quotes/new/page.tsx
+- [x] Task 9.2: Inspect and log error responses from audit_logs and workspace_reminder_usage in src/lib/renewal-engine.ts
+- [x] Task 9.3: Ensure atomic quota check and increment in renewal flow in src/lib/renewal-engine.ts
+- [x] Task 9.4: Update Active Task entry in .gsd/STATE.md
 
