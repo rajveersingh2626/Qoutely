@@ -49,6 +49,11 @@ import {
 import { matchDistrictEQZone } from '@/lib/rag';
 import { downloadQuoteSlipPDF } from '@/lib/pdf-generator';
 import { Quote } from '@/types/database';
+import {
+  RiskOccupancyWizardModal,
+  WizardCompletionData,
+} from '@/components/quotes/RiskOccupancyWizardModal';
+import { routeCommercialFireProduct } from '@/lib/underwriting-engine';
 
 interface AIExtractionResponse {
   occupancyCode: string | null;
@@ -162,6 +167,30 @@ export default function NewQuoteWorkspacePage() {
   const [savedQuoteId, setSavedQuoteId] = useState<string | null>(null);
   const [isCopied, setIsCopied] = useState(false);
   const [showSampleMenu, setShowSampleMenu] = useState(false);
+
+  // 5. Intelligent Risk & Occupancy Wizard State
+  const [isRiskWizardOpen, setIsRiskWizardOpen] = useState(false);
+  const [wizardData, setWizardData] = useState<WizardCompletionData | null>(null);
+
+  const handleWizardComplete = (data: WizardCompletionData) => {
+    setWizardData(data);
+    setSumInsured(data.sumInsuredBreakdown.total);
+    setAiResult((prev) => ({
+      ...(prev || { matchedKeywords: [], confidenceScore: 0.95 }),
+      occupancyCode: data.suggestedOccupancyCode,
+      occupancyDescription: data.suggestedOccupancyDescription,
+      productCategory: data.routing.product,
+      riskTier: data.fireLoadAssessment,
+      reasoning: `Risk Wizard: ${data.operationalClassification} at ${data.ncrHub.toUpperCase()} (${data.fireLoadAssessment} fire load). Bound to ${data.routing.productName}. Mandatory In-Built protections: ₹${(data.inBuiltCovers.totalInBuiltProtectionValueINR / 100000).toFixed(1)}L.`,
+    }));
+  };
+
+  // Invalidate wizardData if sumInsured changes away from wizard's completed breakdown total
+  React.useEffect(() => {
+    if (wizardData && wizardData.sumInsuredBreakdown.total !== sumInsured) {
+      setWizardData(null);
+    }
+  }, [sumInsured, wizardData]);
 
   // Auto-detect Earthquake Zone & STFI when Address, Pincode or GST is entered
   React.useEffect(() => {
@@ -451,6 +480,24 @@ export default function NewQuoteWorkspacePage() {
       return;
     }
 
+    const isWizardConsistent =
+      wizardData && wizardData.sumInsuredBreakdown.total === calculation.sumInsured;
+    const effectiveRouting = routeCommercialFireProduct(calculation.sumInsured);
+
+    const savedBreakdown = isWizardConsistent
+      ? wizardData.sumInsuredBreakdown
+      : {
+          building: Math.round(calculation.sumInsured * 0.3),
+          plant_machinery: Math.round(calculation.sumInsured * 0.5),
+          furniture_fixtures: Math.round(calculation.sumInsured * 0.05),
+          stocks: Math.round(calculation.sumInsured * 0.15),
+          others: 0,
+          total: calculation.sumInsured,
+        };
+    const productType =
+      (isWizardConsistent ? (wizardData.routing?.product as any) : effectiveRouting.product) ||
+      'BSUS';
+
     const newQuoteRecord = addQuote({
       client_id: `client-${Date.now()}`,
       client_name: clientName,
@@ -462,14 +509,7 @@ export default function NewQuoteWorkspacePage() {
         'Engineering Workshops, CNC Metal Machining & Parts Fabrication',
       eq_zone: eqZone,
       sum_insured: calculation.sumInsured,
-      sum_insured_breakdown: {
-        building: Math.round(calculation.sumInsured * 0.3),
-        plant_machinery: Math.round(calculation.sumInsured * 0.5),
-        furniture_fixtures: Math.round(calculation.sumInsured * 0.05),
-        stocks: Math.round(calculation.sumInsured * 0.15),
-        others: 0,
-        total: calculation.sumInsured,
-      },
+      sum_insured_breakdown: savedBreakdown,
       premium: calculation.netPremium,
       gst_amount: calculation.gst,
       total_premium: calculation.totalFinalPremium,
@@ -484,7 +524,7 @@ export default function NewQuoteWorkspacePage() {
           'Engineering Workshops, CNC Metal Machining & Parts Fabrication',
         category: 1,
         section: 'III',
-        product_type: 'BSUS',
+        product_type: productType,
         eq_zone: eqZone,
         kutcha_construction: false,
         base_flexa_rate: calculation.flexaRate,
@@ -517,6 +557,24 @@ export default function NewQuoteWorkspacePage() {
 
   // Download PDF
   const handleDownloadPDF = () => {
+    const isWizardConsistent =
+      wizardData && wizardData.sumInsuredBreakdown.total === calculation.sumInsured;
+    const effectiveRouting = routeCommercialFireProduct(calculation.sumInsured);
+
+    const savedBreakdown = isWizardConsistent
+      ? wizardData.sumInsuredBreakdown
+      : {
+          building: Math.round(calculation.sumInsured * 0.3),
+          plant_machinery: Math.round(calculation.sumInsured * 0.5),
+          furniture_fixtures: Math.round(calculation.sumInsured * 0.05),
+          stocks: Math.round(calculation.sumInsured * 0.15),
+          others: 0,
+          total: calculation.sumInsured,
+        };
+    const productType =
+      (isWizardConsistent ? (wizardData.routing?.product as any) : effectiveRouting.product) ||
+      'BSUS';
+
     const dummyQuote: any = {
       id: savedQuoteId || 'QTL-2026-LIVE',
       quote_number: savedQuoteId || `QTL-${Math.floor(100000 + Math.random() * 900000)}`,
@@ -528,14 +586,7 @@ export default function NewQuoteWorkspacePage() {
         'Engineering Workshops, CNC Metal Machining & Parts Fabrication',
       eq_zone: eqZone,
       sum_insured: calculation.sumInsured,
-      sum_insured_breakdown: {
-        building: Math.round(calculation.sumInsured * 0.3),
-        plant_machinery: Math.round(calculation.sumInsured * 0.5),
-        furniture_fixtures: Math.round(calculation.sumInsured * 0.05),
-        stocks: Math.round(calculation.sumInsured * 0.15),
-        others: 0,
-        total: calculation.sumInsured,
-      },
+      sum_insured_breakdown: savedBreakdown,
       premium: calculation.netPremium,
       gst_amount: calculation.gst,
       total_premium: calculation.totalFinalPremium,
@@ -547,7 +598,7 @@ export default function NewQuoteWorkspacePage() {
           'Engineering Workshops, CNC Metal Machining & Parts Fabrication',
         category: 1,
         section: 'III',
-        product_type: 'BSUS',
+        product_type: productType,
         eq_zone: eqZone,
         base_flexa_rate: calculation.flexaRate,
         stfi_rate: calculation.stfiRate,
@@ -728,25 +779,36 @@ Total Final Premium: ₹ ${formatINRWithDecimals(calculation.totalFinalPremium)}
               </div>
             )}
 
-            {/* Analyze Risk Button */}
-            <button
-              type="button"
-              onClick={() => handleAnalyzeProposal()}
-              disabled={isAnalyzing}
-              className="w-full py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold text-xs shadow-soft flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isAnalyzing ? (
-                <>
-                  <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                  <span>Analyzing Proposal via AI Engine...</span>
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>Analyze Risk & Match Occupancy</span>
-                </>
-              )}
-            </button>
+            {/* Analyze Risk & Intelligent Wizard Buttons */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => setIsRiskWizardOpen(true)}
+                className="py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold text-xs shadow-soft flex items-center justify-center gap-2 transition-all cursor-pointer min-h-[48px]"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Launch Risk Wizard (Step-by-Step)</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleAnalyzeProposal()}
+                disabled={isAnalyzing}
+                className="py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold text-xs shadow-soft flex items-center justify-center gap-2 transition-all disabled:opacity-50 min-h-[48px]"
+              >
+                {isAnalyzing ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    <span>Analyzing via AI Gateway...</span>
+                  </>
+                ) : (
+                  <>
+                    <Zap className="w-3.5 h-3.5" />
+                    <span>Analyze Raw Proposal</span>
+                  </>
+                )}
+              </button>
+            </div>
           </div>
 
           {/* AI Applied Success Banner */}
@@ -1737,6 +1799,20 @@ Total Final Premium: ₹ ${formatINRWithDecimals(calculation.totalFinalPremium)}
           </div>
         </div>
       )}
+
+      {/* Intelligent Risk & Occupancy Wizard Glass Modal */}
+      <RiskOccupancyWizardModal
+        isOpen={isRiskWizardOpen}
+        onClose={() => setIsRiskWizardOpen(false)}
+        onComplete={handleWizardComplete}
+        initialSumInsured={{
+          building: Math.round(sumInsured * 0.35) || 15000000,
+          plant_machinery: Math.round(sumInsured * 0.45) || 15000000,
+          furniture_fixtures: Math.round(sumInsured * 0.05) || 2000000,
+          stocks: Math.round(sumInsured * 0.15) || 10000000,
+          others: 0,
+        }}
+      />
     </div>
   );
 }

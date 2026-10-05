@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { cookies } from 'next/headers';
+import { getEffectivePlanLimits, isDineshUncle } from '@/lib/subscription';
 
 const DEFAULT_SUPABASE_URL = 'https://vcmcueyzjuostebnlmcm.supabase.co';
 const DEFAULT_SUPABASE_ANON_KEY = 'sb_publishable_2YLsp3r5yL1toZ4PUHzS1g_truC17O_';
@@ -100,30 +101,46 @@ export async function POST(req: NextRequest) {
     const workspace = membership?.workspace || null;
     const role = membership?.role || 'underwriter';
 
-    // Build response
+    // Build response with effective plan limits
+    const isDinesh = isDineshUncle({
+      id: data.user.id,
+      email: data.user.email,
+      name: userProfile.full_name || userProfile.name,
+    });
+    const planLimits = getEffectivePlanLimits(userProfile, (workspace?.plan as any) || 'professional');
+
     const res = NextResponse.json({
       success: true,
-      user: userProfile,
+      user: {
+        ...userProfile,
+        is_dinesh_vip: isDinesh,
+      },
       workspace,
-      role,
+      role: isDinesh ? 'admin' : role,
+      plan: planLimits,
+      limits: {
+        unlimited_quota: planLimits.unlimitedQuota,
+        rate_limit_bypass: planLimits.rateLimitBypass,
+        max_reminders: planLimits.maxReminders,
+      },
     });
 
-    // Mirror all session cookies to response headers
+    // Mirror all session cookies to response headers with HttpOnly, SameSite=Strict, Secure
     cookiesToSetLater.forEach(({ name, value, options }) => {
       res.cookies.set(name, value, {
         path: '/',
         httpOnly: true,
-        sameSite: 'lax',
+        sameSite: 'strict',
         secure: process.env.NODE_ENV === 'production',
         ...options,
       });
     });
 
-    // Also set explicit tokens for custom readers
+    // Also set explicit tokens for custom readers (HttpOnly, SameSite=Strict, Secure)
     res.cookies.set('sb-access-token', data.session.access_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: 'strict',
       path: '/',
       maxAge: data.session.expires_in,
     });

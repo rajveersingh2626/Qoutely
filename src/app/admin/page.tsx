@@ -127,15 +127,9 @@ export default function PlatformSuperAdminPage() {
           <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 flex items-start gap-3 text-xs">
             <AlertTriangle className="w-5 h-5 shrink-0 text-amber-400 mt-0.5" />
             <div>
-              <strong className="font-bold block text-sm text-white mb-0.5">Role Sandbox Notice</strong>
-              You are currently viewing the Platform Super Admin dashboard with active role: <code className="font-mono bg-slate-900 px-1.5 py-0.5 rounded text-amber-200">{userRole}</code>. 
-              To inspect true root-level bypass, switch your active persona to Vikramaditya Sharma (Super Admin) using the switcher below:
-              <button
-                onClick={() => switchUser('user-001')}
-                className="ml-3 px-2 py-0.5 rounded bg-amber-500 text-slate-950 font-bold hover:bg-amber-400 inline-block"
-              >
-                Switch to Vikramaditya (Super Admin)
-              </button>
+              <strong className="font-bold block text-sm text-white mb-0.5">Restricted Admin View</strong>
+              You are currently viewing with role: <code className="font-mono bg-slate-900 px-1.5 py-0.5 rounded text-amber-200">{userRole}</code>. 
+              Elevated system configuration and firm-wide audits require an authenticated Super Admin account whitelisted in the platform security registry.
             </div>
           </div>
         )}

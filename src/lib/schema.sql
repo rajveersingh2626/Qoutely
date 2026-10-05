@@ -217,6 +217,17 @@ ALTER TABLE public.quotes ADD COLUMN IF NOT EXISTS org_id UUID REFERENCES public
 -- ------------------------------------------------------------------------------
 ALTER TABLE public.audit_logs ADD COLUMN IF NOT EXISTS org_id UUID REFERENCES public.organizations(id) ON DELETE CASCADE;
 
+-- ------------------------------------------------------------------------------
+-- 5.8 WORKSPACE REMINDER USAGE (Monthly Quota Persistence)
+-- ------------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.workspace_reminder_usage (
+  workspace_id UUID NOT NULL REFERENCES public.workspaces(id) ON DELETE CASCADE,
+  billing_month TEXT NOT NULL,
+  count INTEGER NOT NULL DEFAULT 0,
+  updated_at TIMESTAMPTZ DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
+  PRIMARY KEY (workspace_id, billing_month)
+);
+
 -- ==============================================================================
 -- STEP 6: PERFORMANCE INDEXES
 -- ==============================================================================

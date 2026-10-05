@@ -62,12 +62,6 @@ function LoginFormContent() {
     await executeLogin(email, password);
   };
 
-  const handleQuickDinesh = async () => {
-    setEmail('dinesh@capitalbrokers.in');
-    setPassword('Password123!');
-    await executeLogin('dinesh@capitalbrokers.in', 'Password123!');
-  };
-
   return (
     <div className="min-h-screen w-full flex items-center justify-center p-4 bg-slate-50 dark:bg-slate-950">
       <div className="w-full max-w-md rounded-3xl shadow-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 sm:p-10">
@@ -82,18 +76,6 @@ function LoginFormContent() {
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Sign in to access your underwriting desk
           </p>
-        </div>
-
-        {/* Single Quick Access Button for Dinesh */}
-        <div className="mb-6">
-          <button
-            type="button"
-            onClick={handleQuickDinesh}
-            className="w-full py-2.5 px-4 rounded-2xl bg-emerald-50 hover:bg-emerald-100/80 dark:bg-emerald-950/40 dark:hover:bg-emerald-900/50 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer"
-          >
-            <User className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-            <span>Dinesh (1-Click Sign In)</span>
-          </button>
         </div>
 
         {error && (

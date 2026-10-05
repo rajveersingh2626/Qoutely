@@ -87,6 +87,39 @@ body {
   border: 1px solid rgba(30, 41, 59, 0.8);
 }
 
+/* High-Contrast Frosted Glass Surface (Section 1.2 System) */
+.glass-surface-high-contrast {
+  background: rgba(18, 24, 38, 0.85);
+  backdrop-filter: blur(20px) saturate(190%);
+  -webkit-backdrop-filter: blur(20px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.55);
+  color: #f4f4f5;
+}
+
+:root:not(.dark) .glass-surface-high-contrast {
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(20px) saturate(190%);
+  -webkit-backdrop-filter: blur(20px) saturate(190%);
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.10);
+  color: #0f172a;
+}
+
+/* Hardware cutouts & safe area padding (Section 1.3) */
+.safe-area-bottom {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+.safe-area-top {
+  padding-top: max(1rem, env(safe-area-inset-top));
+}
+
+/* Mobile Touch Target minimum bounding box (48x48px) */
+.touch-target-min {
+  min-width: 48px;
+  min-height: 48px;
+}
+
 /* Card hover lift */
 .card-hover {
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);

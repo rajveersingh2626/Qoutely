@@ -25,6 +25,10 @@ import { useWorkspace } from '@/context/WorkspaceContext';
 import { Header } from '@/components/layout/Header';
 import { calculateCommercialPremium, formatINR } from '@/lib/calculator';
 import { downloadQuoteSlipPDF } from '@/lib/pdf-generator';
+import {
+  RiskOccupancyWizardModal,
+  WizardCompletionData,
+} from '@/components/quotes/RiskOccupancyWizardModal';
 
 type TimelineStep = 'idle' | 'ocr' | 'extraction' | 'classification' | 'premium' | 'quote' | 'completed';
 
@@ -60,6 +64,8 @@ export default function UploadProposalPage() {
     sumInsuredBuilding: 0,
     sumInsuredStocks: 0,
     sumInsuredPM: 0,
+    sumInsuredFF: 0,
+    sumInsuredOthers: 0,
     totalSumInsured: 0,
     hypothecation: '',
     riskCode: '',
@@ -67,6 +73,21 @@ export default function UploadProposalPage() {
     pastClaimRatio: '',
     confidenceScore: 0,
   });
+
+  const [isWizardOpen, setIsWizardOpen] = useState(false);
+
+  const handleWizardComplete = (data: WizardCompletionData) => {
+    setExtractedData((prev) => ({
+      ...prev,
+      riskCode: data.suggestedOccupancyCode,
+      totalSumInsured: data.sumInsuredBreakdown.total,
+      sumInsuredBuilding: data.sumInsuredBreakdown.building,
+      sumInsuredPM: data.sumInsuredBreakdown.plant_machinery,
+      sumInsuredFF: data.sumInsuredBreakdown.furniture_fixtures,
+      sumInsuredStocks: data.sumInsuredBreakdown.stocks,
+      sumInsuredOthers: data.sumInsuredBreakdown.others || 0,
+    }));
+  };
 
   const timelineSteps = [
     { id: 'ocr', label: '1. Document OCR' },
@@ -144,6 +165,8 @@ export default function UploadProposalPage() {
         sumInsuredBuilding: data.sum_insured?.building || 0,
         sumInsuredStocks: data.sum_insured?.stocks || 0,
         sumInsuredPM: data.sum_insured?.plant_and_machinery || 0,
+        sumInsuredFF: data.sum_insured?.furniture_and_fixtures || 0,
+        sumInsuredOthers: data.sum_insured?.other || 0,
         totalSumInsured: totalSI,
         hypothecation: '',
         riskCode: data.clamped_occupancy_code || data.occupancy_code || '1001',
@@ -248,6 +271,8 @@ export default function UploadProposalPage() {
         sumInsuredBuilding: data.sum_insured?.building || 0,
         sumInsuredStocks: data.sum_insured?.stocks || 0,
         sumInsuredPM: data.sum_insured?.plant_and_machinery || 0,
+        sumInsuredFF: data.sum_insured?.furniture_and_fixtures || 0,
+        sumInsuredOthers: data.sum_insured?.other || 0,
         totalSumInsured: totalSI,
         hypothecation: '',
         riskCode: data.clamped_occupancy_code || data.occupancy_code || '1001',
@@ -275,13 +300,13 @@ export default function UploadProposalPage() {
       sum_insured: {
         building: extractedData.sumInsuredBuilding,
         plant_machinery: extractedData.sumInsuredPM,
-        furniture_fixtures: 0,
+        furniture_fixtures: extractedData.sumInsuredFF,
         stocks: extractedData.sumInsuredStocks,
-        others: 0,
+        others: extractedData.sumInsuredOthers,
         total: extractedData.totalSumInsured,
       },
       eq_zone: extractedData.eqZone,
-      product_type: extractedData.totalSumInsured <= 50000000 ? 'BSUS' : 'BLUS',
+      product_type: extractedData.totalSumInsured <= 50000000 ? 'BSUS' : extractedData.totalSumInsured <= 500000000 ? 'BLUS' : 'MEGA_RISK_SFSP',
       feature_discounts: {
         fire_hydrant_sprinkler: true,
         electrical_installations: true,
@@ -307,9 +332,9 @@ export default function UploadProposalPage() {
       sum_insured_breakdown: {
         building: extractedData.sumInsuredBuilding,
         plant_machinery: extractedData.sumInsuredPM,
-        furniture_fixtures: 0,
+        furniture_fixtures: extractedData.sumInsuredFF,
         stocks: extractedData.sumInsuredStocks,
-        others: 0,
+        others: extractedData.sumInsuredOthers,
         total: extractedData.totalSumInsured,
       },
       premium: calc.net_premium,
@@ -340,13 +365,13 @@ export default function UploadProposalPage() {
       sum_insured: {
         building: extractedData.sumInsuredBuilding,
         plant_machinery: extractedData.sumInsuredPM,
-        furniture_fixtures: 0,
+        furniture_fixtures: extractedData.sumInsuredFF,
         stocks: extractedData.sumInsuredStocks,
-        others: 0,
+        others: extractedData.sumInsuredOthers,
         total: extractedData.totalSumInsured,
       },
       eq_zone: extractedData.eqZone,
-      product_type: extractedData.totalSumInsured <= 50000000 ? 'BSUS' : 'BLUS',
+      product_type: extractedData.totalSumInsured <= 50000000 ? 'BSUS' : extractedData.totalSumInsured <= 500000000 ? 'BLUS' : 'MEGA_RISK_SFSP',
       feature_discounts: {
         fire_hydrant_sprinkler: true,
         electrical_installations: true,
@@ -373,9 +398,9 @@ export default function UploadProposalPage() {
       sum_insured_breakdown: {
         building: extractedData.sumInsuredBuilding,
         plant_machinery: extractedData.sumInsuredPM,
-        furniture_fixtures: 0,
+        furniture_fixtures: extractedData.sumInsuredFF,
         stocks: extractedData.sumInsuredStocks,
-        others: 0,
+        others: extractedData.sumInsuredOthers,
         total: extractedData.totalSumInsured,
       },
       premium: calc.net_premium,
@@ -847,9 +872,19 @@ FIRE HYDRANTS: INSTALLED & CERTIFIED`
                   </div>
 
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300 mb-1">
-                      Occupancy Risk Code
-                    </label>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-[11px] font-semibold text-slate-700 dark:text-slate-300">
+                        Occupancy Risk Code
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setIsWizardOpen(true)}
+                        className="text-[10px] text-emerald-600 dark:text-emerald-400 hover:underline font-bold flex items-center gap-1 cursor-pointer"
+                      >
+                        <Sparkles className="w-3 h-3" />
+                        <span>Risk Wizard</span>
+                      </button>
+                    </div>
                     <input
                       type="text"
                       value={extractedData.riskCode}
@@ -870,15 +905,18 @@ FIRE HYDRANTS: INSTALLED & CERTIFIED`
                       type="number"
                       value={extractedData.totalSumInsured || ''}
                       placeholder="0"
-                      onChange={(e) =>
+                      onChange={(e) => {
+                        const val = e.target.value === '' ? 0 : Math.max(0, Number(e.target.value));
                         setExtractedData({
                           ...extractedData,
-                          totalSumInsured: Number(e.target.value),
-                          sumInsuredStocks: Number(e.target.value) * 0.3,
-                          sumInsuredPM: Number(e.target.value) * 0.4,
-                          sumInsuredBuilding: Number(e.target.value) * 0.3,
-                        })
-                      }
+                          totalSumInsured: val,
+                          sumInsuredStocks: Math.round(val * 0.3),
+                          sumInsuredPM: Math.round(val * 0.4),
+                          sumInsuredBuilding: Math.round(val * 0.3),
+                          sumInsuredFF: 0,
+                          sumInsuredOthers: 0,
+                        });
+                      }}
                       className="w-full px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white font-mono font-bold"
                     />
                   </div>
@@ -942,6 +980,20 @@ FIRE HYDRANTS: INSTALLED & CERTIFIED`
           </div>
         )}
       </div>
+
+      {/* Intelligent Risk & Occupancy Wizard Modal */}
+      <RiskOccupancyWizardModal
+        isOpen={isWizardOpen}
+        onClose={() => setIsWizardOpen(false)}
+        onComplete={handleWizardComplete}
+        initialSumInsured={{
+          building: extractedData.sumInsuredBuilding || 15000000,
+          plant_machinery: extractedData.sumInsuredPM || 15000000,
+          furniture_fixtures: extractedData.sumInsuredFF || 2500000,
+          stocks: extractedData.sumInsuredStocks || 10000000,
+          others: extractedData.sumInsuredOthers || 0,
+        }}
+      />
     </div>
   );
 }

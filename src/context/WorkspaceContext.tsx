@@ -15,6 +15,7 @@ import {
   supabase,
   isSupabaseConfigured,
 } from '@/lib/supabase';
+import { getEffectivePlanLimits, isDineshUncle } from '@/lib/subscription';
 
 interface WorkspaceContextType {
   currentUser: Profile;
@@ -58,6 +59,8 @@ interface WorkspaceContextType {
   canGenerateQuotes: boolean;
   canManageClients: boolean;
   canViewOnly: boolean;
+  planLimits: import('@/lib/subscription').PlanLimits;
+  isDineshVip: boolean;
 }
 
 const WorkspaceContext = createContext<WorkspaceContextType | undefined>(undefined);
@@ -97,17 +100,21 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [isAiDrawerOpen, setIsAiDrawerOpen] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
+  // Compute Dinesh VIP and plan limits
+  const isDineshVip = isDineshUncle(currentUser);
+  const planLimits = getEffectivePlanLimits(currentUser, (currentWorkspace as any).plan || 'professional');
+
   // Compute current user role in current workspace
   const memberRecord = members.find(
     (m) => m.workspace_id === currentWorkspace.id && m.user_id === currentUser.id
   );
-  const userRole: UserRole = memberRecord ? memberRecord.role : 'viewer';
+  const userRole: UserRole = isDineshVip ? 'admin' : (memberRecord ? memberRecord.role : 'viewer');
 
   // Role permissions
-  const canManageFirm = userRole === 'super_admin' || userRole === 'brokerage_owner';
-  const canManageClients = userRole !== 'viewer';
-  const canGenerateQuotes = userRole !== 'viewer';
-  const canViewOnly = userRole === 'viewer';
+  const canManageFirm = isDineshVip || userRole === 'super_admin' || userRole === 'brokerage_owner';
+  const canManageClients = isDineshVip || userRole !== 'viewer';
+  const canGenerateQuotes = isDineshVip || userRole !== 'viewer';
+  const canViewOnly = !isDineshVip && userRole === 'viewer';
 
   // Keyboard shortcut for Command Palette (Cmd+K / Ctrl+K)
   useEffect(() => {
@@ -270,6 +277,7 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       user_id: newLog.user_id,
       user_name: newLog.user_name,
       user_email: newLog.user_email,
+      ip_address: newLog.ip_address,
       action: newLog.action,
       resource_type: newLog.resource_type,
       resource_id: newLog.resource_id,
@@ -764,6 +772,8 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         canGenerateQuotes,
         canManageClients,
         canViewOnly,
+        planLimits,
+        isDineshVip,
       }}
     >
       {children}

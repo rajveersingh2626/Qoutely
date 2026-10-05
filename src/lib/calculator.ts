@@ -5,6 +5,23 @@ import {
   Occupancy,
   SumInsuredBreakdown,
 } from '@/types/database';
+import {
+  routeCommercialFireProduct,
+  calculateInBuiltCovers,
+  evaluateBlusUnderinsurance,
+  verifyValuationIntegrity,
+  trackBrokerPiCompliance,
+  PARTNER_INSURERS,
+} from './underwriting-engine';
+
+export {
+  routeCommercialFireProduct,
+  calculateInBuiltCovers,
+  evaluateBlusUnderinsurance,
+  verifyValuationIntegrity,
+  trackBrokerPiCompliance,
+  PARTNER_INSURERS,
+};
 
 export const OCCUPANCIES: Occupancy[] = occupanciesData as Occupancy[];
 
@@ -18,7 +35,7 @@ export interface CalculationInput {
   occupancy_code: string;
   sum_insured: SumInsuredBreakdown;
   eq_zone: string; // 'Zone 1' | 'Zone 2' | 'Zone 3' | 'Zone 4' | 'Zone 5' | 'Zone V' | 'Zone IV' | 'Zone III' | 'Zone II'
-  product_type?: 'Flexi_BS' | 'Flexi_BL' | 'BSUS' | 'BLUS';
+  product_type?: 'Flexi_BS' | 'Flexi_BL' | 'BSUS' | 'BLUS' | 'MEGA_RISK_SFSP';
   kutcha_construction?: boolean;
   feature_discounts?: Partial<FeatureDiscountOptions>;
   discretionary_discount_percent?: number;
@@ -46,7 +63,15 @@ export function calculateCommercialPremium(
     source_doc: 'AIFT 2001',
   };
 
-  const product_type = input.product_type || 'Flexi_BS';
+  const total_sum_insured_preview =
+    (input.sum_insured.building || 0) +
+    (input.sum_insured.plant_machinery || 0) +
+    (input.sum_insured.furniture_fixtures || 0) +
+    (input.sum_insured.stocks || 0) +
+    (input.sum_insured.others || 0);
+
+  const autoRouted = routeCommercialFireProduct(total_sum_insured_preview);
+  const product_type = input.product_type || autoRouted.product;
   const kutcha = !!input.kutcha_construction;
   const floater = !!input.floater_opted;
   const terrorism_opted = input.terrorism_opted ?? (product_type === 'Flexi_BS' || product_type === 'Flexi_BL' ? false : true);
@@ -197,6 +222,24 @@ export function calculateCommercialPremium(
   const gst_amount = Math.round(net_premium * 0.18);
   const total_premium = net_premium + gst_amount;
 
+  let effectiveFramework = autoRouted.regulatoryFramework;
+  let effectiveClaimExcess = autoRouted.claimExcessClause;
+  let effectiveProductName = autoRouted.productName;
+
+  if (product_type === 'BSUS') {
+    effectiveProductName = 'Bharat Sookshma Udyam Suraksha (BSUS)';
+    effectiveFramework = 'IRDAI Sookshma Commercial Fire Framework (Max ₹5 Cr)';
+    effectiveClaimExcess = 'Standard statutory deductible: ₹5,000 per claim across all covered perils.';
+  } else if (product_type === 'BLUS') {
+    effectiveProductName = 'Bharat Laghu Udyam Suraksha (BLUS)';
+    effectiveFramework = 'IRDAI Laghu Commercial Fire Framework (>₹5 Cr up to ₹50 Cr)';
+    effectiveClaimExcess = '5% of claim amount subject to minimum ₹10,000 per occurrence.';
+  } else if (product_type === 'MEGA_RISK_SFSP') {
+    effectiveProductName = 'Standard Fire & Special Perils (Mega-Risk Framework)';
+    effectiveFramework = 'IRDAI Large Industrial Risk / Tariff Advisory De-notification Framework (>₹50 Cr)';
+    effectiveClaimExcess = 'Underwriter negotiable excess (standard 5% or minimum ₹25,000 - ₹1,00,000).';
+  }
+
   return {
     occupancy_code: occ.code,
     occupancy_description: occ.description,
@@ -226,6 +269,31 @@ export function calculateCommercialPremium(
     gst_rate_percent,
     gst_amount,
     total_premium,
+    claim_excess: effectiveClaimExcess,
+    in_built_covers: calculateInBuiltCovers(input.sum_insured),
+    underwriting_framework: effectiveFramework,
+    algorithmic_explainability: {
+      statutory_basis: `IRDAI De-tariffed Framework: ${effectiveProductName} (${effectiveFramework})`,
+      applied_rules: [
+        `Risk threshold bound to ${effectiveProductName} (Sum Insured: ${formatINR(total_sum_insured)})`,
+        `Claim Excess: ${effectiveClaimExcess}`,
+        `Base FLEXA rate: ${base_flexa_rate.toFixed(4)}‰ (Loss Cost: ${occ.loss_cost}‰)`,
+        stfi_opted ? `STFI cover: ${final_stfi_rate.toFixed(4)}‰` : 'STFI: Excluded',
+        eq_opted ? `EQ Zone ${normalizedZone} rate: ${final_eq_rate.toFixed(4)}‰` : 'EQ: Excluded',
+        terrorism_opted ? `Terrorism rate: ${final_terrorism_rate.toFixed(4)}‰` : 'Terrorism: Excluded',
+        `GST: ${gst_rate_percent}% statutory indirect tax`,
+      ],
+      governance_standard: 'MeitY India AI Governance / IRDAI Tariff De-notification 2001',
+      input_vector: {
+        sum_insured: total_sum_insured,
+        occupation_code: occ.code,
+        eq_zone: normalizedZone,
+        kutcha_construction: kutcha,
+        stfi_opted,
+        eq_opted,
+        terrorism_opted,
+      },
+    },
   };
 }
 

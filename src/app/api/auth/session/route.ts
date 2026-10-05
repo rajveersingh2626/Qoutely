@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase-server';
+import { getEffectivePlanLimits, isDineshUncle, isWhitelistedSuperAdmin } from '@/lib/subscription';
 
 export async function GET(req: NextRequest) {
   try {
@@ -11,7 +12,7 @@ export async function GET(req: NextRequest) {
     } = await supabase.auth.getUser();
 
     if (error || !user) {
-      return NextResponse.json({ authenticated: false, user: null, workspace: null });
+      return NextResponse.json({ authenticated: false, user: null, workspace: null, plan: null });
     }
 
     // Fetch full profile
@@ -31,22 +32,42 @@ export async function GET(req: NextRequest) {
       .limit(1)
       .single();
 
-    const userProfile = profile || {
+    const isDinesh = isDineshUncle({
       id: user.id,
-      name: user.user_metadata?.name || user.email?.split('@')[0] || 'User',
+      email: user.email,
+      name: profile?.full_name || profile?.name || user.user_metadata?.full_name,
+    });
+
+    const isSuperAdmin = isWhitelistedSuperAdmin({ id: user.id, email: user.email }) && (profile?.is_super_admin || profile?.super_admin);
+
+    const userProfile = {
+      ...(profile || {}),
+      id: user.id,
+      name: profile?.full_name || profile?.name || user.user_metadata?.name || user.email?.split('@')[0] || 'User',
       email: user.email!,
-      super_admin: false,
-      created_at: user.created_at,
+      super_admin: isSuperAdmin,
+      is_super_admin: isSuperAdmin,
+      is_dinesh_vip: isDinesh,
+      created_at: profile?.created_at || user.created_at,
     };
+
+    const planLimits = getEffectivePlanLimits(userProfile, (membership?.workspace?.plan as any) || 'professional');
 
     return NextResponse.json({
       authenticated: true,
       user: userProfile,
       workspace: membership?.workspace || null,
-      role: membership?.role || 'viewer',
+      role: isDinesh ? 'admin' : (membership?.role || 'viewer'),
+      plan: planLimits,
+      limits: {
+        unlimited_quota: planLimits.unlimitedQuota,
+        rate_limit_bypass: planLimits.rateLimitBypass,
+        max_reminders: planLimits.maxReminders,
+      },
     });
   } catch (err: any) {
     console.error('[Session Error]', err);
-    return NextResponse.json({ authenticated: false, user: null, workspace: null });
+    return NextResponse.json({ authenticated: false, user: null, workspace: null, plan: null });
   }
 }
+

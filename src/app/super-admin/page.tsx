@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { createSupabaseServerClient, createSupabaseServiceClient } from '@/lib/supabase-server';
 import SuperAdminDashboardClient from './SuperAdminDashboardClient';
+import { isWhitelistedSuperAdmin } from '@/lib/subscription';
 
 /**
  * /super-admin — Server Component route guard
@@ -22,16 +23,20 @@ export default async function SuperAdminPage() {
     redirect('/login?redirectTo=/super-admin');
   }
 
-  // 2. Fetch user profile and check super_admin flag from DB (not client state)
+  // 2. Fetch user profile and check super_admin flag and whitelist
   const { data: profile } = await supabase
     .from('profiles')
-    .select('id, name, email, super_admin, created_at')
+    .select('id, name, email, super_admin, is_super_admin, created_at')
     .eq('id', user.id)
     .single();
 
-  if (!profile?.super_admin) {
-    // Not a super admin — redirect to their dashboard
-    redirect('/app/dashboard?error=access_denied');
+  const isAuthorized =
+    (profile?.super_admin || profile?.is_super_admin) &&
+    isWhitelistedSuperAdmin({ id: user.id, email: user.email || profile?.email });
+
+  if (!isAuthorized) {
+    // Not a whitelisted super admin — redirect to dashboard
+    redirect('/dashboard?error=access_denied');
   }
 
   // 3. Use service-role client to bypass RLS for platform-wide stats

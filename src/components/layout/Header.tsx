@@ -33,12 +33,6 @@ export const Header: React.FC<HeaderProps> = ({ title, subtitle, breadcrumbs }) 
 
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
 
-  // Dinesh Beta Tester Quick Bypass Handler
-  const handleDineshBypass = () => {
-    // If Dinesh is in workspace members or switch to Dinesh profile
-    switchUser('10000000-0000-0000-0000-000000000002');
-  };
-
   const notifications = [
     {
       id: '1',
@@ -192,20 +186,19 @@ export const Header: React.FC<HeaderProps> = ({ title, subtitle, breadcrumbs }) 
           </Link>
         )}
 
-        {/* CRITICAL: Dinesh Beta Tester Profile Element / Login Bypass */}
-        <button
-          type="button"
-          onClick={handleDineshBypass}
-          title="Beta Tester Profile (Dinesh Gupta)"
-          className="flex items-center gap-2 pl-1.5 pr-2.5 py-1 rounded-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors cursor-pointer"
+        {/* Authenticated User Profile */}
+        <Link
+          href="/settings"
+          title={`Signed in as ${currentUser.name || currentUser.email}`}
+          className="flex items-center gap-2 pl-1.5 pr-2.5 py-1 rounded-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
         >
           <div className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold shadow-xs">
-            D
+            {(currentUser.name || currentUser.email || 'U')[0].toUpperCase()}
           </div>
-          <span className="text-xs font-medium text-slate-700 dark:text-slate-200">
-            Dinesh
+          <span className="text-xs font-medium text-slate-700 dark:text-slate-200 max-w-[100px] truncate">
+            {currentUser.name || currentUser.email?.split('@')[0] || 'User'}
           </span>
-        </button>
+        </Link>
       </div>
     </header>
   );

@@ -3,6 +3,7 @@ import { searchOccupanciesRAG, matchDistrictEQZone, OccupancyCandidate } from '.
 import { validateProposalInputs } from './validation';
 import { supabase } from './supabase';
 import { validateAndClampLLMOutput } from './schemas';
+import { callGeminiWithFailover } from './gemini-proxy';
 
 export interface AIRequestLog {
   id?: string;
@@ -92,31 +93,20 @@ export function getGeminiClient(): { client: GoogleGenAI | null; hasKey: boolean
 }
 
 /**
- * Resilient caller that tries models in order (gemini-3.5-flash -> gemini-3.8-flash -> gemini-3.7-flash)
+ * Resilient caller using Dual Failover Circuit Breaker (Primary Free -> Fallback Paid)
  */
 export async function callGeminiGenerate(
-  client: GoogleGenAI,
+  _client: GoogleGenAI,
   contents: any,
   config?: any
 ): Promise<{ text: string; modelUsed: string }> {
-  const models = [PRIMARY_GEMINI_MODEL, ...FALLBACK_GEMINI_MODELS];
-  let lastErr: any = null;
-
-  for (const model of models) {
-    try {
-      const res = await client.models.generateContent({
-        model,
-        contents,
-        config,
-      });
-      return { text: res.text || '{}', modelUsed: model };
-    } catch (err: any) {
-      lastErr = err;
-      console.warn(`Gemini model ${model} failed (${err?.status || err?.message}), cascading to next candidate...`);
-    }
-  }
-
-  throw lastErr || new Error('All Gemini candidate models failed');
+  const res = await callGeminiWithFailover({
+    client: _client,
+    contents,
+    config,
+    model: PRIMARY_GEMINI_MODEL,
+  });
+  return { text: res.text || '{}', modelUsed: res.modelUsed };
 }
 
 export interface ExtractInputPayload {

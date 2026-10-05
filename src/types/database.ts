@@ -109,7 +109,7 @@ export interface CalculationBreakdown {
   occupancy_description: string;
   category: number;
   section: string;
-  product_type: 'Flexi_BS' | 'Flexi_BL' | 'BSUS' | 'BLUS';
+  product_type: 'Flexi_BS' | 'Flexi_BL' | 'BSUS' | 'BLUS' | 'MEGA_RISK_SFSP';
   eq_zone: string;
   kutcha_construction: boolean;
   base_flexa_rate: number;
@@ -133,6 +133,23 @@ export interface CalculationBreakdown {
   gst_rate_percent: number;
   gst_amount: number;
   total_premium: number;
+  claim_excess?: string;
+  in_built_covers?: {
+    additionsAlterationsINR: number;
+    temporaryRemovalOfStocksINR: number;
+    startUpExpensesINR: number;
+    professionalFeesINR: number;
+    debrisRemovalINR: number;
+    specificContentsINR: number;
+    totalInBuiltProtectionValueINR: number;
+  };
+  underwriting_framework?: string;
+  algorithmic_explainability?: {
+    statutory_basis: string;
+    applied_rules: string[];
+    governance_standard: string;
+    input_vector: Record<string, any>;
+  };
 }
 
 export interface OccupancyCandidate {
@@ -192,6 +209,7 @@ export interface Quote {
   pdf_url?: string;
   created_at: string;
   updated_at: string;
+  expiry_date?: string;
   version: number;
 }
 
@@ -214,6 +232,7 @@ export interface AuditLog {
   user_id: string;
   user_name: string;
   user_email: string;
+  ip_address?: string;
   action:
     | 'quote.created'
     | 'quote.updated'
@@ -226,8 +245,9 @@ export interface AuditLog {
     | 'member.invited'
     | 'member.role_changed'
     | 'member.removed'
-    | 'workspace.updated';
-  resource_type: 'quote' | 'client' | 'document' | 'member' | 'workspace';
+    | 'workspace.updated'
+    | string;
+  resource_type: 'quote' | 'client' | 'document' | 'member' | 'workspace' | string;
   resource_id: string;
   details?: Record<string, any>;
   timestamp: string;
