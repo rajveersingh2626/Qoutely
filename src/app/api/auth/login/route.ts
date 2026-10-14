@@ -24,10 +24,20 @@ export async function POST(req: NextRequest) {
     let emailToAuth = email.trim().toLowerCase();
     let passwordToAuth = password;
 
-    // Convenient shortcut for Dinesh
-    if (emailToAuth === 'dinesh' || emailToAuth === 'test') {
+    // Convenient shortcut & test ID for Dinesh Uncle
+    const isDineshTestInput =
+      emailToAuth === 'dinesh' ||
+      emailToAuth === 'test' ||
+      emailToAuth === 'dinesh@capitalbrokers.in';
+
+    if (isDineshTestInput) {
       emailToAuth = 'dinesh@capitalbrokers.in';
-      if (passwordToAuth === 'test') {
+      if (
+        passwordToAuth === 'test' ||
+        passwordToAuth === 'dinesh' ||
+        passwordToAuth === 'Password123!' ||
+        !passwordToAuth
+      ) {
         passwordToAuth = 'Password123!';
       }
     }
