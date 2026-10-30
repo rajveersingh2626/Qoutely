@@ -3,6 +3,7 @@ import {
   callGeminiWithFailover,
   getGatewayCircuitStatus,
 } from '@/lib/gemini-proxy';
+import { getAuthenticatedUser, unauthorizedResponse } from '@/lib/api-auth';
 
 export async function GET() {
   const status = getGatewayCircuitStatus();
@@ -13,6 +14,9 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  const auth = await getAuthenticatedUser(req);
+  if (!auth) return unauthorizedResponse();
+
   try {
     const body = await req.json();
     const { action, payload, contents, config, model } = body;

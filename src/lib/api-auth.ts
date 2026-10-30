@@ -28,11 +28,7 @@ export async function getAuthenticatedUser(req: NextRequest) {
     const accessToken = authHeader?.replace('Bearer ', '');
 
     if (!accessToken) {
-      return {
-        user: { id: '10000000-0000-0000-0000-000000000004', email: 'arjun.k@capitalinsurance.co.in' },
-        workspace_id: '00000000-0000-0000-0000-000000000001',
-        isDemoMode: true,
-      };
+      return null;
     }
 
     // Build a minimal Supabase client for server-side token validation
@@ -47,11 +43,7 @@ export async function getAuthenticatedUser(req: NextRequest) {
     const { data: { user }, error } = await supabase.auth.getUser(accessToken);
 
     if (error || !user) {
-      return {
-        user: { id: '10000000-0000-0000-0000-000000000004', email: 'arjun.k@capitalinsurance.co.in' },
-        workspace_id: '00000000-0000-0000-0000-000000000001',
-        isDemoMode: true,
-      };
+      return null;
     }
 
     // Derive workspace_id from user metadata (set during sign-up / invitation)
@@ -62,11 +54,7 @@ export async function getAuthenticatedUser(req: NextRequest) {
 
     return { user, workspace_id, isDemoMode: false };
   } catch {
-    return {
-      user: { id: '10000000-0000-0000-0000-000000000004', email: 'arjun.k@capitalinsurance.co.in' },
-      workspace_id: '00000000-0000-0000-0000-000000000001',
-      isDemoMode: true,
-    };
+    return null;
   }
 }
 

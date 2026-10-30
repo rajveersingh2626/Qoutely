@@ -144,6 +144,8 @@ export interface CalculationBreakdown {
     totalInBuiltProtectionValueINR: number;
   };
   underwriting_framework?: string;
+  custom_override_applied?: boolean;
+  tariff_compliance?: TariffComplianceResult;
   algorithmic_explainability?: {
     statutory_basis: string;
     applied_rules: string[];
@@ -268,6 +270,30 @@ export interface Occupancy {
   source_doc: string;
 }
 
+export interface CustomTariffOverride {
+  id?: string;
+  workspace_id?: string;
+  occupancy_code: string;
+  custom_flexa_rate?: number;
+  custom_loss_cost?: number;
+  custom_discretionary_discount?: number;
+  custom_category?: number;
+  notes?: string;
+  updated_at?: string;
+}
+
+export interface TariffComplianceResult {
+  is_compliant: boolean;
+  status: 'COMPLIANT' | 'WARNING' | 'NON_COMPLIANT';
+  occupancy_code: string;
+  statutory_base_rate: number;
+  effective_rate: number;
+  variance_percent: number;
+  statutory_loss_cost: number;
+  regulatory_clause: string;
+  message: string;
+}
+
 export interface TariffClause {
   id: string;
   title: string;
@@ -276,3 +302,4 @@ export interface TariffClause {
   description: string;
   source_doc: string;
 }
+

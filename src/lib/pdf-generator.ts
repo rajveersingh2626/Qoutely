@@ -24,13 +24,13 @@ export function generateQuoteSlipPDF(quote: Quote, workspace: Workspace): jsPDF 
   doc.setFontSize(7.5);
   doc.setTextColor(80, 80, 80);
   doc.text(
-    `CIN NO: ${workspace.default_rules.cin_no || 'U74999DL2003PTC119576'}   |   CATEGORY: DIRECT BROKERS (GENERAL)`,
+    `CIN NO: ${workspace?.default_rules?.cin_no || 'U74999DL2003PTC119576'}   |   CATEGORY: DIRECT BROKERS (GENERAL)`,
     margin,
     y
   );
   y += 4;
   doc.text(
-    `IRDA LICENSE NO: ${workspace.default_rules.irda_license_no || '236'}   |   L. EXPIRY DATE: 29 DECEMBER 2027`,
+    `IRDA LICENSE NO: ${workspace?.default_rules?.irda_license_no || '236'}   |   L. EXPIRY DATE: 29 DECEMBER 2027`,
     margin,
     y
   );

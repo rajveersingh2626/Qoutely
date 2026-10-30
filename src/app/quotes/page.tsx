@@ -69,7 +69,7 @@ export default function QuotesDashboardPage() {
         title="Quotes Register & Policy Ledger"
         subtitle={`Audit-ready commercial quotation register for ${currentWorkspace.name}`}
         breadcrumbs={[
-          { label: 'Home', href: '/app/dashboard' },
+          { label: 'Home', href: '/dashboard' },
           { label: 'Quotes Register' },
         ]}
       />
@@ -139,7 +139,7 @@ export default function QuotesDashboardPage() {
           </div>
 
           <Link
-            href="/app/quotes/new"
+            href="/quotes/new"
             className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-bold shadow-emerald shadow-sm transition-all hover:scale-[1.01] active:scale-[0.99]"
           >
             <Plus className="w-4 h-4" />
@@ -173,7 +173,7 @@ export default function QuotesDashboardPage() {
                         Try adjusting filters or create a new quote using the workspace.
                       </p>
                       <Link
-                        href="/app/quotes/new"
+                        href="/quotes/new"
                         className="inline-flex items-center gap-1.5 mt-4 px-3.5 py-1.5 rounded-lg bg-emerald-600 text-white text-xs font-semibold"
                       >
                         <Plus className="w-3.5 h-3.5" />

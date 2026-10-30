@@ -1,35 +1,17 @@
-# GSD Current State
+# Current State - Milestone 20: Unified Lenis Magnetic Snap & Rest Frame Motion Fix (Complete & Verified)
 
-- **Current Phase**: Phase 5 (Production Hardening & Review Fixes)
-- **Active Task**: None (All review tasks 8.1–8.5 and 9.1–9.4 complete; ready for deployment)
+- **Current Phase**: Phase 5 (Ship & Verified)
+- **Active Task**: All tasks complete. Fixed background frames stopping at awkward motion positions, eliminated conflicting scroll snaps, implemented unified Lenis magnetic snap controller, and verified all 4 milestones.
 - **Completed Tasks**:
-  - [x] Initialized GSD CONTEXT.md & ROADMAP.md
-  - [x] Inventoried database schemas & auth session tables
-  - [x] Milestone 1: Authentication Hardening, Super Admin Whitelist & Dinesh VIP Session Lock
-  - [x] Milestone 2: Dual Gemini API Failover Proxy Engine (`/api/ai/proxy`) with Cooldown & Transparent 429 Retry
-  - [x] Milestone 3: Modern Underwriting Rules Engine (BSUS/BLUS) & Carrier Directory
-  - [x] Milestone 4: Interactive Risk & Occupancy Wizard (Okhla DPCC/FAR, Bawana DFS Fire NOC)
-  - [x] Milestone 5: Tiered Plan Engine & Omnichannel Hinglish Renewal Engine (60, 30, 15, 3 days)
-  - [x] Milestone 6: High-Contrast Glassmorphic System & Executive Operational Summary UX
-  - [x] Milestone 7: Regulatory Governance, Audit Trails with IP, MeitY Algorithmic Explainability & Mechanical Verification Gate
-  - [x] Task 8.1: Invalidate / reconcile wizardData in src/app/quotes/new/page.tsx when sumInsured changes
-  - [x] Task 8.2: Update total-edit allocation in src/app/upload/page.tsx to clear retained FF & Others
-  - [x] Task 8.3: Update 429 cooldown and failover logic in src/lib/gemini-proxy.ts to require GEMINI_API_KEY_FALLBACK
-  - [x] Task 8.4: Replace in-memory reminderCounterMap with persistent database-backed usage in src/lib/renewal-engine.ts
-  - [x] Task 8.5: Update quota flow in src/app/api/reminders/route.ts to check quotaCheck.allowed and return 429 when false
-  - [x] Task 9.1: Fallback breakdown in src/app/quotes/new/page.tsx calculates remainder allocation so sum matches exactly
-  - [x] Task 9.2: Inspect and log error responses from audit_logs and workspace_reminder_usage in src/lib/renewal-engine.ts
-  - [x] Task 9.3: Atomic database quota check and conditional increment in src/lib/renewal-engine.ts treating no returned row as denial
-  - [x] Task 9.4: Update Active Task entry in STATE.md to reflect completed status
-  - [x] Task 9.5: Bootstrap environment loader (`scripts/bootstrap-env.ts`) & `process.env[key] === undefined` check
-  - [x] Task 9.6: Bounded CAS retry loop on zero-row match & fallback handling in `src/lib/renewal-engine.ts`
-- **Verification Status**:
-  - `npm run typecheck` (`tsc --noEmit`): EXITED WITH CODE 0 (0 errors)
-  - `npx tsx scripts/verify-all.ts`: EXITED WITH CODE 0 (All 6 production hardening suites passed with zero errors)
-  - Dinesh Uncle VIP Lock: PERMANENT & VERIFIED
-
-
-  - Mock Auth Purge: VERIFIED (100% removed)
-  - Zero Mock Data / Clean Dashboard: 100% dynamic (displays 0 across pipeline, renewals, recoveries & verified empty states when starting fresh)
-- **Known Blockers / Assumptions**: None. All exit criteria satisfied.
-
+  - [x] Structured sticky full-viewport stage inside a 400vh scroll track (`sticky top-0 h-screen w-full overflow-hidden`).
+  - [x] Eliminated wheel event hijacking (`handleWheel` with `e.preventDefault()`) and conflicting GSAP ScrollTrigger `snap` config that fought Lenis.
+  - [x] Implemented unified Lenis-driven magnetic snap controller with 110ms settle debounce and directional momentum awareness.
+  - [x] Expanded anchor resting zones to ±0.035 around each section milestone with monotonic piecewise frame interpolation, guaranteeing zero awkward frozen motion frames.
+  - [x] Clean anchor frames verified across all 4 milestones:
+    - Section 1 (Hero - 0%): Frame 1 (Index 0) - Pristine upright hovering pose.
+    - Section 2 (Workflows - 33.33%): Frame 70 (Index 69) - Upright level pose in center corridor.
+    - Section 3 (Carrier Matching - 66.67%): Frame 149 (Index 148) - Upright pose in left pedestal dock.
+    - Section 4 (Pricing - 100%): Frame 215 (Index 214) - Rest pose centered above pricing watermark.
+  - [x] Optimized Lenis duration (1.15s) and exponential curve `(t) => Math.min(1, 1.001 - Math.pow(2, -10 * t))` for fluid, responsive momentum.
+  - [x] Verified in live browser across all 4 milestones with DevTools screenshots.
+  - [x] Verified `npm run typecheck` (0 errors), `npm run build` (59/59 routes compiled), and `scripts/verify-all.ts` (100% pass).

@@ -140,10 +140,10 @@ export const Sidebar: React.FC = () => {
               <Link
                 href="/dashboard"
                 onClick={() => setIsMobileSidebarOpen(false)}
-                className="flex items-center gap-2.5"
+                className="flex items-center gap-2.5 group"
               >
-                <div className="w-8 h-8 rounded-lg bg-emerald-600 flex items-center justify-center text-white shadow-xs">
-                  <Shield className="w-4 h-4" />
+                <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center p-1 border border-emerald-500/20 group-hover:scale-105 transition-transform">
+                  <img src="/qoutely_logo.png" alt="Quotely" className="h-6 w-auto object-contain" />
                 </div>
                 <div className="flex items-baseline gap-1">
                   <span className="text-base font-bold tracking-tight text-slate-900 dark:text-white">

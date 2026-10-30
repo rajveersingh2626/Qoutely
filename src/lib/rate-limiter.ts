@@ -11,6 +11,16 @@ const rateLimitMap = new Map<string, RateLimitRecord>();
 
 export function checkRateLimit(key: string, limit: number = 60, windowMs: number = 60000): { allowed: boolean; remaining: number; resetAt: number } {
   const now = Date.now();
+
+  // Prune expired entries to prevent monotonic memory growth
+  if (rateLimitMap.size > 500) {
+    for (const [k, v] of rateLimitMap.entries()) {
+      if (now > v.resetAt) {
+        rateLimitMap.delete(k);
+      }
+    }
+  }
+
   const record = rateLimitMap.get(key);
 
   if (!record || now > record.resetAt) {

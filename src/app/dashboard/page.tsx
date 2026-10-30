@@ -30,7 +30,7 @@ import { formatINR } from '@/lib/calculator';
 import { downloadQuoteSlipPDF } from '@/lib/pdf-generator';
 
 export default function DashboardPage() {
-  const { quotes, clients, currentWorkspace, auditLogs, canGenerateQuotes } = useWorkspace();
+  const { quotes, clients, currentWorkspace, auditLogs, canGenerateQuotes, tariffOverrides } = useWorkspace();
   const [chartMode, setChartMode] = useState<'volume' | 'premium'>('volume');
   const [dismissedAlerts, setDismissedAlerts] = useState<string[]>([]);
 
@@ -38,6 +38,7 @@ export default function DashboardPage() {
   const quotesCount = quotes.length;
   const activeClientsCount = clients.length;
   const pendingReviewsCount = quotes.filter((q) => q.status === 'under_review' || q.status === 'draft').length;
+  const customOccupancyCount = Object.keys(tariffOverrides || {}).length;
 
   const totalSumInsured = quotes.reduce((acc, q) => acc + (q.sum_insured || 0), 0);
   const totalPipelinePremium = quotes.reduce((acc, q) => acc + (q.total_premium || 0), 0);
@@ -205,8 +206,8 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Section 1.1 First Screen Experience: 3 Executive Operational Summary Cards (Glassmorphic) */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6">
+        {/* Section 1.1 First Screen Experience: 4 Executive Operational Summary Cards (Glassmorphic) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
           {/* Card 1: Active Quotation Volume */}
           <div className="glass-surface-high-contrast rounded-2xl p-5 sm:p-6 transition-all relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-emerald-500/20 transition-all" />
@@ -341,6 +342,51 @@ export default function DashboardPage() {
               <span className={`font-semibold font-mono ${reconciledCarrierCount > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500 dark:text-zinc-400'}`}>
                 {reconciledCarrierCount > 0 ? '100% Reconciled' : 'Not Started'}
               </span>
+            </div>
+          </div>
+
+          {/* Card 4: Customized Tariff Schedules */}
+          <div className="glass-surface-high-contrast rounded-2xl p-5 sm:p-6 transition-all relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-purple-500/20 transition-all" />
+            <div className="flex items-center justify-between text-slate-400 dark:text-zinc-400 mb-3">
+              <div className="flex items-center gap-2">
+                <span className="p-2 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                  <Shield className="w-4 h-4" />
+                </span>
+                <span className="text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-zinc-300">
+                  Custom Tariffs
+                </span>
+              </div>
+              <span className="text-[11px] font-mono px-2 py-0.5 rounded-md bg-purple-500/15 text-purple-600 dark:text-purple-400 font-semibold">
+                IIB Schedules
+              </span>
+            </div>
+
+            <div className="mt-2 flex items-baseline justify-between">
+              <div>
+                <span className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white font-mono">
+                  {customOccupancyCount}
+                </span>
+                <span className="text-xs text-slate-500 dark:text-zinc-400 ml-2 font-medium">
+                  Active Overrides
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-slate-200 dark:border-white/10 flex items-center justify-between text-xs text-slate-600 dark:text-zinc-300">
+              <span className="text-[11px] text-slate-500 dark:text-zinc-400">
+                {customOccupancyCount > 0 ? (
+                  <span className="text-emerald-600 dark:text-emerald-400 font-medium">Reflecting in real-time</span>
+                ) : (
+                  <span>Using statutory baseline</span>
+                )}
+              </span>
+              <Link
+                href="/occupancies"
+                className="text-purple-600 dark:text-purple-400 hover:underline font-semibold flex items-center gap-0.5"
+              >
+                Customize &rarr;
+              </Link>
             </div>
           </div>
         </div>

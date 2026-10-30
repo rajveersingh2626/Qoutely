@@ -37,3 +37,23 @@
 - Immutable audit trail logger adhering to DPDP Act.
 - Algorithmic explainability metadata for calculated quotes.
 - Run typecheck, custom unit/integration tests, and viewport tests for full verification.
+
+## Milestone 8: Dynamic Occupancy Tariff Customization Engine & IIB Formula Verification
+- Mirror exact formula logic from `UPdated Calculator-07.02.2024.xlsx` (Category scaling: -25%, -10%, +25%, +160%; Section-based STFI, EQ zone rates, Terrorism, Risk Feature discounts, Floater).
+- Allow user/workspace customized occupancy tariff rates with immediate dynamic reactivity on their quotation dashboard.
+- Real-time regulatory compliance validation checking customized rates against statutory AIFT / IIB loss costs.
+
+## Milestone 9: Intelligent Dual-Loading UX System
+- Type 1: High-impact video-based quick loader (~1-2s).
+- Type 2: Clean animated tech loader.
+- Weighted distribution engine with high prominence on Type 1 (80/20 weight constraint).
+- Seamless integration across backend data fetches and route transitions.
+
+## Milestone 10: Stark White Glassmorphic Frontend & Video Hero Flow
+- Transition public website to stark clean white theme.
+- Premium translucent green glassmorphism navbar housing `qoutely_logo_remove_bg.png` ("Apple-vibe").
+- Hero section flow adhering to reference video motion flow.
+
+## Milestone 11: Backend UI Facelift & Operational Polish
+- Modern visual refresh for backend broker dashboards, quote builders, and settings.
+

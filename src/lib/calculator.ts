@@ -1,9 +1,11 @@
 import occupanciesData from '@/data/occupancies.json';
 import {
   CalculationBreakdown,
+  CustomTariffOverride,
   FeatureDiscountOptions,
   Occupancy,
   SumInsuredBreakdown,
+  TariffComplianceResult,
 } from '@/types/database';
 import {
   routeCommercialFireProduct,
@@ -31,6 +33,59 @@ export function getOccupancyByCode(code: string): Occupancy | undefined {
   );
 }
 
+export function evaluateTariffCompliance(
+  occ: Occupancy,
+  appliedFlexaRate: number
+): TariffComplianceResult {
+  const statutoryLossCost = Number(occ.loss_cost) || 0.1;
+  const statutoryBaseRate = Number(occ.flexa_rate) || statutoryLossCost;
+  const effectiveRate = Number(appliedFlexaRate);
+  const variancePercent =
+    statutoryBaseRate > 0
+      ? Number((((effectiveRate - statutoryBaseRate) / statutoryBaseRate) * 100).toFixed(2))
+      : 0;
+
+  if (effectiveRate < statutoryLossCost - 0.0001) {
+    return {
+      is_compliant: false,
+      status: 'NON_COMPLIANT',
+      occupancy_code: occ.code,
+      statutory_base_rate: statutoryBaseRate,
+      effective_rate: effectiveRate,
+      variance_percent: variancePercent,
+      statutory_loss_cost: statutoryLossCost,
+      regulatory_clause: 'AIFT 2001 General Rule 7 / IIB Schedule 3 Minimum Loss Cost Enforcement',
+      message: `Statutory Non-Compliance: Custom rate (₹${effectiveRate.toFixed(4)}‰) is lower than statutory IIB loss cost baseline of ₹${statutoryLossCost.toFixed(4)}‰. Underwriter sanction required.`,
+    };
+  }
+
+  if (effectiveRate < statutoryBaseRate - 0.0001) {
+    return {
+      is_compliant: true,
+      status: 'WARNING',
+      occupancy_code: occ.code,
+      statutory_base_rate: statutoryBaseRate,
+      effective_rate: effectiveRate,
+      variance_percent: variancePercent,
+      statutory_loss_cost: statutoryLossCost,
+      regulatory_clause: 'AIFT 2001 Section III/IV/V/VII Discretionary Loss Cost Corridor',
+      message: `Broker Custom Rate Applied: Discounted by ${Math.abs(variancePercent).toFixed(1)}% from statutory baseline. Complies with IIB minimum loss cost threshold.`,
+    };
+  }
+
+  return {
+    is_compliant: true,
+    status: 'COMPLIANT',
+    occupancy_code: occ.code,
+    statutory_base_rate: statutoryBaseRate,
+    effective_rate: effectiveRate,
+    variance_percent: variancePercent,
+    statutory_loss_cost: statutoryLossCost,
+    regulatory_clause: 'AIFT 2001 / IIB Schedule 3 Certified',
+    message: `100% compliant with IRDAI & IIB statutory fire tariff schedule.`,
+  };
+}
+
 export interface CalculationInput {
   occupancy_code: string;
   sum_insured: SumInsuredBreakdown;
@@ -43,6 +98,7 @@ export interface CalculationInput {
   terrorism_opted?: boolean;
   stfi_opted?: boolean;
   eq_opted?: boolean;
+  custom_override?: Partial<CustomTariffOverride>;
 }
 
 export function calculateCommercialPremium(
@@ -80,14 +136,29 @@ export function calculateCommercialPremium(
 
   // Normalize zone name
   let normalizedZone = input.eq_zone || 'Zone 2';
-  if (normalizedZone === 'Zone V') normalizedZone = 'Zone 1';
+  if (normalizedZone === 'Zone V' || normalizedZone === 'Zone 5' || normalizedZone === '5' || normalizedZone === 'V') normalizedZone = 'Zone 1';
   if (normalizedZone === 'Zone IV') normalizedZone = 'Zone 2';
   if (normalizedZone === 'Zone III') normalizedZone = 'Zone 3';
   if (normalizedZone === 'Zone II') normalizedZone = 'Zone 4';
 
-  const category = occ.category || 1;
+  const customOverride = input.custom_override;
+  const hasCustomFlexa =
+    customOverride?.custom_flexa_rate !== undefined &&
+    customOverride.custom_flexa_rate !== null &&
+    !isNaN(Number(customOverride.custom_flexa_rate));
+
+  const base_flexa_rate = hasCustomFlexa
+    ? Number(customOverride!.custom_flexa_rate)
+    : (occ.flexa_rate || 0.5);
+
+  const category =
+    customOverride?.custom_category &&
+    [1, 2, 3, 4].includes(customOverride.custom_category)
+      ? customOverride.custom_category
+      : (occ.category || 1);
+
   const section = occ.section || 'III';
-  const base_flexa_rate = occ.flexa_rate || 0.5;
+  const compliance = evaluateTariffCompliance(occ, base_flexa_rate);
 
   // Category adjustment formula (as per Excel Sheet1 Row 3):
   // Cat 1: -25% | Cat 2: -10% | Cat 3: +25% | Cat 4: +160%
@@ -195,7 +266,11 @@ export function calculateCommercialPremium(
 
   // Discretionary broker discount (e.g. 0-20%)
   const discretionary_discount_percent =
-    input.discretionary_discount_percent ?? 10;
+    customOverride?.custom_discretionary_discount !== undefined &&
+    customOverride.custom_discretionary_discount !== null &&
+    !isNaN(Number(customOverride.custom_discretionary_discount))
+      ? Number(customOverride.custom_discretionary_discount)
+      : (input.discretionary_discount_percent ?? 10);
   const rate_after_discretionary =
     (total_base_rate * (100 - discretionary_discount_percent)) / 100;
 
@@ -272,6 +347,8 @@ export function calculateCommercialPremium(
     claim_excess: effectiveClaimExcess,
     in_built_covers: calculateInBuiltCovers(input.sum_insured),
     underwriting_framework: effectiveFramework,
+    custom_override_applied: !!hasCustomFlexa || customOverride?.custom_discretionary_discount !== undefined || customOverride?.custom_category !== undefined,
+    tariff_compliance: compliance,
     algorithmic_explainability: {
       statutory_basis: `IRDAI De-tariffed Framework: ${effectiveProductName} (${effectiveFramework})`,
       applied_rules: [

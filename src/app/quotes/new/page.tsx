@@ -126,7 +126,7 @@ const SAMPLE_PROPOSALS = [
 
 export default function NewQuoteWorkspacePage() {
   const router = useRouter();
-  const { currentWorkspace, addQuote } = useWorkspace();
+  const { currentWorkspace, addQuote, tariffOverrides } = useWorkspace();
 
   // 1. Client & Proposal Metadata State
   const [clientName, setClientName] = useState('');
@@ -270,22 +270,29 @@ export default function NewQuoteWorkspacePage() {
       if (codeParam) {
         const matched = OCCUPANCIES.find((o) => o.code === codeParam);
         if (matched) {
-          setFlexaRate(matched.flexa_rate);
+          const override = tariffOverrides?.[matched.code];
+          const effFlexa = override?.custom_flexa_rate !== undefined ? override.custom_flexa_rate : matched.flexa_rate;
+          setFlexaRate(effFlexa);
+          if (override?.custom_discretionary_discount !== undefined) {
+            setDiscounts(override.custom_discretionary_discount);
+          }
           setAiResult({
             occupancyCode: matched.code,
             occupancyDescription: matched.description,
             matchedKeywords: [matched.code, matched.category_tag],
             confidenceScore: 0.98,
-            suggestedFlexaRate: matched.flexa_rate,
+            suggestedFlexaRate: effFlexa,
             suggestedStfiRate: matched.stfi_rate || 0.15,
             suggestedEqRate: matched.eq_rate || 0.10,
-            riskTier: matched.category === 1 ? 'Low' : 'Medium',
-            reasoning: `Pre-classified under statutory IIB Schedule 3 Code ${matched.code}.`,
+            riskTier: (override?.custom_category || matched.category) === 1 ? 'Low' : 'Medium',
+            reasoning: override
+              ? `Workspace Custom Tariff Override applied for Code ${matched.code}.`
+              : `Pre-classified under statutory IIB Schedule 3 Code ${matched.code}.`,
           });
         }
       }
     }
-  }, []);
+  }, [tariffOverrides]);
 
   // STEP 2: Pure deterministic calculation execution via calculatePremium(data)
   const calculation = useMemo(() => {
@@ -380,14 +387,19 @@ export default function NewQuoteWorkspacePage() {
         category: topCand.category || 2,
       } : null);
 
-      const flexa = matched ? matched.flexa_rate : (topCand?.loss_cost || 0.65);
+      const override = tariffOverrides?.[returnedCode];
+      const flexa = override?.custom_flexa_rate !== undefined
+        ? override.custom_flexa_rate
+        : (matched ? matched.flexa_rate : (topCand?.loss_cost || 0.65));
       const stfi = matched ? (matched.stfi_rate || 0.15) : 0.15;
       const eq = matched ? (matched.eq_rate || 0.10) : 0.10;
 
-      const discountPct = data?.suggested_discount_percent || 0;
+      const discountPct = override?.custom_discretionary_discount !== undefined
+        ? override.custom_discretionary_discount
+        : (data?.suggested_discount_percent || 0);
       const loadingPct = data?.suggested_loading_percent || 0;
 
-      const resolvedCat = data?.aift_category || matched?.category || 1;
+      const resolvedCat = override?.custom_category || data?.aift_category || matched?.category || 1;
       const resolvedSec = data?.aift_section || (matched?.section ? (matched.section.startsWith('Section') ? matched.section : `Section ${matched.section}`) : 'Section IV');
 
       setAiResult({
@@ -403,7 +415,9 @@ export default function NewQuoteWorkspacePage() {
         suggestedStfiRate: stfi,
         suggestedEqRate: eq,
         riskTier: resolvedCat === 1 ? 'Low Hazard (Cat 1)' : (resolvedCat === 2 ? 'Normal (Cat 2)' : `High Hazard (Cat ${resolvedCat})`),
-        reasoning: data?.reasoning || topCand?.reason || 'Verified statutory occupancy classification.',
+        reasoning: override
+          ? `Workspace Custom Tariff Override applied (Flexa: ${flexa}‰) for Code ${returnedCode}.`
+          : (data?.reasoning || topCand?.reason || 'Verified statutory occupancy classification.'),
         clarificationQuestion: null,
         suggestedQuickAnswers: [],
         missingFields: [],

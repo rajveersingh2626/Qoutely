@@ -27,4 +27,36 @@
 - [x] Task 9.2: Inspect and log error responses from audit_logs and workspace_reminder_usage in src/lib/renewal-engine.ts
 - [x] Task 9.3: Ensure atomic quota check and increment in renewal flow in src/lib/renewal-engine.ts
 - [x] Task 9.4: Update Active Task entry in .gsd/STATE.md
-
+- [x] Task 10.1: [Tariff Parity] Mirrored IIB Excel calculation rules (Sheet1 lookup, Category factors -25%/-10%/+25%/+160%, STFI/EQ/Terrorism/Floater) and custom occupancy override schema (`workspace_tariff_overrides`)
+- [x] Task 10.2: [Tariff Dashboard Reactivity] Implemented real-time reactive occupancy customization in `/occupancies` and `/dashboard` with AIFT compliance guardrails (`evaluateTariffCompliance`)
+- [x] Task 10.3: [Dual-Loader UX] Implemented Type 1 (video 1-2s chassis) and Type 2 (animated pulse) dual-loader system with weighted randomizer (80/20 constraint) and deterministic hashing in `loading-manager.ts` and `QuotelySmartLoader.tsx`
+- [x] Task 10.4: [Frontend & Backend Polish] Implemented stark clean white landing page with floating translucent green glassmorphism navbar (`apple-vibe`), official logo integration, video flow chassis, and backend UI branding
+- [x] Task 10.5: [Automated Verification Gate] Verified 100% test pass on `scripts/verify-all.ts` and 0 errors on `tsc --noEmit` with zero regressions
+- [x] Task 11.1: [Loading State Animation] Replaced heavy video chassis with pure HTML/CSS/JS `QuotelyLoadingAnimation.tsx` & `Loader.module.css` (Dark green Q logo, 3 bouncing dots, winged money orbital curved flight, center landing, pop/bounce and fade)
+- [x] Task 11.2: [Hero Intro Sequence] Built modular `HeroIntro.tsx` & `HeroIntro.module.css` featuring headline "Elevate Your Brokerage" and floating winged guide character
+- [x] Task 11.3: [Website Flow Animation] Built `ScrollFlowGuide.tsx` & `ScrollFlowGuide.module.css` with continuous scroll-following winged money flyer passing charts, compliance shields, and document icons
+- [x] Task 11.4: [Capital Brokers Calculation Engine] Built `InteractiveCalculator.tsx` integrating Capital Brokers Excel rules (IIB Code 4002, EQ Zones, Feature discounts, Floater, 18% GST) with lazy-loading and code splitting
+- [x] Task 11.5: [Performance & Zero Regression Verification] Removed all `<video>` tags from codebase; verified `npm run typecheck` (0 errors), `npx tsx scripts/verify-all.ts` (100% pass), and `npm run build` (59/59 pages compiled)
+- [x] Task 12.1: [Review Fix - Hero Layout] Adjusted `HeroIntro.tsx` to 2-column layout matching reference video frame 0 with prominent floating winged character and ambient aura
+- [x] Task 12.2: [Review Fix - Pure Gliding Flow] Refactored `ScrollFlowGuide.tsx` & `ScrollFlowGuide.module.css` to purely show the winged character gliding and flowing downwards along an illuminated stream, removing hypothetical mock cards per user directive
+- [x] Task 12.3: [Review Fix - Smart Loader Centerpiece] Configured `QuotelySmartLoader.tsx` to always render `QuotelyLoadingAnimation` as the primary loading experience
+- [x] Task 12.4: [Accessibility Hardening] Implemented `prefers-reduced-motion: reduce` across `Loader.module.css`, `HeroIntro.module.css`, and `ScrollFlowGuide.module.css`
+- [x] Task 13.1: Preloader with offscreen Image buffers for 215 flight WebP frames and trajectory data
+- [x] Task 13.2: Full-screen Canvas Scrollytelling Engine with rAF loop, high-DPI scaling, GSAP velocity detection
+- [x] Task 13.3: Apple-Style Minimal Navbar with translucent cream backdrop blur, brand typography, and pill CTA
+- [x] Task 13.4: Dynamic Negative-Space Text Placement across 4 Storytelling Beats (Hero, Workflows, Carrier Matching, Landing)
+- [x] Task 13.5: Interactive Book Demo Modal with broker qualification fields
+- [x] Task 13.6: Modern InsurTech Page Assembly in `src/app/page.tsx`
+- [x] Task 13.7: Mechanical Verification (`npm run typecheck` and `npm run build`)
+- [x] Task 14.1: Section snap configuration (`snapTo: [0, 0.3333, 0.6666, 1.0]`) with curated resting keyframes (`[0, 70, 149, 214]`)
+- [x] Task 14.2: Purged all emojis from text, badges, copy, and UI layers
+- [x] Task 14.3: High-contrast void blending on `#FBF9F5` with background watermark Q brand mark
+- [x] Task 14.4: Full verification gate (`tsc`, `verify-all.ts`, `next build`)
+- [x] Task 15.1: Sticky pinned viewport container (`sticky top-0 h-screen w-full overflow-hidden`) with smooth crossfades
+- [x] Task 15.2: Removed constant idle wing flapping loop; paused state holds curated clean keyframe
+- [x] Task 15.3: Piecewise frame interpolation guaranteeing exact resting keyframes at all 4 milestones
+- [x] Task 15.4: Live headless browser testing of all 4 snap stops
+- [x] Task 16.1: Fixed background frames stopping at awkward motion positions by widening anchor resting zones (±0.035) with continuous monotonic interpolation
+- [x] Task 16.2: Eliminated wheel event hijacking and conflicting ScrollTrigger snap; replaced with unified Lenis magnetic snap controller with settle debouncing
+- [x] Task 16.3: Calibrated smooth exponential easing and responsive momentum in SmoothScrollProvider
+- [x] Task 16.4: Verified zero motion blur on section rest stops in live browser, 100% pass on verify-all.ts, tsc --noEmit, and next build (59/59 routes)

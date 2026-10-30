@@ -4,8 +4,10 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import {
   AuditLog,
   Client,
+  CustomTariffOverride,
   Profile,
   Quote,
+  TariffComplianceResult,
   UploadedDocument,
   UserRole,
   Workspace,
@@ -61,6 +63,10 @@ interface WorkspaceContextType {
   canViewOnly: boolean;
   planLimits: import('@/lib/subscription').PlanLimits;
   isDineshVip: boolean;
+  tariffOverrides: Record<string, CustomTariffOverride>;
+  updateTariffOverride: (override: CustomTariffOverride) => Promise<TariffComplianceResult>;
+  deleteTariffOverride: (occupancyCode: string) => Promise<void>;
+  getTariffOverride: (occupancyCode: string) => CustomTariffOverride | undefined;
 }
 
 const WorkspaceContext = createContext<WorkspaceContextType | undefined>(undefined);
@@ -96,6 +102,7 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
   const [documents, setDocuments] = useState<UploadedDocument[]>([]);
+  const [tariffOverrides, setTariffOverrides] = useState<Record<string, CustomTariffOverride>>({});
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [isAiDrawerOpen, setIsAiDrawerOpen] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
@@ -200,6 +207,26 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       if (!docErr && docData) {
         setDocuments(docData);
       }
+
+      // 7. Tariff Overrides
+      try {
+        const tariffRes = await fetch(`/api/tariffs?workspace_id=${currentWorkspace.id}`);
+        if (tariffRes.ok) {
+          const tariffJson = await tariffRes.json();
+          if (tariffJson.overrides && Array.isArray(tariffJson.overrides)) {
+            const map: Record<string, CustomTariffOverride> = {};
+            for (const item of tariffJson.overrides) {
+              map[item.occupancy_code] = item;
+            }
+            setTariffOverrides(map);
+            if (typeof window !== 'undefined') {
+              localStorage.setItem('quotely_tariff_overrides', JSON.stringify(map));
+            }
+          }
+        }
+      } catch (tErr) {
+        console.warn('Tariff overrides fetch error:', tErr);
+      }
     } catch (err) {
       console.warn('Supabase synchronization error:', err);
     }
@@ -212,6 +239,7 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       try {
         const cachedUser = localStorage.getItem('quotely_user');
         const cachedWs = localStorage.getItem('quotely_workspace');
+        const cachedTariff = localStorage.getItem('quotely_tariff_overrides');
         if (cachedUser) {
           const parsed = JSON.parse(cachedUser);
           if (parsed && parsed.id) setCurrentUser(parsed);
@@ -219,6 +247,10 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         if (cachedWs) {
           const parsedWs = JSON.parse(cachedWs);
           if (parsedWs && parsedWs.id) setCurrentWorkspace(parsedWs);
+        }
+        if (cachedTariff) {
+          const parsedTariff = JSON.parse(cachedTariff);
+          if (parsedTariff) setTariffOverrides(parsedTariff);
         }
       } catch {
         // Ignore JSON parse errors
@@ -733,6 +765,98 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     return newDoc;
   };
 
+  const updateTariffOverride = async (override: CustomTariffOverride): Promise<TariffComplianceResult> => {
+    // Immediate reactive local state update
+    setTariffOverrides((prev) => {
+      const updated = {
+        ...prev,
+        [override.occupancy_code]: {
+          ...override,
+          workspace_id: currentWorkspace.id,
+          updated_at: new Date().toISOString(),
+        },
+      };
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('quotely_tariff_overrides', JSON.stringify(updated));
+      }
+      return updated;
+    });
+
+    logAction('quote.occupancy_overridden', 'occupancy', override.occupancy_code, {
+      custom_flexa_rate: override.custom_flexa_rate,
+      custom_loss_cost: override.custom_loss_cost,
+      custom_discretionary_discount: override.custom_discretionary_discount,
+      custom_category: override.custom_category,
+    });
+
+    try {
+      const res = await fetch('/api/tariffs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          workspace_id: currentWorkspace.id,
+          ...override,
+        }),
+      });
+      const data = await res.json();
+      if (data.override) {
+        setTariffOverrides((prev) => {
+          const finalMap = { ...prev, [override.occupancy_code]: data.override };
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('quotely_tariff_overrides', JSON.stringify(finalMap));
+          }
+          return finalMap;
+        });
+      }
+      return data.compliance;
+    } catch (err: any) {
+      console.warn('Failed to persist tariff override to backend:', err);
+      return {
+        is_compliant: true,
+        status: 'WARNING',
+        occupancy_code: override.occupancy_code,
+        statutory_base_rate: override.custom_flexa_rate || 0.5,
+        effective_rate: override.custom_flexa_rate || 0.5,
+        variance_percent: 0,
+        statutory_loss_cost: override.custom_loss_cost || 0.2,
+        regulatory_clause: 'AIFT 2001 / IIB Schedule 3 Local Override',
+        message: 'Saved locally. Server synchronization will retry.',
+      };
+    }
+  };
+
+  const deleteTariffOverride = async (occupancyCode: string): Promise<void> => {
+    setTariffOverrides((prev) => {
+      const copy = { ...prev };
+      delete copy[occupancyCode];
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('quotely_tariff_overrides', JSON.stringify(copy));
+      }
+      return copy;
+    });
+
+    logAction('quote.occupancy_overridden', 'occupancy', occupancyCode, {
+      reset_to_statutory_baseline: true,
+    });
+
+    try {
+      await fetch('/api/tariffs', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          workspace_id: currentWorkspace.id,
+          occupancy_code: occupancyCode,
+        }),
+      });
+    } catch (err) {
+      console.warn('Failed to delete tariff override on backend:', err);
+    }
+  };
+
+  const getTariffOverride = (occupancyCode: string): CustomTariffOverride | undefined => {
+    return tariffOverrides[occupancyCode];
+  };
+
   return (
     <WorkspaceContext.Provider
       value={{
@@ -745,6 +869,10 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         quotes: quotes.filter((q) => q.workspace_id === currentWorkspace.id),
         auditLogs: auditLogs.filter((a) => a.workspace_id === currentWorkspace.id),
         documents: documents.filter((d) => d.workspace_id === currentWorkspace.id),
+        tariffOverrides,
+        updateTariffOverride,
+        deleteTariffOverride,
+        getTariffOverride,
         isCommandPaletteOpen,
         setIsCommandPaletteOpen,
         isAiDrawerOpen,

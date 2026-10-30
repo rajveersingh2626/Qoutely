@@ -31,7 +31,7 @@ export const TIER_DEFINITIONS: Record<SubscriptionTier, PlanLimits> = {
   starter: {
     tier: 'starter',
     planName: 'Starter Tier',
-    monthlyFeeINR: 899,
+    monthlyFeeINR: 549,
     maxReminders: 500,
     max_reminders_per_month: 500,
     unlimitedQuota: false,
@@ -49,7 +49,7 @@ export const TIER_DEFINITIONS: Record<SubscriptionTier, PlanLimits> = {
   professional: {
     tier: 'professional',
     planName: 'Professional Tier',
-    monthlyFeeINR: 1999,
+    monthlyFeeINR: 1499,
     maxReminders: 3000,
     max_reminders_per_month: 3000,
     unlimitedQuota: false,

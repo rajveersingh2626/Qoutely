@@ -32,7 +32,7 @@ import {
 } from 'lucide-react';
 import { useWorkspace } from '@/context/WorkspaceContext';
 import { Header } from '@/components/layout/Header';
-import { analyzeProposalAI } from '@/lib/ai-engine';
+import { searchOccupanciesRAG } from '@/lib/rag';
 import { AIAnalysisResult } from '@/types/database';
 
 const SAMPLE_RFQS = [
@@ -174,11 +174,36 @@ export default function AIAnalysisPage() {
       console.warn('API classify failed, falling back to local grounded engine:', e);
     }
 
-    // Fallback to grounded local engine if network fails
-    const fallbackRes = analyzeProposalAI({
-      raw_text: inputText,
-      business_description: inputText,
-    });
+    // Fallback to grounded local RAG engine if network fails
+    const ragResult = searchOccupanciesRAG(inputText, 5);
+    const primary = ragResult.primaryCandidate;
+    const catNum = primary?.category !== undefined ? Number(primary.category) : undefined;
+    const fallbackRes: AIAnalysisResult = {
+      business_summary: inputText.slice(0, 100),
+      keywords: ragResult.matchedKeywords,
+      product_category: catNum ? `Risk Category ${catNum}` : undefined,
+      aift_section: primary?.section ? `Section ${primary.section}` : undefined,
+      aift_category: catNum,
+      occupancy_code: primary?.code,
+      occupancy_description: primary?.description,
+      occupancy_candidates: ragResult.topCandidates.map((c) => ({
+        code: c.code,
+        description: c.description,
+        confidence: c.confidence,
+        reason: c.reason,
+        section: c.section,
+        loss_cost: c.loss_cost,
+        category: c.category !== undefined ? Number(c.category) : undefined,
+      })),
+      hazard_flags: primary?.hazardRating === 'High' ? ['High Hazard Classification'] : [],
+      missing_fields: [],
+      confidence_score: primary?.confidence || 0.85,
+      clarification_question: ragResult.clarificationQuestion,
+      clarifying_question: ragResult.clarificationQuestion,
+      suggested_quick_answers: ['Pucca Storage with Certified Hydrants', 'Non-Hazardous Retail Goods Only'],
+      suggested_discount_percent: 15,
+      suggested_loading_percent: 0,
+    };
     setAnalysisResult(fallbackRes);
     if (fallbackRes.occupancy_candidates[0]?.code) {
       setSelectedCandidateCode(fallbackRes.occupancy_candidates[0].code);

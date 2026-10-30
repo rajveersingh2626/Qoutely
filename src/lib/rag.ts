@@ -53,6 +53,27 @@ function tokenize(text: unknown): string[] {
     .filter((t) => t.length > 2 && !GENERIC_STOPWORDS.has(t));
 }
 
+interface PreTokenizedOccupancy {
+  occ: any;
+  descLower: string;
+  descTokens: string[];
+  catTokens: string[];
+  keywords: string[];
+}
+
+const PRE_TOKENIZED_OCCUPANCIES: PreTokenizedOccupancy[] = (occupanciesData as any[]).map((occ) => {
+  const descLower = (occ.description || '').toLowerCase();
+  return {
+    occ,
+    descLower,
+    descTokens: tokenize(descLower),
+    catTokens: tokenize(occ.category_tag || occ.category || ''),
+    keywords: (occ.keywords || [])
+      .map((k: any) => String(k).toLowerCase())
+      .filter((k: string) => !GENERIC_STOPWORDS.has(k)),
+  };
+});
+
 /**
  * Hybrid Statutory & Semantic Search over IIB Schedule 3 (AIFT 2001)
  */
@@ -67,12 +88,8 @@ export function searchOccupanciesRAG(businessDescription: string, limit: number 
   const isManufacturing = /manufactur|factory|plant|fabricat|processing|refiner|mill|foundry|workshop|stamping|extruding|smelting/i.test(queryDesc);
   const isOffice = /office|it\b|software|bpo|call center|bank|consulting|corporate/i.test(queryDesc);
 
-  const scored = occupanciesData.map((occ: any) => {
+  const scored = PRE_TOKENIZED_OCCUPANCIES.map(({ occ, descLower, descTokens, catTokens, keywords }) => {
     let score = 0;
-    const descLower = (occ.description || '').toLowerCase();
-    const descTokens = tokenize(descLower);
-    const catTokens = tokenize(occ.category_tag || occ.category || '');
-    const keywords = (occ.keywords || []).map((k: any) => String(k).toLowerCase()).filter((k: string) => !GENERIC_STOPWORDS.has(k));
 
     // 1. Exact phrase matches in description
     if (descLower && queryDesc && queryDesc.length >= 5 && descLower.includes(queryDesc.slice(0, 30))) {

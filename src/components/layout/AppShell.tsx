@@ -21,7 +21,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
     pathname.startsWith('/admin');
 
   if (isStandalonePage) {
-    return <main className="min-h-screen bg-slate-950 text-slate-100">{children}</main>;
+    return <main className={`min-h-screen ${pathname === '/' ? 'bg-[#FCFCFD] text-slate-900' : 'bg-slate-950 text-slate-100'}`}>{children}</main>;
   }
 
   return (
