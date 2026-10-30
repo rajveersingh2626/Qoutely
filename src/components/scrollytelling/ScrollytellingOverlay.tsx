@@ -433,6 +433,18 @@ export const ScrollytellingOverlay: React.FC<ScrollytellingOverlayProps> = ({
   onBookDemo,
   onExploreWorkflows,
 }) => {
+  const [currentSection, setCurrentSection] = useState(0);
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      const getSec = (window as unknown as { __currentSection?: () => number }).__currentSection;
+      if (getSec) {
+        const sec = getSec();
+        setCurrentSection((prev) => (prev !== sec ? sec : prev));
+      }
+    }, 120);
+    return () => clearInterval(interval);
+  }, []);
   return (
     <div className="absolute inset-0 pointer-events-none z-20 overflow-hidden">
 
@@ -878,6 +890,40 @@ export const ScrollytellingOverlay: React.FC<ScrollytellingOverlayProps> = ({
             <span>&copy; {new Date().getFullYear()} Qoutely Inc. All rights reserved.</span>
           </div>
         </div>
+      </div>
+
+      {/* Sleek Floating Section Navigation Indicators (Right edge) */}
+      <div className="fixed right-6 top-1/2 -translate-y-1/2 z-50 hidden lg:flex flex-col items-center gap-3.5 bg-white/80 backdrop-blur-md px-2.5 py-4 rounded-full border border-[#121316]/10 shadow-[0_4px_16px_rgba(0,0,0,0.06)]">
+        {[
+          { idx: 0, label: 'Platform' },
+          { idx: 1, label: 'Workflows' },
+          { idx: 2, label: 'Appetite' },
+          { idx: 3, label: 'Pricing' },
+        ].map((item) => (
+          <button
+            key={item.idx}
+            onClick={() => {
+              const nav = (window as unknown as { __navigateToSection?: (i: number) => void }).__navigateToSection;
+              if (nav) nav(item.idx);
+            }}
+            title={item.label}
+            className={`group relative flex items-center justify-center transition-all cursor-pointer ${
+              currentSection === item.idx ? 'w-4 h-4' : 'w-3 h-3'
+            }`}
+          >
+            <span
+              className={`rounded-full transition-all duration-300 ${
+                currentSection === item.idx
+                  ? 'w-3.5 h-3.5 bg-[#0F5132] shadow-[0_0_8px_rgba(15,81,50,0.5)]'
+                  : 'w-2 h-2 bg-[#121316]/25 group-hover:bg-[#121316]/60 group-hover:scale-125'
+              }`}
+            />
+            {/* Hover tooltip label */}
+            <span className="absolute right-8 px-2.5 py-1 rounded-md bg-[#121316] text-white text-[11px] font-semibold opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity whitespace-nowrap shadow-md">
+              {item.label}
+            </span>
+          </button>
+        ))}
       </div>
     </div>
   );

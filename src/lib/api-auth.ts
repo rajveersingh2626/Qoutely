@@ -25,7 +25,11 @@ export async function getAuthenticatedUser(req: NextRequest) {
   try {
     // Extract auth token from Authorization header (Bearer token) or cookies
     const authHeader = req.headers.get('authorization');
-    const accessToken = authHeader?.replace('Bearer ', '');
+    let accessToken = authHeader ? authHeader.replace(/^Bearer\s+/i, '').trim() : undefined;
+
+    if (!accessToken) {
+      accessToken = req.cookies.get('sb-access-token')?.value;
+    }
 
     if (!accessToken) {
       return null;

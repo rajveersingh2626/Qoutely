@@ -61,20 +61,19 @@ export default function ScrollytellingLandingPage() {
   };
 
   const handleNavigate = (sectionIndex: number) => {
+    if (typeof window !== 'undefined' && (window as unknown as { __navigateToSection?: (idx: number) => void }).__navigateToSection) {
+      (window as unknown as { __navigateToSection: (idx: number) => void }).__navigateToSection(sectionIndex);
+      return;
+    }
     if (!containerRef.current) return;
     const maxScroll = containerRef.current.scrollHeight - window.innerHeight;
     const targetRatio = SNAP_POINTS[sectionIndex] ?? 0;
     const targetTop = maxScroll * targetRatio;
 
-    const lenis = (window as unknown as { __lenis?: { scrollTo: (y: number, opts?: { duration?: number }) => void } }).__lenis;
-    if (lenis) {
-      lenis.scrollTo(targetTop, { duration: 1.2 });
-    } else {
-      window.scrollTo({
-        top: targetTop,
-        behavior: 'smooth',
-      });
-    }
+    window.scrollTo({
+      top: targetTop,
+      behavior: 'smooth',
+    });
   };
 
   return (

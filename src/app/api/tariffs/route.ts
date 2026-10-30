@@ -39,8 +39,7 @@ async function getAuthorizedWorkspace(req: NextRequest, requestedWorkspaceId?: s
   }
 
   if (!targetWsId) {
-    // Fallback to default mock workspace if in development / local testing
-    targetWsId = '00000000-0000-0000-0000-000000000001';
+    return { error: 'No active workspace found for user', status: 403 } as const;
   }
 
   return { supabase, user, workspaceId: targetWsId };
@@ -54,16 +53,7 @@ export async function GET(req: NextRequest) {
 
     const auth = await getAuthorizedWorkspace(req, requestedWorkspaceId);
     if ('error' in auth) {
-      // In local dev without active auth session, allow querying with default workspace
-      const supabase = await createSupabaseServerClient();
-      const { data, error } = await supabase
-        .from('workspace_tariff_overrides')
-        .select('*');
-
-      if (error) {
-        return NextResponse.json({ overrides: [] }, { status: 200 });
-      }
-      return NextResponse.json({ overrides: data || [] });
+      return NextResponse.json({ error: auth.error }, { status: auth.status });
     }
 
     const { supabase, workspaceId } = auth;
@@ -109,7 +99,10 @@ export async function POST(req: NextRequest) {
     }
 
     const auth = await getAuthorizedWorkspace(req, requestedWorkspaceId);
-    const workspaceId = 'workspaceId' in auth ? auth.workspaceId : (requestedWorkspaceId || '00000000-0000-0000-0000-000000000001');
+    if ('error' in auth) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status });
+    }
+    const { workspaceId } = auth;
 
     // Compliance Evaluation
     const appliedFlexa = custom_flexa_rate !== undefined ? Number(custom_flexa_rate) : occ.flexa_rate;
@@ -166,7 +159,10 @@ export async function DELETE(req: NextRequest) {
     }
 
     const auth = await getAuthorizedWorkspace(req, requestedWorkspaceId);
-    const workspaceId = 'workspaceId' in auth ? auth.workspaceId : (requestedWorkspaceId || '00000000-0000-0000-0000-000000000001');
+    if ('error' in auth) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status });
+    }
+    const { workspaceId } = auth;
 
     const { error } = await supabase
       .from('workspace_tariff_overrides')

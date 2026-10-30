@@ -3,9 +3,6 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { getEffectivePlanLimits, isDineshUncle } from '@/lib/subscription';
 
-const DEFAULT_SUPABASE_URL = 'https://vcmcueyzjuostebnlmcm.supabase.co';
-const DEFAULT_SUPABASE_ANON_KEY = 'sb_publishable_2YLsp3r5yL1toZ4PUHzS1g_truC17O_';
-
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -18,29 +15,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || DEFAULT_SUPABASE_URL;
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON_KEY;
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-    let emailToAuth = email.trim().toLowerCase();
-    let passwordToAuth = password;
-
-    // Convenient shortcut & test ID for Dinesh Uncle
-    const isDineshTestInput =
-      emailToAuth === 'dinesh' ||
-      emailToAuth === 'test' ||
-      emailToAuth === 'dinesh@capitalbrokers.in';
-
-    if (isDineshTestInput) {
-      emailToAuth = 'dinesh@capitalbrokers.in';
-      if (
-        passwordToAuth === 'test' ||
-        passwordToAuth === 'dinesh' ||
-        passwordToAuth === 'Password123!' ||
-        !passwordToAuth
-      ) {
-        passwordToAuth = 'Password123!';
-      }
+    if (!supabaseUrl || !supabaseAnonKey) {
+      return NextResponse.json(
+        { success: false, error: 'Authentication service configuration is missing.' },
+        { status: 500 }
+      );
     }
+
+    const emailToAuth = email.trim().toLowerCase();
+    const passwordToAuth = password;
 
     const cookieStore = await cookies();
     const cookiesToSetLater: { name: string; value: string; options?: CookieOptions }[] = [];

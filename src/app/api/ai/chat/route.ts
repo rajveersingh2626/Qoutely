@@ -6,8 +6,10 @@ import { searchOccupanciesRAG, matchDistrictEQZone, searchTariffRules } from '@/
 import { getGeminiClient, callGeminiGenerate } from '@/lib/ai';
 
 export async function POST(req: NextRequest) {
-  // Optional auth verification with demo fallback
-  await getAuthenticatedUser(req);
+  const auth = await getAuthenticatedUser(req);
+  if (!auth) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
   try {
     const { query } = await req.json();

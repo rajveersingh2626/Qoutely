@@ -74,19 +74,13 @@ export const PRIMARY_GEMINI_MODEL = 'gemini-3.5-flash';
 export const FALLBACK_GEMINI_MODELS = ['gemini-3.8-flash', 'gemini-3.7-flash'];
 export const FALLBACK_GEMINI_MODEL = 'gemini-3.8-flash';
 
-const EMBEDDED_GEMINI_KEY = Buffer.from('QVEuQWI4Uk42TEJJaVgzM3U3Q2Uwd1JZOUlzdGFrU3M2eGpWTFZWWnJLTF83MHhBQ0ZZTkE=', 'base64').toString('utf-8');
 
 /**
  * Initializes Google GenAI client with environment key
  */
 export function getGeminiClient(): { client: GoogleGenAI | null; hasKey: boolean } {
-  let apiKey =
-    process.env.GEMINI_API_KEY ||
-    process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
   if (!apiKey || apiKey.trim() === '' || apiKey === 'YOUR_GEMINI_API_KEY') {
-    apiKey = EMBEDDED_GEMINI_KEY;
-  }
-  if (!apiKey) {
     return { client: null, hasKey: false };
   }
   return { client: new GoogleGenAI({ apiKey }), hasKey: true };

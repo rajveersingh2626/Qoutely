@@ -79,11 +79,12 @@ export async function middleware(request: NextRequest) {
     });
   }
 
-  const DEFAULT_SUPABASE_URL = 'https://vcmcueyzjuostebnlmcm.supabase.co';
-  const DEFAULT_SUPABASE_ANON_KEY = 'sb_publishable_2YLsp3r5yL1toZ4PUHzS1g_truC17O_';
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || DEFAULT_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON_KEY;
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return response;
+  }
 
   // Initialize Supabase SSR client
   const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
@@ -101,18 +102,23 @@ export async function middleware(request: NextRequest) {
     },
   });
 
-  // Verify server-side user session
+  // Verify server-side user session cryptographically
   let user = null;
   try {
     const { data } = await supabase.auth.getUser();
     user = data.user;
+    if (!user) {
+      const accessToken = request.cookies.get('sb-access-token')?.value;
+      if (accessToken) {
+        const { data: tokenData } = await supabase.auth.getUser(accessToken);
+        user = tokenData.user;
+      }
+    }
   } catch {
     user = null;
   }
 
-  // Fallback cookie check for sb-access-token if direct JWT was set
-  const hasFallbackToken = !!request.cookies.get('sb-access-token')?.value;
-  const isAuthenticated = !!user || hasFallbackToken;
+  const isAuthenticated = !!user;
 
   const isProtectedRoute = PROTECTED_PREFIXES.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)

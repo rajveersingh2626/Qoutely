@@ -2,12 +2,7 @@
 
 import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ScrollytellingAssets, MascotCoordinate } from './types';
-
-if (typeof window !== 'undefined') {
-  gsap.registerPlugin(ScrollTrigger);
-}
 
 interface ScrollytellingCanvasProps {
   assets: ScrollytellingAssets;
@@ -25,39 +20,29 @@ export const RESTING_FRAMES = [0, 69, 148, 214];
 export const SNAP_POINTS = [0, 0.333333, 0.666667, 1.0];
 
 /**
- * Piecewise mapping — ensures exact anchor alignment at section milestones:
+ * Piecewise mapping — guarantees monotonic, smooth frame interpolation:
  * p = 0.000000 → Frame 1   (Index 0)
  * p = 0.333333 → Frame 70  (Index 69)
  * p = 0.666667 → Frame 149 (Index 148)
  * p = 1.000000 → Frame 215 (Index 214)
- * 
- * Generous resting anchor zones (±0.035 around each section milestone)
- * ensure that whenever the user rests at or near a section,
- * the character is locked strictly to its clean, upright resting pose.
  */
 export function getFrameFromProgress(p: number): number {
   const clamped = Math.max(0, Math.min(1, p));
   
-  // Generous resting anchor zones (±0.035 around each section milestone)
-  // Guarantees that whenever the user rests at or near a section,
-  // the character is locked strictly to its clean, upright resting pose with idle hovering.
-  if (clamped <= 0.035) return 0;
-  if (Math.abs(clamped - 0.333333) <= 0.035) return 69;
-  if (Math.abs(clamped - 0.666667) <= 0.035) return 148;
-  if (clamped >= 0.965) return 214;
+  if (clamped <= 0.008) return 0;
+  if (Math.abs(clamped - 0.333333) <= 0.008) return 69;
+  if (Math.abs(clamped - 0.666667) <= 0.008) return 148;
+  if (clamped >= 0.992) return 214;
 
   if (clamped < 0.333333) {
-    const local = (clamped - 0.035) / (0.333333 - 0.07);
-    const normalized = Math.max(0, Math.min(1, local));
-    return Math.min(69, Math.max(0, Math.round(normalized * 69)));
+    const norm = clamped / 0.333333;
+    return Math.min(69, Math.max(0, Math.round(norm * 69)));
   } else if (clamped < 0.666667) {
-    const local = (clamped - (0.333333 + 0.035)) / (0.333334 - 0.07);
-    const normalized = Math.max(0, Math.min(1, local));
-    return Math.min(148, Math.max(69, 69 + Math.round(normalized * (148 - 69))));
+    const norm = (clamped - 0.333333) / (0.666667 - 0.333333);
+    return Math.min(148, Math.max(69, 69 + Math.round(norm * (148 - 69))));
   } else {
-    const local = (clamped - (0.666667 + 0.035)) / (0.333333 - 0.07);
-    const normalized = Math.max(0, Math.min(1, local));
-    return Math.min(214, Math.max(148, 148 + Math.round(normalized * (214 - 148))));
+    const norm = (clamped - 0.666667) / (1.0 - 0.666667);
+    return Math.min(214, Math.max(148, 148 + Math.round(norm * (214 - 148))));
   }
 }
 
@@ -69,10 +54,10 @@ export const ScrollytellingCanvas: React.FC<ScrollytellingCanvasProps> = ({
 }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  // Animated progress value (separate from raw scroll to allow eased snap-to)
-  const scrollProgressRef = useRef<number>(0);
+  // Animated progress value (synchronized across GSAP section tweens)
   const animatedProgressRef = useRef<number>(0);
   const currentSectionRef = useRef<number>(0);
+  const isTransitioningRef = useRef<boolean>(false);
   const rafIdRef = useRef<number | null>(null);
   const lastDrawnFrameRef = useRef<number>(-1);
 
@@ -140,158 +125,107 @@ export const ScrollytellingCanvas: React.FC<ScrollytellingCanvasProps> = ({
     updateSectionStyles(0);
 
     // ─────────────────────────────────────────────────────────
-    //  MAGNETIC SNAP & SCROLL ENGINE (LENIS DRIVEN)
-    //  No fighting between ScrollTrigger snap and Lenis momentum.
-    //  Lenis handles smooth scrolling, and magnetic settle guarantees
-    //  the mascot lands cleanly on the resting anchor keyframes.
+    //  DETERMINISTIC SECTION-BY-SECTION TRANSITION CONTROLLER
+    //  Eliminates Lenis virtual scroll momentum loop fighting.
+    //  Every scroll gesture, swipe, or key cleanly glides from
+    //  Section N to Section N±1 and locks onto resting frames.
     // ─────────────────────────────────────────────────────────
-    let snapDebounceTimer: ReturnType<typeof setTimeout> | null = null;
-    let isProgrammaticSnap = false;
+    const tweenObj = { progress: animatedProgressRef.current };
 
-    const navigateToSection = (targetIndex: number) => {
+    const navigateToSection = (targetIndex: number, duration: number = 0.72) => {
       const clamped = Math.max(0, Math.min(3, targetIndex));
+      if (clamped === currentSectionRef.current && !isTransitioningRef.current) return;
+
+      isTransitioningRef.current = true;
       currentSectionRef.current = clamped;
       if (onSectionChange) onSectionChange(clamped);
 
-      const maxScroll =
-        (containerRef.current?.scrollHeight ?? document.documentElement.scrollHeight) -
-        window.innerHeight;
-      const targetScroll = maxScroll * SNAP_POINTS[clamped];
+      const targetProgress = SNAP_POINTS[clamped];
 
-      const lenis = (window as unknown as { __lenis?: { scrollTo: (y: number, opts?: Record<string, unknown>) => void } }).__lenis;
+      gsap.killTweensOf(tweenObj);
+      gsap.to(tweenObj, {
+        progress: targetProgress,
+        duration: duration,
+        ease: 'power2.out',
+        onUpdate: () => {
+          animatedProgressRef.current = tweenObj.progress;
+          updateSectionStyles(tweenObj.progress);
 
-      if (lenis) {
-        isProgrammaticSnap = true;
-        lenis.scrollTo(targetScroll, {
-          duration: 0.85,
-          easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-          onComplete: () => {
-            isProgrammaticSnap = false;
-            animatedProgressRef.current = SNAP_POINTS[clamped];
-            updateSectionStyles(SNAP_POINTS[clamped]);
-            lastDrawnFrameRef.current = -1;
-          },
-        });
+          // Synchronize window scroll top so scrollbar position is consistent
+          if (containerRef.current) {
+            const maxScroll = containerRef.current.scrollHeight - window.innerHeight;
+            window.scrollTo({
+              top: maxScroll * tweenObj.progress,
+              behavior: 'instant' as ScrollBehavior,
+            });
+          }
+        },
+        onComplete: () => {
+          animatedProgressRef.current = targetProgress;
+          tweenObj.progress = targetProgress;
+          updateSectionStyles(targetProgress);
+          lastDrawnFrameRef.current = -1; // force render exact resting anchor
+
+          // Short grace period to prevent mouse wheel inertia double-stepping
+          setTimeout(() => {
+            isTransitioningRef.current = false;
+          }, 120);
+        },
+      });
+    };
+
+    // Expose controller globally for Navbar and CTA buttons
+    (window as unknown as { __navigateToSection?: (idx: number, dur?: number) => void }).__navigateToSection = navigateToSection;
+    (window as unknown as { __currentSection?: () => number }).__currentSection = () => currentSectionRef.current;
+
+    // ─────────────────────────────────────────────────────────
+    //  WHEEL GESTURE INTERCEPTOR (Crisp Section-by-Section)
+    // ─────────────────────────────────────────────────────────
+    let lastWheelTime = 0;
+
+    const handleWheel = (e: WheelEvent) => {
+      // Allow browser zoom (Ctrl + wheel) or internal scroll in modal dialogs
+      if (e.ctrlKey || e.metaKey) return;
+      const target = e.target as HTMLElement | null;
+      if (target && target.closest('[data-lenis-prevent], [role="dialog"], .allow-scroll')) {
+        return;
+      }
+
+      e.preventDefault();
+
+      const now = Date.now();
+      // Enforce debounce cooldown while an animation is actively playing
+      if (isTransitioningRef.current || now - lastWheelTime < 420) {
+        return;
+      }
+
+      // Ignore micro-jitter
+      if (Math.abs(e.deltaY) < 18) {
+        return;
+      }
+
+      lastWheelTime = now;
+
+      if (e.deltaY > 0) {
+        // Scroll Down -> Next Section
+        navigateToSection(currentSectionRef.current + 1);
       } else {
-        window.scrollTo({ top: targetScroll, behavior: 'smooth' });
+        // Scroll Up -> Previous Section
+        navigateToSection(currentSectionRef.current - 1);
       }
     };
 
-    const performMagneticSnap = (direction: number = 0) => {
-      if (isProgrammaticSnap || !containerRef.current) return;
-      const maxScroll = containerRef.current.scrollHeight - window.innerHeight;
-      if (maxScroll <= 0) return;
+    window.addEventListener('wheel', handleWheel, { passive: false });
 
-      const currentScroll = window.scrollY;
-      const currentProgress = Math.max(0, Math.min(1, currentScroll / maxScroll));
-
-      // Determine closest snap milestone
-      let closestIdx = 0;
-      let minDiff = Infinity;
-      for (let i = 0; i < SNAP_POINTS.length; i++) {
-        const diff = Math.abs(currentProgress - SNAP_POINTS[i]);
-        if (diff < minDiff) {
-          minDiff = diff;
-          closestIdx = i;
-        }
-      }
-
-      let targetIdx = closestIdx;
-      // Directional bias if user scrolled with significant intent
-      if (direction > 0 && currentProgress > SNAP_POINTS[currentSectionRef.current] + 0.04) {
-        targetIdx = Math.min(3, currentSectionRef.current + 1);
-      } else if (direction < 0 && currentProgress < SNAP_POINTS[currentSectionRef.current] - 0.04) {
-        targetIdx = Math.max(0, currentSectionRef.current - 1);
-      }
-
-      const targetScroll = maxScroll * SNAP_POINTS[targetIdx];
-
-      // Snap if off target by more than 2px
-      if (Math.abs(currentScroll - targetScroll) > 2) {
-        navigateToSection(targetIdx);
-      } else {
-        currentSectionRef.current = targetIdx;
-        animatedProgressRef.current = SNAP_POINTS[targetIdx];
-        updateSectionStyles(SNAP_POINTS[targetIdx]);
-        lastDrawnFrameRef.current = -1;
-      }
-    };
-
-    // Scroll progress synchronizer: called on every frame of scroll
-    const handleScrollUpdate = (scrollY: number, direction: number = 0) => {
-      if (!containerRef.current) return;
-      const maxScroll = containerRef.current.scrollHeight - window.innerHeight;
-      if (maxScroll <= 0) return;
-
-      const progress = Math.max(0, Math.min(1, scrollY / maxScroll));
-      scrollProgressRef.current = progress;
-
-      if (!isProgrammaticSnap) {
-        animatedProgressRef.current = progress;
-        updateSectionStyles(progress);
-      }
-
-      // Track active section for HUD / Navbar
-      let closestIdx = 0;
-      let minDiff = Infinity;
-      for (let i = 0; i < SNAP_POINTS.length; i++) {
-        const diff = Math.abs(progress - SNAP_POINTS[i]);
-        if (diff < minDiff) {
-          minDiff = diff;
-          closestIdx = i;
-        }
-      }
-      if (closestIdx !== currentSectionRef.current && !isProgrammaticSnap) {
-        currentSectionRef.current = closestIdx;
-        if (onSectionChange) onSectionChange(closestIdx);
-      }
-
-      // Debounce magnetic snap after user scroll gesture settles
-      if (!isProgrammaticSnap) {
-        if (snapDebounceTimer) clearTimeout(snapDebounceTimer);
-        snapDebounceTimer = setTimeout(() => {
-          performMagneticSnap(direction);
-        }, 110);
-      }
-    };
-
-    // Hook into Lenis scroll listener
-    type LenisInstance = {
-      scroll: number;
-      direction: number;
-      on: (event: string, cb: (e: { scroll: number; direction: number }) => void) => () => void;
-    };
-
-    let unsubLenis: (() => void) | null = null;
-    const attachLenis = () => {
-      const lenis = (window as unknown as { __lenis?: LenisInstance }).__lenis;
-      if (lenis && typeof lenis.on === 'function') {
-        unsubLenis = lenis.on('scroll', (e) => {
-          handleScrollUpdate(e.scroll, e.direction);
-        });
-        return true;
-      }
-      return false;
-    };
-
-    if (!attachLenis()) {
-      const checkInterval = setInterval(() => {
-        if (attachLenis()) {
-          clearInterval(checkInterval);
-        }
-      }, 50);
-      setTimeout(() => clearInterval(checkInterval), 2500);
-    }
-
-    // Native scroll fallback (if Lenis not loaded or during initial paint)
-    const onNativeScrollFallback = () => {
-      if ((window as unknown as { __lenis?: LenisInstance }).__lenis) return;
-      handleScrollUpdate(window.scrollY, 0);
-    };
-    window.addEventListener('scroll', onNativeScrollFallback, { passive: true });
-
-    // Keyboard navigation
+    // ─────────────────────────────────────────────────────────
+    //  KEYBOARD NAVIGATION (Arrow keys, PageUp/Down, Space)
+    // ─────────────────────────────────────────────────────────
     const handleKeyDown = (e: KeyboardEvent) => {
+      const activeEl = document.activeElement;
+      if (activeEl && ['INPUT', 'TEXTAREA', 'SELECT'].includes(activeEl.tagName)) {
+        return;
+      }
+
       if (['ArrowDown', 'PageDown', ' '].includes(e.key)) {
         e.preventDefault();
         navigateToSection(currentSectionRef.current + 1);
@@ -307,14 +241,18 @@ export const ScrollytellingCanvas: React.FC<ScrollytellingCanvasProps> = ({
       }
     };
 
-    // Touch swipe navigation
+    window.addEventListener('keydown', handleKeyDown);
+
+    // ─────────────────────────────────────────────────────────
+    //  TOUCH SWIPE NAVIGATION (Mobile / Tablet)
+    // ─────────────────────────────────────────────────────────
     let touchStartY = 0;
     const handleTouchStart = (e: TouchEvent) => {
       touchStartY = e.touches[0].clientY;
     };
     const handleTouchEnd = (e: TouchEvent) => {
       const delta = touchStartY - e.changedTouches[0].clientY;
-      if (Math.abs(delta) > 40 && !isProgrammaticSnap) {
+      if (Math.abs(delta) > 35 && !isTransitioningRef.current) {
         if (delta > 0) {
           navigateToSection(currentSectionRef.current + 1);
         } else {
@@ -323,7 +261,6 @@ export const ScrollytellingCanvas: React.FC<ScrollytellingCanvasProps> = ({
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('touchstart', handleTouchStart, { passive: true });
     window.addEventListener('touchend', handleTouchEnd, { passive: true });
 
@@ -427,12 +364,12 @@ export const ScrollytellingCanvas: React.FC<ScrollytellingCanvasProps> = ({
 
     return () => {
       window.removeEventListener('resize', handleResize);
-      window.removeEventListener('scroll', onNativeScrollFallback);
+      window.removeEventListener('wheel', handleWheel);
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchend', handleTouchEnd);
-      if (unsubLenis) unsubLenis();
-      if (snapDebounceTimer) clearTimeout(snapDebounceTimer);
+      delete (window as unknown as { __navigateToSection?: unknown }).__navigateToSection;
+      delete (window as unknown as { __currentSection?: unknown }).__currentSection;
       if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
     };
   }, [assets, containerRef, onCoordinateUpdate, onSectionChange]);

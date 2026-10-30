@@ -26,18 +26,13 @@ export async function POST(req: NextRequest) {
     let base64: string | undefined;
     let mimeType: string | undefined;
     let fileName: string | undefined;
-    let workspace_id = auth.workspace_id;
-    let user_id = auth.user.id;
+    const workspace_id = auth.workspace_id;
+    const user_id = auth.user.id;
 
     if (contentType.includes('multipart/form-data')) {
       const formData = await req.formData();
       const file = formData.get('file') as File | null;
       const textContent = formData.get('content') as string | null;
-      const wsParam = formData.get('workspace_id') as string | null;
-      const userParam = formData.get('user_id') as string | null;
-
-      if (wsParam) workspace_id = wsParam;
-      if (userParam) user_id = userParam;
 
       if (textContent) {
         content = textContent;
@@ -62,8 +57,6 @@ export async function POST(req: NextRequest) {
         base64 = parsed.data.base64;
         mimeType = parsed.data.mimeType;
         fileName = parsed.data.fileName;
-        if (parsed.data.workspace_id) workspace_id = parsed.data.workspace_id;
-        if (parsed.data.user_id) user_id = parsed.data.user_id;
       }
     }
 
