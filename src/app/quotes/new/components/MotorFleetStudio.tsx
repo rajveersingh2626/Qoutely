@@ -16,6 +16,7 @@ import { formatNumberINR, formatINRWithDecimals } from '@/lib/calculator';
 import { BulkFleetUploader, ParsedVehicleRecord, FleetRollupSummary } from '../uploaders/BulkFleetUploader';
 import { downloadMotorFleetQuotePDF } from '@/lib/pdf/motor-fleet-pdf';
 import { useWorkspace } from '@/context/WorkspaceContext';
+import { getStatutoryTpPremium, getAimtIdvDepreciation } from '@/lib/engines/motor-engine';
 
 interface MotorFleetStudioProps {
   clientInfo: {
@@ -95,16 +96,12 @@ export const MotorFleetStudio: React.FC<MotorFleetStudioProps> = ({
       };
     }
 
-    // 1. AIMT GR.8 Age Depreciation
+    // 1. AIMT GR.8 Age Depreciation from pure statutory engine
     const currentYear = 2026;
     const ageYears = Math.max(0, currentYear - mfgYear);
-    let depFactor = 0.50;
-    if (ageYears === 0) depFactor = 0.05;
-    else if (ageYears === 1) depFactor = 0.15;
-    else if (ageYears === 2) depFactor = 0.20;
-    else if (ageYears === 3) depFactor = 0.30;
-    else if (ageYears === 4) depFactor = 0.40;
-    else if (ageYears >= 5) depFactor = 0.50;
+    const ageMonths = ageYears * 12;
+    const { percent } = getAimtIdvDepreciation(ageMonths);
+    const depFactor = percent / 100;
 
     const chassisIdv = Math.round(exShowroomPrice * (1 - depFactor));
     const totalIdv = chassisIdv + accessoriesIdv + cngKitIdv;
@@ -142,22 +139,9 @@ export const MotorFleetStudio: React.FC<MotorFleetStudioProps> = ({
     const fleetAdjustment = Math.round(grossOd * ((fleetDiscountPercent - claimsAdjustmentPercent) / 100));
     const netOd = Math.max(1000, grossOd + totalImtAddons - ncbDiscount - fleetAdjustment);
 
-    // 5. Statutory Third-Party (TP) Tariff (Fixed IRDAI Schedule)
-    let statutoryTp = 16049;
-    if (vehicleClass === 'gcv') {
-      if (gvwKg <= 7500) statutoryTp = 16049;
-      else if (gvwKg <= 12000) statutoryTp = 27486;
-      else if (gvwKg <= 20000) statutoryTp = 35313;
-      else if (gvwKg <= 40000) statutoryTp = 44242;
-      else statutoryTp = 45512;
-    } else if (vehicleClass === 'pcv') {
-      if (seatingCapacity <= 6) statutoryTp = 14213;
-      else if (seatingCapacity <= 18) statutoryTp = 24190;
-      else if (seatingCapacity <= 36) statutoryTp = 36875;
-      else statutoryTp = 44242;
-    } else {
-      statutoryTp = 12500;
-    }
+    // 5. Statutory Third-Party (TP) Tariff (Pure IRDAI Gazetted Schedule)
+    const motorVehicleType = vehicleClass === 'gcv' ? 'gcv_public' : vehicleClass === 'pcv' ? 'pcv_bus' : 'misc_construction';
+    const statutoryTp = getStatutoryTpPremium(motorVehicleType as any, gvwKg, seatingCapacity);
 
     const cpaPremium = paOwnerDriverOpted ? 275 : 0;
     const paidDriverPremium = paidDriversCount * 50;

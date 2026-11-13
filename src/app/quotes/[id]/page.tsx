@@ -26,7 +26,7 @@ import {
 import { useWorkspace } from '@/context/WorkspaceContext';
 import { Header } from '@/components/layout/Header';
 import { formatINR, formatNumberINR } from '@/lib/calculator';
-import { downloadQuoteSlipPDF } from '@/lib/pdf-generator';
+import { downloadQuoteSlipPDF } from '@/lib/pdf';
 
 export default function QuoteDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -41,7 +41,7 @@ export default function QuoteDetailPage({ params }: { params: Promise<{ id: stri
       <div className="flex-1 flex items-center justify-center p-6 text-center">
         <div>
           <p className="text-sm font-semibold text-slate-700">Quote slip not found.</p>
-          <Link href="/app/quotes" className="text-xs text-emerald-600 underline mt-2 block">
+          <Link href="/quotes" className="text-xs text-emerald-600 underline mt-2 block">
             Return to quotes history
           </Link>
         </div>
@@ -57,7 +57,7 @@ export default function QuoteDetailPage({ params }: { params: Promise<{ id: stri
   const handleDuplicate = () => {
     const dup = duplicateQuote(quote.id);
     if (dup) {
-      router.push(`/app/quotes/${dup.id}`);
+      router.push(`/quotes/${dup.id}`);
     }
   };
 
@@ -73,7 +73,7 @@ export default function QuoteDetailPage({ params }: { params: Promise<{ id: stri
         title={`Quote Slip • ${quote.quote_number}`}
         subtitle={`Insured: ${quote.client_name} • Underwritten Commercial Policy`}
         breadcrumbs={[
-          { label: 'Quotes', href: '/app/quotes' },
+          { label: 'Quotes', href: '/quotes' },
           { label: quote.quote_number },
         ]}
       />
@@ -82,7 +82,7 @@ export default function QuoteDetailPage({ params }: { params: Promise<{ id: stri
       <div className="px-6 py-3 bg-white dark:bg-slate-900 border-b border-slate-200/80 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <Link
-            href="/app/quotes"
+            href="/quotes"
             className="p-1.5 rounded-lg text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />

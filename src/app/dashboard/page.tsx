@@ -27,7 +27,7 @@ import {
 import { useWorkspace } from '@/context/WorkspaceContext';
 import { Header } from '@/components/layout/Header';
 import { formatINR } from '@/lib/calculator';
-import { downloadQuoteSlipPDF } from '@/lib/pdf-generator';
+import { downloadQuoteSlipPDF } from '@/lib/pdf';
 
 export default function DashboardPage() {
   const { quotes, clients, currentWorkspace, auditLogs, canGenerateQuotes, tariffOverrides } = useWorkspace();

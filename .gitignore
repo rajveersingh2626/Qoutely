@@ -43,7 +43,9 @@ supabase/.temp/
 Thumbs.db
 ehthumbs.db
 
-# IDE & Editor configs
+# Agent orchestration artifacts
+.agents/
+
 .idea/
 .vscode/
 *.swp

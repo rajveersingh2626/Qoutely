@@ -26,7 +26,7 @@ import {
 import { useWorkspace } from '@/context/WorkspaceContext';
 import { Header } from '@/components/layout/Header';
 import { formatINR, formatNumberINR, formatINRWithDecimals } from '@/lib/calculator';
-import { downloadQuoteSlipPDF } from '@/lib/pdf-generator';
+import { downloadQuoteSlipPDF } from '@/lib/pdf';
 import { Quote } from '@/types/database';
 
 export default function QuotesDashboardPage() {

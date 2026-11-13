@@ -208,9 +208,20 @@ CREATE TABLE IF NOT EXISTS public.workspaces (
 ALTER TABLE public.clients ADD COLUMN IF NOT EXISTS org_id UUID REFERENCES public.organizations(id) ON DELETE CASCADE;
 
 -- ------------------------------------------------------------------------------
--- 5.6 QUOTES (With explicit org_id FK)
+-- 5.6 QUOTES (With explicit org_id FK & Multi-Line Commercial LOB support)
 -- ------------------------------------------------------------------------------
 ALTER TABLE public.quotes ADD COLUMN IF NOT EXISTS org_id UUID REFERENCES public.organizations(id) ON DELETE CASCADE;
+ALTER TABLE public.quotes ADD COLUMN IF NOT EXISTS lob_category TEXT DEFAULT 'property';
+ALTER TABLE public.quotes ADD COLUMN IF NOT EXISTS insurance_line TEXT DEFAULT 'fire';
+ALTER TABLE public.quotes ADD COLUMN IF NOT EXISTS risk_details JSONB DEFAULT '{}'::jsonb;
+ALTER TABLE public.quotes ADD COLUMN IF NOT EXISTS policy_number TEXT;
+ALTER TABLE public.quotes ADD COLUMN IF NOT EXISTS policy_start_date DATE;
+ALTER TABLE public.quotes ADD COLUMN IF NOT EXISTS policy_end_date DATE;
+ALTER TABLE public.quotes ADD COLUMN IF NOT EXISTS tpa_name TEXT;
+ALTER TABLE public.quotes ADD COLUMN IF NOT EXISTS co_insurance JSONB DEFAULT '[]'::jsonb;
+ALTER TABLE public.quotes ALTER COLUMN occupation_code DROP NOT NULL;
+ALTER TABLE public.quotes ALTER COLUMN occupation_description DROP NOT NULL;
+ALTER TABLE public.quotes ALTER COLUMN eq_zone DROP NOT NULL;
 
 -- ------------------------------------------------------------------------------
 -- 5.7 AUDIT LOGS (With org_id)

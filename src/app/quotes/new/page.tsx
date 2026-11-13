@@ -134,7 +134,8 @@ const SAMPLE_PROPOSALS = [
 function NewQuoteWorkspaceContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const activeLine = (searchParams.get('line') as LOBCategoryKey) || 'property';
+  const rawLine = searchParams.get('line');
+  const activeLine: LOBCategoryKey = (rawLine === 'fire' ? 'property' : (rawLine as LOBCategoryKey)) || 'property';
   const { currentWorkspace, addQuote, tariffOverrides } = useWorkspace();
 
   const handleSelectLine = (newLineKey: LOBCategoryKey) => {
