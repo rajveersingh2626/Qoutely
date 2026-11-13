@@ -6,6 +6,7 @@ import {
   useCurrentFrame,
   useVideoConfig,
   Img,
+  OffthreadVideo,
   staticFile,
 } from 'remotion';
 
@@ -181,88 +182,130 @@ export const QoutelyLinkedInDemo: React.FC = () => {
       />
 
       {/* ====================================================================
-          SCENE 1: THE HOOK
+          SCENE 1: THE HOOK (WITH DYNAMIC INTRO VIDEO BACKDROP)
       ==================================================================== */}
       {frame < 270 && (
-        <AbsoluteFill
-          style={{
-            opacity: hookOpacity,
-            transform: `scale(${hookScale})`,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            textAlign: 'center',
-            padding: '0 120px',
-            zIndex: 10,
-          }}
-        >
+        <>
+          {/* Dynamic Background Intro Video from Qoutely Personal */}
           <div
             style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 12,
-              padding: '10px 24px',
-              borderRadius: 9999,
-              backgroundColor: 'rgba(15, 81, 50, 0.25)',
-              border: '1px solid rgba(34, 197, 94, 0.4)',
-              color: '#4ade80',
-              fontSize: 16,
-              fontWeight: 800,
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-              marginBottom: 32,
+              position: 'absolute',
+              inset: 0,
+              opacity: 0.38,
+              overflow: 'hidden',
+              filter: 'contrast(1.1) brightness(0.9)',
             }}
           >
-            <span>The Reality of Commercial Insurance in India</span>
-          </div>
-
-          <h1
-            style={{
-              fontSize: 64,
-              fontWeight: 900,
-              lineHeight: 1.15,
-              letterSpacing: '-0.03em',
-              maxWidth: 1300,
-              marginBottom: 28,
-            }}
-          >
-            Brokers waste <span style={{ color: '#ef4444' }}>3 to 5 days</span> waiting for underwriter replies on 40-page RFQs.
-          </h1>
-
-          <p
-            style={{
-              fontSize: 28,
-              color: '#94a3b8',
-              maxWidth: 1000,
-              lineHeight: 1.5,
-              marginBottom: 44,
-            }}
-          >
-            Fighting spreadsheets and losing clients to faster competitors?
-          </p>
-
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 16,
-              padding: '16px 36px',
-              borderRadius: 24,
-              backgroundColor: '#0F5132',
-              border: '1px solid #22c55e',
-              boxShadow: '0 20px 40px rgba(15, 81, 50, 0.4)',
-            }}
-          >
-            <Img
-              src={staticFile('qoutely_logo.png')}
-              style={{ width: 40, height: 40, objectFit: 'contain' }}
+            <OffthreadVideo
+              src={staticFile('intro_video.mp4')}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+              }}
             />
-            <span style={{ fontSize: 26, fontWeight: 900, color: '#FFFFFF' }}>
-              Qoutely: Compare Real Insurer Rates in 60 Seconds
-            </span>
+            {/* Dark vignette gradient overlay */}
+            <div
+              style={{
+                position: 'absolute',
+                inset: 0,
+                background: 'linear-gradient(to bottom, rgba(10, 13, 18, 0.75) 0%, rgba(10, 13, 18, 0.92) 100%)',
+              }}
+            />
           </div>
-        </AbsoluteFill>
+
+          <AbsoluteFill
+            style={{
+              opacity: hookOpacity,
+              transform: `scale(${hookScale})`,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              textAlign: 'center',
+              padding: '0 120px',
+              zIndex: 10,
+            }}
+          >
+            <div
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 12,
+                padding: '10px 24px',
+                borderRadius: 9999,
+                backgroundColor: 'rgba(15, 81, 50, 0.35)',
+                border: '1px solid rgba(34, 197, 94, 0.5)',
+                color: '#4ade80',
+                fontSize: 16,
+                fontWeight: 800,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+                marginBottom: 28,
+              }}
+            >
+              <span>The Reality of Commercial Insurance in India</span>
+            </div>
+
+            <h1
+              style={{
+                fontSize: 64,
+                fontWeight: 900,
+                lineHeight: 1.15,
+                letterSpacing: '-0.03em',
+                maxWidth: 1300,
+                marginBottom: 24,
+              }}
+            >
+              Brokers waste <span style={{ color: '#ef4444' }}>3 to 5 days</span> waiting for underwriter replies on 40-page RFQs.
+            </h1>
+
+            <p
+              style={{
+                fontSize: 28,
+                color: '#94a3b8',
+                maxWidth: 1000,
+                lineHeight: 1.5,
+                marginBottom: 36,
+              }}
+            >
+              Fighting spreadsheets and losing clients to faster competitors?
+            </p>
+
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 20,
+                padding: '16px 36px',
+                borderRadius: 24,
+                backgroundColor: '#0F5132',
+                border: '1px solid #22c55e',
+                boxShadow: '0 20px 40px rgba(15, 81, 50, 0.4)',
+                position: 'relative',
+              }}
+            >
+              {/* Winged Money Character Mascot from Qoutely Personal */}
+              <Img
+                src={staticFile('winged_money_character.png')}
+                style={{
+                  width: 64,
+                  height: 64,
+                  objectFit: 'contain',
+                  transform: `translateY(${Math.sin(frame / 12) * 8}px) rotate(${Math.sin(frame / 20) * 5}deg)`,
+                  filter: 'drop-shadow(0 10px 15px rgba(0,0,0,0.5))',
+                }}
+              />
+              <Img
+                src={staticFile('qoutely_logo.png')}
+                style={{ width: 40, height: 40, objectFit: 'contain' }}
+              />
+              <span style={{ fontSize: 26, fontWeight: 900, color: '#FFFFFF' }}>
+                Qoutely: Compare Real Insurer Rates in 60 Seconds
+              </span>
+            </div>
+          </AbsoluteFill>
+        </>
       )}
 
       {/* ====================================================================
@@ -766,6 +809,20 @@ export const QoutelyLinkedInDemo: React.FC = () => {
           >
             Limited to 10–15 commercial brokerages in India. Run live Fire, Motor Fleet, and Marine quotes with zero commitment.
           </p>
+
+          {/* Floating Mascot in Outro */}
+          <div style={{ marginBottom: 16 }}>
+            <Img
+              src={staticFile('winged_money_character.png')}
+              style={{
+                width: 90,
+                height: 90,
+                objectFit: 'contain',
+                transform: `translateY(${Math.sin(frame / 10) * 10}px)`,
+                filter: 'drop-shadow(0 15px 25px rgba(0,0,0,0.6))',
+              }}
+            />
+          </div>
 
           {/* Contact Box */}
           <div
