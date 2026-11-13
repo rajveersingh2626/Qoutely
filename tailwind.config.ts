@@ -41,7 +41,7 @@ const config: Config = {
         emerald: "0 4px 20px -2px rgba(22, 163, 74, 0.25)",
       },
       fontFamily: {
-        sans: ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
+        sans: ["var(--font-inter)", "Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
       },
     },
   },

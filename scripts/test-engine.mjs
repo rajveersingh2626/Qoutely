@@ -9,8 +9,8 @@ function calculatePremium(data) {
   const rawDiscounts = Math.max(0, Number(data.discounts) || 0);
   const rawLoadings = Math.max(0, Number(data.loadings) || 0);
 
-  const discountDecimal = rawDiscounts > 1 ? rawDiscounts / 100 : rawDiscounts;
-  const loadingDecimal = rawLoadings > 1 ? rawLoadings / 100 : rawLoadings;
+  const discountDecimal = rawDiscounts >= 1 ? rawDiscounts / 100 : rawDiscounts;
+  const loadingDecimal = rawLoadings >= 1 ? rawLoadings / 100 : rawLoadings;
 
   // 1. Base Rate per mille = (Flexa + STFI + EQ)
   const baseRate = Number((flexaRate + stfiRate + eqRate).toFixed(4));

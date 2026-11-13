@@ -38,12 +38,12 @@ export async function middleware(request: NextRequest) {
     process.env.NEXT_PUBLIC_MAINTENANCE_MODE === 'true';
 
   const bypassQuery = request.nextUrl.searchParams.get('bypass');
-  const hasBypassCookie = !!request.cookies.get('maintenance_bypass')?.value;
-  const isBypassed =
-    hasBypassCookie ||
-    bypassQuery === 'admin' ||
-    bypassQuery === 'qoutely' ||
-    bypassQuery === 'dinesh';
+  const bypassSecret = process.env.MAINTENANCE_BYPASS_TOKEN || process.env.MAINTENANCE_BYPASS_SECRET || '';
+  const bypassCookie = request.cookies.get('maintenance_bypass')?.value;
+  const isBypassed = Boolean(
+    (bypassSecret && bypassCookie === bypassSecret) ||
+    (bypassSecret && bypassQuery === bypassSecret)
+  );
 
   if (isMaintenanceMode && !isBypassed) {
     if (pathname === '/maintenance') {
@@ -71,11 +71,13 @@ export async function middleware(request: NextRequest) {
 
   let response = NextResponse.next({ request });
 
-  if (bypassQuery && ['admin', 'qoutely', 'dinesh'].includes(bypassQuery)) {
-    response.cookies.set('maintenance_bypass', bypassQuery, {
+  if (bypassSecret && bypassQuery === bypassSecret) {
+    response.cookies.set('maintenance_bypass', bypassSecret, {
       path: '/',
       maxAge: 86400 * 7,
       sameSite: 'lax',
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
     });
   }
 

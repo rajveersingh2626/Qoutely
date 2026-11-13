@@ -257,7 +257,16 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       }
     }
 
-    refreshData();
+    const isPublicLanding =
+      typeof window !== 'undefined' &&
+      (window.location.pathname === '/' ||
+        window.location.pathname === '/login' ||
+        window.location.pathname === '/register');
+
+    // Skip eager database query bombardment on public marketing landing if unauthenticated
+    if (!isPublicLanding) {
+      refreshData();
+    }
 
     // Revalidate and hydrate current user from server session cookie
     fetch('/api/auth/session')
@@ -273,6 +282,10 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             if (typeof window !== 'undefined') {
               localStorage.setItem('quotely_workspace', JSON.stringify(data.workspace));
             }
+          }
+          // Refresh workspace data once verified authenticated
+          if (isPublicLanding) {
+            refreshData();
           }
         }
       })
@@ -597,6 +610,12 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       creator_name: currentUser.name,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
+      lob_category: quoteData.lob_category || 'property',
+      insurance_line: quoteData.insurance_line || 'fire',
+      risk_details: quoteData.risk_details || {},
+      occupation_code: quoteData.occupation_code || 'N/A',
+      occupation_description: quoteData.occupation_description || 'Commercial Insurance Line',
+      eq_zone: quoteData.eq_zone || 'N/A',
     };
 
     setQuotes((prev) => [newQuote, ...prev]);
@@ -628,6 +647,14 @@ export const WorkspaceProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       ai_analysis: newQuote.ai_analysis,
       created_at: newQuote.created_at,
       updated_at: newQuote.updated_at,
+      lob_category: newQuote.lob_category,
+      insurance_line: newQuote.insurance_line,
+      risk_details: newQuote.risk_details,
+      policy_number: newQuote.policy_number,
+      policy_start_date: newQuote.policy_start_date,
+      policy_end_date: newQuote.policy_end_date,
+      tpa_name: newQuote.tpa_name,
+      co_insurance: newQuote.co_insurance || [],
     }).then(({ error }) => {
       if (error) console.error('Failed to insert quote into Supabase:', error);
     });

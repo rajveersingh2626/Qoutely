@@ -58,67 +58,18 @@
   - Terrorism rate (0.15 for Section III, 0.23 for other sections; opt-out capability for Flexi_BS/BL).
   - Kutcha construction surcharge (+4.00 on adjusted flexa).
   - Risk feature discount/loadings (capped at -50% unless adverse claim loading applies).
-  - Discretionary discount and floater rate (+10%).
-- **Dynamic Per-User/Per-Workspace Customization**:
-  - Enable brokers to configure custom base flexa rates, loss costs, or discount ceilings on a per-occupancy level for their workspace.
-  - Changes immediately reflect in real-time on their quotation dashboard, quote creation flows, and analytics.
-  - Built-in regulatory guardrails: automatically compare customized rates against statutory AIFT / IIB baseline rates and display compliance variance badges (e.g., "Compliant with IIB Minimum Loss Cost" vs "Below Recommended Loss Cost - Regulatory Justification Required").
 
-### 8. Intelligent Dual-Loading UX System
-- **Type 1 (Video-based loader)**: Ultra-sleek, short video loop (~1-2s) representing rapid data fetch & AI crunching.
-- **Type 2 (Standard animated loader)**: Lightweight, high-tech animated SVG/pulse loader.
-- **Weighted Distribution Engine**:
-  - Weighted probabilistic selection constraint: Type 1 (Video) is significantly more prominent (e.g., ~80% weight) vs Type 2 (Standard animated ~20% weight).
-  - Deterministic per-action / session seeding to avoid visual flickering during identical loading steps.
-  - Integrated into global route transitions, data queries, and AI generation states.
-
-### 9. Stark White Glassmorphic Frontend & Video Hero Flow
-- **Aesthetic Direction**: Stark, clean, ultra-modern white theme replacing legacy dark tones on the public marketing landing page.
-- **Apple-vibe Glass-morphism Navigation Bar**: Translucent green glass (`backdrop-blur-md`, subtle emerald tint, crisp hairline borders), housing the new transparent logo (`qoutely_logo_remove_bg.png`).
-
-### 10. Performance Optimization & Pure UI Animations (Zero Video Tags)
-- **Problem**: Prior implementation embedded massive (>40MB) MP4 video chassis directly into landing page and loader components, degrading initial page load, Core Web Vitals, and mobile responsiveness.
-- **Solution**:
-  - Completely purged all `<video>` tags from the codebase.
-  - Implemented `QuotelyLoadingAnimation.tsx` + `Loader.module.css`: Hardware-accelerated CSS keyframes and SVG orbital motion paths replicating the exact timing: dark green 'Q' logo with 3 bouncing dots below it; winged money character flying in from top-right, orbiting 360° around the 'Q', landing in the center with a pop/bounce before fading out smoothly. Added `prefers-reduced-motion` accessible fallbacks.
-  - Implemented `HeroIntro.tsx` + `HeroIntro.module.css`: Refactored to a balanced 2-column layout matching reference video frame 0 with the headline "Elevate Your Brokerage" on the left and the winged money character floating prominently on the right with an ambient emerald glow.
-  - Implemented `ScrollFlowGuide.tsx` + `ScrollFlowGuide.module.css`: Purely displays the winged character gliding and flowing downwards along an illuminated curved guide stream following scroll position, removing hypothetical mock cards per user directive ("in the website flow video only the gliding and the flow that the character and the character must be seen, everything except that is hypothetical").
-  - Implemented `InteractiveCalculator.tsx`: Lightweight, code-split client component directly executing the Capital Brokers / AIFT 2001 calculation formulas with instant reactivity.
-
-### 11. Milestone 14: Fluid Scroll & Character Flight Flow (Video 2 Parity)
-- **Objective**: Eliminate rigid, fragmented scroll disconnect from Video 1 and achieve the continuous, scroll-linked character flight flow from Video 2.
-- **Root Cause & Structural Evolution**:
-  - Unify the Hero section and Scroll Flow runway into a single persistent corridor (`<HeroScrollFlowDirector />`).
-  - Character starts in the Hero showcase position at `scroll = 0%`.
-  - As scroll begins, character detaches and travels along a smooth S-curve down the screen, guiding the eye across Stage 1 (IIB tariffs) and Stage 2 (Statutory shield & quotes) to Stage 3 ('Q' dock).
-- **Puppet Rigging & Wing Articulation**:
-  - Decompose `winged_money_character.png` into 3 layered assets: `money_body.png`, `wing_left.png`, `wing_right.png`.
-  - Sinusoidal 3D wing flapping via hardware-accelerated transforms, reacting dynamically to scroll velocity (`useVelocity`).
-  - Realistic aerodynamic banking (-18° dive, +16° swoop, 0° landing).
-- **Preservation Mandate**:
-  - Retain 100% of verified statutory underwriting content, calculator, pricing, FAQs, and navigation. Zero code or test regressions.
-### 12. Milestone 15: Continuous Scroll-Linked Character Flight to Rate Verifier Section
-- **Problem Statement**:
-  - The previous 380vh locked block (`HeroScrollFlowDirector.tsx`) trapped the character inside a rigid, artificial runway with synthetic intermediate cards, interrupting the natural flow of the website.
-- **Architectural & Aesthetic Target**:
-  - Liberate the character from the locked runway block; allow normal, unconstrained website scrolling.
-  - The character starts inside the Hero section ("Elevate Your Brokerage") on the top-right.
-  - As the user scrolls down, the character physically tilts/bends forward into flight posture (-22° roll, forward pitch), accelerating wing flap frequency, and glides down across the viewport.
-  - The destination is the "Interactive Tools & Rate Verifier" section (`#calculator`), where text and content are right-aligned. The character fluidly lands and occupies the empty space on the left side of that section.
-  - Character size remains proportional and consistent; zero heavy video tags; 100% native 3D GPU transforms.
-  - Full preservation of statutory tariffs, underwriting rules, and database schemas.
-- **Implemented Architecture & Verified Journey**:
-  - **Component Structure**:
-    - `AnimatedWingedCharacter.tsx` & `.module.css`: 3-layer rigged sprite puppet (`money_body.png`, `wing_left.png`, `wing_right.png`) with rhythmic 3D wing flapping, scroll-velocity sensitivity, aerodynamic banking, and forward pitch.
-    - `HeroSection.tsx` & `.module.css`: Clean, white 2-column Hero section with Left headline & CTAs, and Right transparent anchor zone for initial character placement.
-    - `ScrollLinkedCharacterFlight.tsx` & `.module.css`: Dynamic flight corridor controller with `position: sticky; top: 42vh;` viewport rig, hardware-accelerated 3D transforms (`rotate`, `rotateX`), and calibrated sub-pixel waypoints:
-      - State A: Hero top-right (+19vw, -7vh, 0° tilt, idle hover bobbing).
-      - State B: Flight transition (-5vw, +6vh, 20° forward tilt, 20° 3D pitch, rapid velocity flapping).
-      - State C: Landing dock in Rate Verifier left pedestal (-30vw, -11vh, 0° upright alignment, resume idle hover).
-    - `#calculator` (Rate Verifier): Asymmetric 2-column layout (Left: glowing pedestal bay with "Autonomous Tariff Copilot • Active" badge; Right: right-aligned header, right-aligned tabs, and `<InteractiveCalculator />` showcase card).
-    - Post-Landing Flow: When scrolling past the corridor (>1200px into "How Quotely Works"), the character stays docked inside `#calculator` and naturally scrolls away with the section, keeping subsequent sections 100% clean and unobstructed.
-  - **Mechanical Verification**:
-    - `npm run typecheck` (`tsc --noEmit`): 0 errors.
-    - `verify-all.ts`: All 6 statutory suites passed (100% test pass rate).
-    - `npm run build`: 59/59 routes compiled with code 0.
-    - Real browser DevTools verification: Verified visually at scroll 0px, 260px, 620px, and 1500px forwards and backwards.
+### 8. Multi-Insurance Line Expansion (NEW — Phase 12+)
+- **Strategic Decision**: Expand Qoutely from Fire-only platform to full commercial broker operating system covering all IRDAI-regulated commercial insurance lines.
+- **Phased Roll-Out Priority** (see ROADMAP.md Milestones 12-20):
+  1. **Marine Cargo** (highest broker demand, existing IIB rate infrastructure)
+  2. **Engineering Lines** (CAR/EAR/MB/EEI/BPP)
+  3. **Liability Lines** (Public Liability, Product Liability, PI, D&O, CGL, Cyber)
+  4. **Employee Benefits** (Group Health, Group Personal Accident, Workmen's Compensation)
+  5. **Specialty/Financial Lines** (Surety Bonds, Trade Credit, Fidelity Guarantee)
+- **Core Architecture Decisions**:
+  - Each insurance line gets a dedicated `/quotes/new?line=marine` route variant sharing the 3-column underwriting studio shell.
+  - A unified `insurance_line` discriminator column added to the `quotes` table in Supabase.
+  - Line-specific underwriting engines live in `src/lib/underwriting/<line>/` directories.
+  - AI extraction prompts are line-aware; OCR pipeline routes to the correct extractor based on detected document type.
+  - All lines share the same RBAC, audit trail, renewal engine, and PDF export infrastructure.

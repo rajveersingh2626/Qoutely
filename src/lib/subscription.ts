@@ -90,7 +90,7 @@ export const DINESH_UNCLE_IDENTIFIERS = {
     '664e9b3c-1f0b-4fcb-ae7f-1fbb156bbc3f', // Supabase primary seed ID
     '10000000-0000-0000-0000-000000000002', // Seed workspace member ID
   ],
-  nameFragments: ['dinesh gupta', 'dinesh uncle', 'dinesh'],
+  nameFragments: ['dinesh gupta', 'dinesh uncle'],
 };
 
 /**

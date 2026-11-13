@@ -20,15 +20,11 @@ export const RESTING_FRAMES = [0, 69, 148, 214];
 export const SNAP_POINTS = [0, 0.333333, 0.666667, 1.0];
 
 /**
- * Piecewise mapping — guarantees monotonic, smooth frame interpolation:
- * p = 0.000000 → Frame 1   (Index 0)
- * p = 0.333333 → Frame 70  (Index 69)
- * p = 0.666667 → Frame 149 (Index 148)
- * p = 1.000000 → Frame 215 (Index 214)
+ * Monotonic piecewise mapping from progress (0..1) to frame index (0..214)
  */
 export function getFrameFromProgress(p: number): number {
   const clamped = Math.max(0, Math.min(1, p));
-  
+
   if (clamped <= 0.008) return 0;
   if (Math.abs(clamped - 0.333333) <= 0.008) return 69;
   if (Math.abs(clamped - 0.666667) <= 0.008) return 148;
@@ -61,6 +57,11 @@ export const ScrollytellingCanvas: React.FC<ScrollytellingCanvasProps> = ({
   const rafIdRef = useRef<number | null>(null);
   const lastDrawnFrameRef = useRef<number>(-1);
 
+  // Layout cache refs to completely eliminate synchronous layout queries inside 60fps RAF loop
+  const cachedWidthRef = useRef<number>(1280);
+  const cachedHeightRef = useRef<number>(720);
+  const cachedDprRef = useRef<number>(1);
+
   const NATIVE_W = 1280;
   const NATIVE_H = 720;
 
@@ -71,12 +72,14 @@ export const ScrollytellingCanvas: React.FC<ScrollytellingCanvasProps> = ({
     const ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
 
-    let dpr = window.devicePixelRatio || 1;
-
     const handleResize = () => {
-      dpr = window.devicePixelRatio || 1;
+      const dpr = window.devicePixelRatio || 1;
       const w = window.innerWidth;
       const h = window.innerHeight;
+
+      cachedDprRef.current = dpr;
+      cachedWidthRef.current = w;
+      cachedHeightRef.current = h;
 
       canvas.width = Math.round(w * dpr);
       canvas.height = Math.round(h * dpr);
@@ -94,6 +97,13 @@ export const ScrollytellingCanvas: React.FC<ScrollytellingCanvasProps> = ({
     const el2 = document.getElementById('section-carrier');
     const el3 = document.getElementById('section-landing');
 
+    // Apply compositor promotion hints once
+    [el0, el1, el2, el3].forEach((el) => {
+      if (el) {
+        el.style.willChange = 'transform, opacity';
+      }
+    });
+
     const updateSectionStyles = (p: number) => {
       const op0 = Math.max(0, Math.min(1, 1 - p * 3.8));
       const op1 = Math.max(0, Math.min(1, 1 - Math.abs(p - 0.33333) * 4.5));
@@ -102,22 +112,22 @@ export const ScrollytellingCanvas: React.FC<ScrollytellingCanvasProps> = ({
 
       if (el0) {
         el0.style.opacity = op0.toFixed(3);
-        el0.style.transform = `translateY(${((1 - op0) * -14).toFixed(1)}px)`;
+        el0.style.transform = `translate3d(0, ${((1 - op0) * -14).toFixed(1)}px, 0)`;
         el0.style.pointerEvents = op0 > 0.35 ? 'auto' : 'none';
       }
       if (el1) {
         el1.style.opacity = op1.toFixed(3);
-        el1.style.transform = `translateY(${((1 - op1) * -14).toFixed(1)}px)`;
+        el1.style.transform = `translate3d(0, ${((1 - op1) * -14).toFixed(1)}px, 0)`;
         el1.style.pointerEvents = op1 > 0.35 ? 'auto' : 'none';
       }
       if (el2) {
         el2.style.opacity = op2.toFixed(3);
-        el2.style.transform = `translateY(${((1 - op2) * -14).toFixed(1)}px)`;
+        el2.style.transform = `translate3d(0, ${((1 - op2) * -14).toFixed(1)}px, 0)`;
         el2.style.pointerEvents = op2 > 0.35 ? 'auto' : 'none';
       }
       if (el3) {
         el3.style.opacity = op3.toFixed(3);
-        el3.style.transform = `translateY(${((1 - op3) * -14).toFixed(1)}px)`;
+        el3.style.transform = `translate3d(0, ${((1 - op3) * -14).toFixed(1)}px, 0)`;
         el3.style.pointerEvents = op3 > 0.35 ? 'auto' : 'none';
       }
     };
@@ -126,13 +136,11 @@ export const ScrollytellingCanvas: React.FC<ScrollytellingCanvasProps> = ({
 
     // ─────────────────────────────────────────────────────────
     //  DETERMINISTIC SECTION-BY-SECTION TRANSITION CONTROLLER
-    //  Eliminates Lenis virtual scroll momentum loop fighting.
-    //  Every scroll gesture, swipe, or key cleanly glides from
-    //  Section N to Section N±1 and locks onto resting frames.
+    //  Glides cleanly from Section N to Section N±1 and locks onto resting frames.
     // ─────────────────────────────────────────────────────────
     const tweenObj = { progress: animatedProgressRef.current };
 
-    const navigateToSection = (targetIndex: number, duration: number = 0.72) => {
+    const navigateToSection = (targetIndex: number, duration: number = 0.68) => {
       const clamped = Math.max(0, Math.min(3, targetIndex));
       if (clamped === currentSectionRef.current && !isTransitioningRef.current) return;
 
@@ -142,6 +150,15 @@ export const ScrollytellingCanvas: React.FC<ScrollytellingCanvasProps> = ({
 
       const targetProgress = SNAP_POINTS[clamped];
 
+      // Sync window scroll once at transition start rather than 60fps in onUpdate
+      if (containerRef.current) {
+        const maxScroll = containerRef.current.scrollHeight - window.innerHeight;
+        window.scrollTo({
+          top: maxScroll * targetProgress,
+          behavior: 'smooth',
+        });
+      }
+
       gsap.killTweensOf(tweenObj);
       gsap.to(tweenObj, {
         progress: targetProgress,
@@ -150,15 +167,6 @@ export const ScrollytellingCanvas: React.FC<ScrollytellingCanvasProps> = ({
         onUpdate: () => {
           animatedProgressRef.current = tweenObj.progress;
           updateSectionStyles(tweenObj.progress);
-
-          // Synchronize window scroll top so scrollbar position is consistent
-          if (containerRef.current) {
-            const maxScroll = containerRef.current.scrollHeight - window.innerHeight;
-            window.scrollTo({
-              top: maxScroll * tweenObj.progress,
-              behavior: 'instant' as ScrollBehavior,
-            });
-          }
         },
         onComplete: () => {
           animatedProgressRef.current = targetProgress;
@@ -166,10 +174,10 @@ export const ScrollytellingCanvas: React.FC<ScrollytellingCanvasProps> = ({
           updateSectionStyles(targetProgress);
           lastDrawnFrameRef.current = -1; // force render exact resting anchor
 
-          // Short grace period to prevent mouse wheel inertia double-stepping
+          // Grace period to prevent mouse wheel inertia double-stepping
           setTimeout(() => {
             isTransitioningRef.current = false;
-          }, 120);
+          }, 100);
         },
       });
     };
@@ -177,6 +185,31 @@ export const ScrollytellingCanvas: React.FC<ScrollytellingCanvasProps> = ({
     // Expose controller globally for Navbar and CTA buttons
     (window as unknown as { __navigateToSection?: (idx: number, dur?: number) => void }).__navigateToSection = navigateToSection;
     (window as unknown as { __currentSection?: () => number }).__currentSection = () => currentSectionRef.current;
+
+    // ─────────────────────────────────────────────────────────
+    //  NATIVE SCROLLBAR & SCROLL SYNC
+    // ─────────────────────────────────────────────────────────
+    const handleNativeScroll = () => {
+      if (isTransitioningRef.current || !containerRef.current) return;
+      const maxScroll = containerRef.current.scrollHeight - window.innerHeight;
+      if (maxScroll <= 0) return;
+      const p = Math.max(0, Math.min(1, window.scrollY / maxScroll));
+      animatedProgressRef.current = p;
+      updateSectionStyles(p);
+
+      // Determine active section from scroll position
+      let sec = 0;
+      if (p >= 0.85) sec = 3;
+      else if (p >= 0.5) sec = 2;
+      else if (p >= 0.16) sec = 1;
+
+      if (sec !== currentSectionRef.current) {
+        currentSectionRef.current = sec;
+        if (onSectionChange) onSectionChange(sec);
+      }
+    };
+
+    window.addEventListener('scroll', handleNativeScroll, { passive: true });
 
     // ─────────────────────────────────────────────────────────
     //  WHEEL GESTURE INTERCEPTOR (Crisp Section-by-Section)
@@ -191,11 +224,18 @@ export const ScrollytellingCanvas: React.FC<ScrollytellingCanvasProps> = ({
         return;
       }
 
-      e.preventDefault();
+      // Check if user has scrolled beyond the 4 scrollytelling acts into below-the-fold content
+      if (containerRef.current) {
+        const maxScroll = containerRef.current.scrollHeight - window.innerHeight;
+        if (window.scrollY > maxScroll + 50 && e.deltaY > 0) {
+          // Allow normal native scrolling into below-the-fold content
+          return;
+        }
+      }
 
       const now = Date.now();
       // Enforce debounce cooldown while an animation is actively playing
-      if (isTransitioningRef.current || now - lastWheelTime < 420) {
+      if (isTransitioningRef.current || now - lastWheelTime < 380) {
         return;
       }
 
@@ -208,10 +248,16 @@ export const ScrollytellingCanvas: React.FC<ScrollytellingCanvasProps> = ({
 
       if (e.deltaY > 0) {
         // Scroll Down -> Next Section
-        navigateToSection(currentSectionRef.current + 1);
+        if (currentSectionRef.current < 3) {
+          e.preventDefault();
+          navigateToSection(currentSectionRef.current + 1);
+        }
       } else {
         // Scroll Up -> Previous Section
-        navigateToSection(currentSectionRef.current - 1);
+        if (currentSectionRef.current > 0 && window.scrollY <= (containerRef.current?.scrollHeight || 0)) {
+          e.preventDefault();
+          navigateToSection(currentSectionRef.current - 1);
+        }
       }
     };
 
@@ -227,11 +273,15 @@ export const ScrollytellingCanvas: React.FC<ScrollytellingCanvasProps> = ({
       }
 
       if (['ArrowDown', 'PageDown', ' '].includes(e.key)) {
-        e.preventDefault();
-        navigateToSection(currentSectionRef.current + 1);
+        if (currentSectionRef.current < 3) {
+          e.preventDefault();
+          navigateToSection(currentSectionRef.current + 1);
+        }
       } else if (['ArrowUp', 'PageUp'].includes(e.key)) {
-        e.preventDefault();
-        navigateToSection(currentSectionRef.current - 1);
+        if (currentSectionRef.current > 0) {
+          e.preventDefault();
+          navigateToSection(currentSectionRef.current - 1);
+        }
       } else if (e.key === 'Home') {
         e.preventDefault();
         navigateToSection(0);
@@ -253,9 +303,9 @@ export const ScrollytellingCanvas: React.FC<ScrollytellingCanvasProps> = ({
     const handleTouchEnd = (e: TouchEvent) => {
       const delta = touchStartY - e.changedTouches[0].clientY;
       if (Math.abs(delta) > 35 && !isTransitioningRef.current) {
-        if (delta > 0) {
+        if (delta > 0 && currentSectionRef.current < 3) {
           navigateToSection(currentSectionRef.current + 1);
-        } else {
+        } else if (delta < 0 && currentSectionRef.current > 0) {
           navigateToSection(currentSectionRef.current - 1);
         }
       }
@@ -265,31 +315,31 @@ export const ScrollytellingCanvas: React.FC<ScrollytellingCanvasProps> = ({
     window.addEventListener('touchend', handleTouchEnd, { passive: true });
 
     // ─────────────────────────────────────────────────────────
-    //  Hardware-Accelerated Canvas RAF Loop
-    //  Decoupled pacing: reads animatedProgressRef so character
-    //  flies cinematically without violent frame jumps.
-    //  Adds gentle organic idle-bobbing when resting at anchors.
+    //  Zero-Thrash Canvas RAF Loop (Reads Cached Dimensions Only)
     // ─────────────────────────────────────────────────────────
     let lastRenderTime = 0;
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     const render = (time: number) => {
-      const w = canvas.clientWidth;
-      const h = canvas.clientHeight;
+      // Pure reading from cached refs — NO canvas.clientWidth or clientHeight reflows!
+      const w = cachedWidthRef.current;
+      const h = cachedHeightRef.current;
+      const dpr = cachedDprRef.current;
       const progress = animatedProgressRef.current;
       const targetFrame = getFrameFromProgress(progress);
 
-      // Check if we are resting on an anchor frame
+      // Check if resting on an anchor frame
       const isResting =
         targetFrame === 0 ||
         targetFrame === 69 ||
         targetFrame === 148 ||
         targetFrame === 214;
 
-      // In resting idle, animate subtle organic hovering bob (60fps)
-      // When moving, redraw only on frame index change for zero-lag performance
       const needsRedraw =
         targetFrame !== lastDrawnFrameRef.current ||
-        (isResting && time - lastRenderTime > 25);
+        (isResting && !prefersReducedMotion && time - lastRenderTime > 25);
 
       if (needsRedraw) {
         lastDrawnFrameRef.current = targetFrame;
@@ -321,9 +371,8 @@ export const ScrollytellingCanvas: React.FC<ScrollytellingCanvasProps> = ({
 
         const scale = drawW / NATIVE_W;
 
-        // Subtle gentle idle bobbing when resting on anchors (CSS/Canvas loop)
-        // Damped to 0 while flying between sections
-        const idleBob = isResting ? Math.sin(time * 0.0022) * 4.5 : 0;
+        // Subtle gentle idle bobbing when resting on anchors (damped to 0 if motion reduced)
+        const idleBob = isResting && !prefersReducedMotion ? Math.sin(time * 0.0022) * 4.5 : 0;
 
         // Fetch trajectory data for current frame
         const traj = assets.trajectory[targetFrame] || {
@@ -348,8 +397,19 @@ export const ScrollytellingCanvas: React.FC<ScrollytellingCanvasProps> = ({
           });
         }
 
-        // Draw hardware-accelerated flight frame with gentle bob applied
-        const flightImg = assets.flightFrames[targetFrame];
+        // Draw flight frame with fallback to frame 0 if stream is still filling in
+        let flightImg = assets.flightFrames[targetFrame];
+        if (!flightImg || !flightImg.complete) {
+          // Fall back to closest anchor frame or frame 0
+          if (targetFrame >= 148 && assets.flightFrames[148]?.complete) {
+            flightImg = assets.flightFrames[148];
+          } else if (targetFrame >= 69 && assets.flightFrames[69]?.complete) {
+            flightImg = assets.flightFrames[69];
+          } else {
+            flightImg = assets.flightFrames[0];
+          }
+        }
+
         if (flightImg && flightImg.complete) {
           ctx.drawImage(flightImg, offsetX, offsetY + idleBob * scale, drawW, drawH);
         }
@@ -364,6 +424,7 @@ export const ScrollytellingCanvas: React.FC<ScrollytellingCanvasProps> = ({
 
     return () => {
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('scroll', handleNativeScroll);
       window.removeEventListener('wheel', handleWheel);
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('touchstart', handleTouchStart);

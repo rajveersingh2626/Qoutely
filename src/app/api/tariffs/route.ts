@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase-server';
 import { evaluateTariffCompliance, getOccupancyByCode } from '@/lib/calculator';
 
+import { isWhitelistedSuperAdmin } from '@/lib/subscription';
+
 async function getAuthorizedWorkspace(req: NextRequest, requestedWorkspaceId?: string | null) {
   const supabase = await createSupabaseServerClient();
   const {
@@ -13,36 +15,33 @@ async function getAuthorizedWorkspace(req: NextRequest, requestedWorkspaceId?: s
     return { error: 'Unauthorized', status: 401 } as const;
   }
 
+  const isSuper = isWhitelistedSuperAdmin(user);
+
   let targetWsId = requestedWorkspaceId || user.user_metadata?.workspace_id;
-  if (!targetWsId) {
-    const { data: membership } = await supabase
-      .from('workspace_members')
-      .select('workspace_id, role')
-      .eq('user_id', user.id)
-      .eq('status', 'active')
-      .limit(1)
-      .maybeSingle();
+  let userRole = isSuper ? 'super_admin' : undefined;
 
-    targetWsId = membership?.workspace_id;
-  } else if (requestedWorkspaceId && requestedWorkspaceId !== user.user_metadata?.workspace_id) {
-    const { data: member } = await supabase
-      .from('workspace_members')
-      .select('workspace_id, role')
-      .eq('user_id', user.id)
-      .eq('workspace_id', requestedWorkspaceId)
-      .eq('status', 'active')
-      .maybeSingle();
+  const { data: members } = await supabase
+    .from('workspace_members')
+    .select('workspace_id, role')
+    .eq('user_id', user.id)
+    .eq('status', 'active');
 
-    if (!member) {
+  if (members && members.length > 0) {
+    const matched = targetWsId ? members.find((m) => m.workspace_id === targetWsId) : members[0];
+    if (matched) {
+      targetWsId = matched.workspace_id;
+      if (!isSuper) userRole = matched.role;
+    } else if (requestedWorkspaceId && !isSuper) {
       return { error: 'Forbidden: unauthorized workspace access', status: 403 } as const;
+    } else if (!isSuper) {
+      targetWsId = members[0].workspace_id;
+      userRole = members[0].role;
     }
-  }
-
-  if (!targetWsId) {
+  } else if (!isSuper) {
     return { error: 'No active workspace found for user', status: 403 } as const;
   }
 
-  return { supabase, user, workspaceId: targetWsId };
+  return { supabase, user, workspaceId: targetWsId, role: userRole || (isSuper ? 'super_admin' : 'viewer') };
 }
 
 // GET /api/tariffs - List all custom tariff overrides for workspace
@@ -101,6 +100,9 @@ export async function POST(req: NextRequest) {
     const auth = await getAuthorizedWorkspace(req, requestedWorkspaceId);
     if ('error' in auth) {
       return NextResponse.json({ error: auth.error }, { status: auth.status });
+    }
+    if (auth.role !== 'admin' && auth.role !== 'brokerage_owner' && auth.role !== 'super_admin') {
+      return NextResponse.json({ error: 'Forbidden: admin or brokerage owner role required' }, { status: 403 });
     }
     const { workspaceId } = auth;
 
@@ -161,6 +163,9 @@ export async function DELETE(req: NextRequest) {
     const auth = await getAuthorizedWorkspace(req, requestedWorkspaceId);
     if ('error' in auth) {
       return NextResponse.json({ error: auth.error }, { status: auth.status });
+    }
+    if (auth.role !== 'admin' && auth.role !== 'brokerage_owner' && auth.role !== 'super_admin') {
+      return NextResponse.json({ error: 'Forbidden: admin or brokerage owner role required' }, { status: 403 });
     }
     const { workspaceId } = auth;
 

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { extractProposal } from '@/lib/ai';
 import { getAuthenticatedUser, unauthorizedResponse } from '@/lib/api-auth';
+import { checkApiRateLimit, rateLimitExceededResponse } from '@/lib/rate-limiter';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -19,6 +20,12 @@ export async function POST(req: NextRequest) {
   // Auth guard — validates Supabase session (with demo fallback)
   const auth = await getAuthenticatedUser(req);
   if (!auth) return unauthorizedResponse();
+
+  // Rate limit guard (max 30 heavy document extraction requests per minute per user/IP)
+  const rateLimit = checkApiRateLimit(req, 'extract', 30, 60000, auth.user.id);
+  if (!rateLimit.allowed) {
+    return rateLimitExceededResponse(rateLimit.resetAt);
+  }
 
   try {
     const contentType = req.headers.get('content-type') || '';

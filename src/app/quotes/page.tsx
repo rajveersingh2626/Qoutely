@@ -42,8 +42,10 @@ export default function QuotesDashboardPage() {
     const matchesSearch =
       q.client_name.toLowerCase().includes(search.toLowerCase()) ||
       q.quote_number.toLowerCase().includes(search.toLowerCase()) ||
-      q.occupation_code.includes(search) ||
-      q.occupation_description.toLowerCase().includes(search.toLowerCase());
+      (q.occupation_code || '').includes(search) ||
+      (q.occupation_description || '').toLowerCase().includes(search.toLowerCase()) ||
+      (q.lob_category || '').toLowerCase().includes(search.toLowerCase()) ||
+      (q.insurance_line || '').toLowerCase().includes(search.toLowerCase());
 
     const matchesStatus = statusFilter === 'all' || q.status === statusFilter;
     return matchesSearch && matchesStatus;

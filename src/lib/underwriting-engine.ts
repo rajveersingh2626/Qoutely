@@ -476,7 +476,13 @@ export function trackBrokerPiCompliance(
   let description = `Broker Errors & Omissions policy is active with ${policy.insurer}. Expiry in ${daysRemaining} days.`;
   let actionRequired = 'No immediate action required.';
 
-  if (daysRemaining <= 15) {
+  if (expiry <= now) {
+    alertLevel = 'critical';
+    alertTier = 'EXPIRED_SUSPENDED';
+    title = 'STATUTORY VIOLATION: Broker PI Policy Expired';
+    description = `IRDAI-mandated Broker E&O policy (${policy.policyNumber}) expired on ${policy.expiryDate}. Broking operations suspended until active.`;
+    actionRequired = 'Execute immediate renewal endorsement with insurer underwriter desk before placing further risks.';
+  } else if (daysRemaining <= 15) {
     alertLevel = 'critical';
     alertTier = 'CRITICAL_IMMOBILIZED';
     title = 'CRITICAL: Broker PI Expiry Imminent';

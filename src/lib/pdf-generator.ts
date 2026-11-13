@@ -68,7 +68,7 @@ export function generateQuoteSlipPDF(quote: Quote, workspace: Workspace): jsPDF 
   // Table Helper
   const drawRow = (
     label: string,
-    value: string,
+    value: string = 'N/A',
     rowY: number,
     rowHeight: number = 6,
     isHeader: boolean = false
@@ -97,7 +97,7 @@ export function generateQuoteSlipPDF(quote: Quote, workspace: Workspace): jsPDF 
   y += 6;
   drawRow('INSURED NAME', quote.client_name, y);
   y += 6;
-  drawRow('RISK LOCATION', quote.client_gst ? `${quote.client_name}, ${quote.eq_zone}` : quote.eq_zone, y);
+  drawRow('RISK LOCATION', quote.client_gst ? `${quote.client_name}, ${quote.eq_zone || 'N/A'}` : (quote.eq_zone || 'N/A'), y);
   y += 6;
   drawRow('GST NUMBER', quote.client_gst || '07ALMPA9603N1ZS', y);
   y += 6;
@@ -105,11 +105,13 @@ export function generateQuoteSlipPDF(quote: Quote, workspace: Workspace): jsPDF 
   y += 6;
   drawRow('PREVIOUS INSURER', quote.insurer_name || 'THE NEW INDIA ASSURANCE CO. LTD.', y);
   y += 6;
-  drawRow('BUSINESS / OCCUPATION', quote.occupation_description, y, 7);
+  drawRow('BUSINESS / OCCUPATION', quote.occupation_description || 'Commercial Insurance Risk', y, 7);
   y += 7;
-  drawRow('RISK / OCCUPANCY CODE', `${quote.occupation_code} (Category ${quote.calculation_breakdown.category || 1}, Section ${quote.calculation_breakdown.section || 'III'})`, y);
+  const cbCategory = (quote.calculation_breakdown as any)?.category || 1;
+  const cbSection = (quote.calculation_breakdown as any)?.section || 'III';
+  drawRow('RISK / OCCUPANCY CODE', `${quote.occupation_code || 'N/A'} (Category ${cbCategory}, Section ${cbSection})`, y);
   y += 6;
-  drawRow('EARTHQUAKE ZONE', `${quote.eq_zone} (Tariff Loading Applied)`, y);
+  drawRow('EARTHQUAKE ZONE', `${quote.eq_zone || 'N/A'} (Tariff Loading Applied)`, y);
   y += 6;
   drawRow('HYPOTHECATION', 'Bank of India / Agreed Bank Clause attached', y);
   y += 6;
@@ -150,13 +152,18 @@ export function generateQuoteSlipPDF(quote: Quote, workspace: Workspace): jsPDF 
 
   assets.forEach((a) => {
     if (a.val > 0 || (a.label.includes('Stocks') && quote.sum_insured_breakdown.total > 0)) {
+      const itemSi = a.val || 0;
+      const itemPremium = quote.sum_insured > 0
+        ? Math.round((itemSi / quote.sum_insured) * quote.premium)
+        : quote.premium;
+
       doc.rect(margin, y, contentWidth, rowH);
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(7);
       doc.text(a.label, margin + 3, y + 3.8);
-      doc.text(formatNumberINR(a.val || quote.sum_insured), margin + 60, y + 3.8);
+      doc.text(formatNumberINR(itemSi || quote.sum_insured), margin + 60, y + 3.8);
       doc.text(`${quote.policy_rate} per mille`, margin + 105, y + 3.8);
-      doc.text(formatNumberINR(quote.premium), margin + 145, y + 3.8);
+      doc.text(formatNumberINR(itemPremium), margin + 145, y + 3.8);
       y += rowH;
     }
   });
@@ -264,3 +271,10 @@ export function downloadQuoteSlipPDF(quote: Quote, workspace: Workspace) {
   const cleanClient = quote.client_name.replace(/[^a-zA-Z0-9]/g, '_');
   doc.save(`Quote_Slip-${cleanClient}-${quote.quote_number}.pdf`);
 }
+
+export {
+  generateBenefitsQuoteSlipPDF,
+  downloadBenefitsQuotePDF,
+  type BenefitsQuoteData,
+} from './pdf/benefits-pdf';
+

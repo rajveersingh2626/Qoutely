@@ -4,8 +4,12 @@ import {
   getGatewayCircuitStatus,
 } from '@/lib/gemini-proxy';
 import { getAuthenticatedUser, unauthorizedResponse } from '@/lib/api-auth';
+import { checkApiRateLimit, rateLimitExceededResponse } from '@/lib/rate-limiter';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const auth = await getAuthenticatedUser(req);
+  if (!auth) return unauthorizedResponse();
+
   const status = getGatewayCircuitStatus();
   return NextResponse.json({
     status: 'online',
@@ -16,6 +20,11 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   const auth = await getAuthenticatedUser(req);
   if (!auth) return unauthorizedResponse();
+
+  const rateLimit = checkApiRateLimit(req, 'ai-proxy', 60, 60000, auth.user.id);
+  if (!rateLimit.allowed) {
+    return rateLimitExceededResponse(rateLimit.resetAt);
+  }
 
   try {
     const body = await req.json();

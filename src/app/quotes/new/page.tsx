@@ -1,8 +1,15 @@
 'use client';
 
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { StudioHeaderNav, LOBCategoryKey } from './components/StudioHeaderNav';
+import { MotorFleetStudio } from './components/MotorFleetStudio';
+import { MarineCargoStudio } from './components/MarineCargoStudio';
+import { BenefitsStudio } from './components/BenefitsStudio';
+import { EngineeringStudio } from './components/EngineeringStudio';
+import { LiabilityStudio } from './components/LiabilityStudio';
+import { SpecialtyStudio } from './components/SpecialtyStudio';
 import {
   Sparkles,
   Calculator,
@@ -124,9 +131,24 @@ const SAMPLE_PROPOSALS = [
   },
 ];
 
-export default function NewQuoteWorkspacePage() {
+function NewQuoteWorkspaceContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const activeLine = (searchParams.get('line') as LOBCategoryKey) || 'property';
   const { currentWorkspace, addQuote, tariffOverrides } = useWorkspace();
+
+  const handleSelectLine = (newLineKey: LOBCategoryKey) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('line', newLineKey);
+    router.push(`/quotes/new?${params.toString()}`);
+  };
+
+  const handleClientInfoChange = (field: string, value: string) => {
+    if (field === 'clientName') setClientName(value);
+    else if (field === 'clientGst') setClientGst(value);
+    else if (field === 'clientAddress') setClientAddress(value);
+    else if (field === 'hypothecationBank') setHypothecationBank(value);
+  };
 
   // 1. Client & Proposal Metadata State
   const [clientName, setClientName] = useState('');
@@ -662,11 +684,133 @@ Total Final Premium: ₹ ${formatINRWithDecimals(calculation.totalFinalPremium)}
         title="Commercial Underwriting Workspace"
         subtitle="AI Perception Layer • Deterministic IRDAI Rating Engine • Live Tariff Ledger"
         breadcrumbs={[
-          { label: 'Quotes', href: '/app/quotes' },
+          { label: 'Quotes', href: '/quotes' },
           { label: 'New Underwrite' },
         ]}
       />
 
+      {/* Multi-Line Studio Header Navigation */}
+      <StudioHeaderNav
+        activeLine={activeLine}
+        onSelectLine={handleSelectLine}
+        commonClientInfo={{
+          clientName,
+          clientGst,
+          clientAddress,
+          hypothecationBank,
+        }}
+      />
+
+      {activeLine === 'motor_fleet' ? (
+        <MotorFleetStudio
+          clientInfo={{
+            clientName,
+            clientGst,
+            clientAddress,
+            hypothecationBank,
+          }}
+          onClientInfoChange={handleClientInfoChange}
+          onSaveQuote={async (data) => {
+            addQuote({
+              ...data,
+              client_name: data.client_name || clientName || 'Commercial Client',
+              client_gst: data.client_gst || clientGst,
+            });
+            router.push('/quotes');
+          }}
+        />
+      ) : activeLine === 'marine_cargo' ? (
+        <MarineCargoStudio
+          clientInfo={{
+            clientName,
+            clientGst,
+            clientAddress,
+            hypothecationBank,
+          }}
+          onClientInfoChange={handleClientInfoChange}
+          onSaveQuote={async (data) => {
+            addQuote({
+              ...data,
+              client_name: data.client_name || clientName || 'Commercial Client',
+              client_gst: data.client_gst || clientGst,
+            });
+            router.push('/quotes');
+          }}
+        />
+      ) : activeLine === 'benefits' ? (
+        <BenefitsStudio
+          clientInfo={{
+            clientName,
+            clientGst,
+            clientAddress,
+            hypothecationBank,
+          }}
+          onClientInfoChange={handleClientInfoChange}
+          onSaveQuote={async (data) => {
+            addQuote({
+              ...data,
+              client_name: data.client_name || clientName || 'Commercial Client',
+              client_gst: data.client_gst || clientGst,
+            });
+            router.push('/quotes');
+          }}
+        />
+      ) : activeLine === 'engineering' ? (
+        <EngineeringStudio
+          clientInfo={{
+            clientName,
+            clientGst,
+            clientAddress,
+            hypothecationBank,
+          }}
+          onClientInfoChange={handleClientInfoChange}
+          onSaveQuote={async (data) => {
+            addQuote({
+              ...data,
+              client_name: data.client_name || clientName || 'Commercial Client',
+              client_gst: data.client_gst || clientGst,
+            });
+            router.push('/quotes');
+          }}
+        />
+      ) : activeLine === 'liability' ? (
+        <LiabilityStudio
+          clientInfo={{
+            clientName,
+            clientGst,
+            clientAddress,
+            hypothecationBank,
+          }}
+          onClientInfoChange={handleClientInfoChange}
+          onSaveQuote={async (data) => {
+            addQuote({
+              ...data,
+              client_name: data.client_name || clientName || 'Corporate Liability Client',
+              client_gst: data.client_gst || clientGst,
+            });
+            router.push('/quotes');
+          }}
+        />
+      ) : activeLine === 'specialty' ? (
+        <SpecialtyStudio
+          clientInfo={{
+            clientName,
+            clientGst,
+            clientAddress,
+            hypothecationBank,
+          }}
+          onClientInfoChange={handleClientInfoChange}
+          onSaveQuote={async (data) => {
+            addQuote({
+              ...data,
+              client_name: data.client_name || clientName || 'Specialty Lines Client',
+              client_gst: data.client_gst || clientGst,
+            });
+            router.push('/quotes');
+          }}
+        />
+      ) : (
+        <>
       {/* Top Banner: Status & Quick-load sample proposals */}
       <div className="px-6 py-2.5 bg-white dark:bg-slate-900 border-b border-slate-200/80 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 flex-shrink-0">
         <div className="flex items-center gap-3">
@@ -1837,6 +1981,22 @@ Total Final Premium: ₹ ${formatINRWithDecimals(calculation.totalFinalPremium)}
           others: 0,
         }}
       />
+        </>
+      )}
     </div>
+  );
+}
+
+export default function NewQuoteWorkspacePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex-1 flex items-center justify-center p-12 text-slate-500 font-sans text-xs">
+          Loading Commercial Underwriting Workspace...
+        </div>
+      }
+    >
+      <NewQuoteWorkspaceContent />
+    </Suspense>
   );
 }

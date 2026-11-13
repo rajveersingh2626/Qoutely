@@ -1,59 +1,86 @@
 # QOUTELY PRODUCTION HARDENING ROADMAP
 
-## Milestone 1: Authentication Hardening, Super Admin Whitelist & Dinesh VIP Session Lock
-- Hardcode Dinesh Uncle permanent Enterprise plan override (`unlimited_quota: true`, `rate_limit_bypass: true`).
-- Restrict super admin access strictly to `SUPER_ADMIN_IDS` whitelist.
-- Purge mock single-click login buttons from `Header.tsx`, `login/page.tsx`, and `admin/page.tsx`.
-- Enforce cookie security (HttpOnly, Secure, SameSite).
+## ✅ COMPLETED MILESTONES (1–11)
 
-## Milestone 2: Dual Gemini API Failover Proxy Engine (`/api/ai/proxy`)
-- Configure primary and fallback Gemini API keys.
-- Build circuit-breaker proxy gateway catching HTTP 429 quota exhaustion and failover to fallback key with cooldown timer.
-- Wire AI modules (OCR, IDP, Hinglish renewal generators, quote analysis) through this resilient gateway.
+## Milestone 1: Authentication Hardening, Super Admin Whitelist & Dinesh VIP Session Lock ✅
+## Milestone 2: Dual Gemini API Failover Proxy Engine (`/api/ai/proxy`) ✅
+## Milestone 3: Modern Underwriting Rules Engine (BSUS/BLUS) & Carrier Directory ✅
+## Milestone 4: Interactive Risk & Occupancy Wizard ✅
+## Milestone 5: Tiered Plan Engine & Omnichannel Hinglish Renewal Engine ✅
+## Milestone 6: High-Contrast Glassmorphic System & Executive Summary UX ✅
+## Milestone 7: Regulatory Governance, Audit Trails & Verification ✅
+## Milestone 8: Dynamic Occupancy Tariff Customization Engine & IIB Formula Verification ✅
+## Milestone 9: Intelligent Dual-Loading UX System ✅
+## Milestone 10: Stark White Glassmorphic Frontend & Video Hero Flow ✅
+## Milestone 11: Backend UI Facelift & Operational Polish ✅
 
-## Milestone 3: Modern Underwriting Rules Engine (BSUS/BLUS) & Carrier Directory
-- Implement IRDAI commercial fire products with dynamic routing (<= ₹5 Cr BSUS with ₹5,000 excess; ₹5 Cr - ₹50 Cr BLUS with 5% excess min ₹10,000; > ₹50 Cr mega-risk).
-- Implement BLUS 15% Underinsurance Waiver Engine with proportionate penalty calculation and broker warning advisories.
-- Implement automated in-built covers (Additions 15%, Temporary removal 10%, Startup expenses ₹5L, Professional fees 5%, Debris 2%).
-- Implement Carrier Master Directory and Broker Professional Indemnity (PI) 90/60/30-day expiry tracker.
+---
 
-## Milestone 4: Interactive Risk & Occupancy Wizard
-- Build Step-by-Step Glass Modal Wizard replacing static occupancy dropdowns:
-  - Step 1: Operational Classification
-  - Step 2: Hazard & Fire-Load Assessment
-  - Step 3: NCR Municipal & Environmental Compliance (Okhla DPCC & FAR; Bawana DFS Fire NOC & hazardous waste)
-  - Step 4: Itemized Asset Valuation Breakdown (Reinstatement for Buildings & Plant/Machinery; inventory cost for Stocks)
+## 🔄 PHASE 2: ALL-LINES COMMERCIAL BROKER EXPANSION (Milestones 12–22)
 
-## Milestone 5: Tiered Plan Engine & Omnichannel Hinglish Renewal Engine
-- Subscription middleware enforcing Starter (500), Pro (3,000), Enterprise (Unlimited) quotas with Dinesh VIP bypass.
-- Automated omnichannel renewal engine scheduling notices at 60, 30, 15, and 3 days with English and Hinglish templates across WhatsApp, SMS, and Email.
+### Milestone 12: Commercial Motor & Fleet Insurance Module
+**Scope**: Primary high-volume commercial line across Indian brokerages.
+- DB: Add `lob_category` and expanded `insurance_line` enum values.
+- Studio: `/quotes/new?line=motor_fleet` supporting GCV, PCV, and Misc Digger/Crane categories.
+- Engine: Vehicle depreciation, zone rating (A/B/C), IMT add-ons (IMT 23, Zero Dep, Consumables, Engine Protect).
+- Fleet Ingestion: Bulk Excel vehicle roster parsing (Reg No, Chassis, Engine, GVW, Seating Capacity).
 
-## Milestone 6: High-Contrast Glassmorphic System & Executive Summary UX
-- Implement high-contrast layered frosted glass CSS design tokens.
-- Add Executive Operational Summary first screen on dashboard (active quotation volume, pending renewals, recovered commission leakages).
-- Implement mobile-first responsiveness (48x48px touch targets, mobile bottom sheets, safe-area-inset padding).
+### Milestone 13: Marine Cargo & Logistics Module
+**Scope**: Inland (ITC A/B/C) and Ocean (ICC A/B/C) transit protection.
+- Studio: `/quotes/new?line=marine_cargo` with Single Voyage vs. Open Cover (MOP/ATPO).
+- Engine: Commodity risk loading, Incoterms (CIF, FOB, CFR), monthly declaration workflows.
 
-## Milestone 7: Regulatory Governance, Audit Trails & Verification
-- Immutable audit trail logger adhering to DPDP Act.
-- Algorithmic explainability metadata for calculated quotes.
-- Run typecheck, custom unit/integration tests, and viewport tests for full verification.
+### Milestone 14: Employee Benefits — Group Health (GHI) & Group Term Life (GTLI)
+**Scope**: Corporate medical and life protection.
+- Studio: `/quotes/new?line=ghi` with dynamic Census file upload.
+- Engine: Demographic age-banding, family definition (1+3 / 1+5), room rent sub-limits, maternity, corporate buffers.
 
-## Milestone 8: Dynamic Occupancy Tariff Customization Engine & IIB Formula Verification
-- Mirror exact formula logic from `UPdated Calculator-07.02.2024.xlsx` (Category scaling: -25%, -10%, +25%, +160%; Section-based STFI, EQ zone rates, Terrorism, Risk Feature discounts, Floater).
-- Allow user/workspace customized occupancy tariff rates with immediate dynamic reactivity on their quotation dashboard.
-- Real-time regulatory compliance validation checking customized rates against statutory AIFT / IIB loss costs.
+### Milestone 15: Employee Benefits — Group Personal Accident (GPA) & Workmen's Compensation (WC)
+**Scope**: 24x7 accident and statutory labor law compliance.
+- Engine: EC Act formula calculator based on monthly wage roll and age factor.
+- GPA risk classification (white collar, blue collar, hazardous).
 
-## Milestone 9: Intelligent Dual-Loading UX System
-- Type 1: High-impact video-based quick loader (~1-2s).
-- Type 2: Clean animated tech loader.
-- Weighted distribution engine with high prominence on Type 1 (80/20 weight constraint).
-- Seamless integration across backend data fetches and route transitions.
+### Milestone 16: Engineering Insurance — CAR / EAR
+**Scope**: Construction and erection all-risk policies.
+- Project lifecycle timeline builder, civil vs. plant split, AOG earthquake/STFI peril loadings.
 
-## Milestone 10: Stark White Glassmorphic Frontend & Video Hero Flow
-- Transition public website to stark clean white theme.
-- Premium translucent green glassmorphism navbar housing `qoutely_logo_remove_bg.png` ("Apple-vibe").
-- Hero section flow adhering to reference video motion flow.
+### Milestone 17: Engineering Insurance — MB, EEI & Boiler (BPP)
+**Scope**: Operational asset breakdown and electronic hardware.
+- Fixed asset schedule uploader, machine group rates (Group I–IV), Indian Boilers Act certification tracking.
 
-## Milestone 11: Backend UI Facelift & Operational Polish
-- Modern visual refresh for backend broker dashboards, quote builders, and settings.
+### Milestone 18: Liability — Commercial General Liability (CGL) & Public/Product Liability
+**Scope**: Bodily injury and property damage third-party exposures.
+- Turnover-based pricing, AOA/AOY limit ratios, Public Liability Insurance Act statutory mandates.
 
+### Milestone 19: Liability — Professional Indemnity (PI) & Directors & Officers (D&O)
+**Scope**: Errors & omissions and corporate executive protection.
+- Claims-made retroactive date management, Side A/B/C cover structures.
+
+### Milestone 20: Cyber Liability & Commercial Crime/Fidelity
+**Scope**: Digital assets, extortion, DPDPA 2023 compliance, and internal employee theft.
+- Cyber security posture scoring matrix (MFA, EDR, air-gapped backups).
+
+### Milestone 21: Financial Lines — Surety Bonds & Trade Credit
+**Scope**: Contract performance guarantee replacing bank guarantees (GFR) and accounts receivable default protection.
+- Contractor balance sheet scoring and buyer limit schedules.
+
+### Milestone 22: Business Interruption & Burglary
+**Scope**: Revenue loss and theft add-ons integrated seamlessly across Property & Plant portfolios.
+
+---
+
+## 🚀 PHASE 3: PLATFORM INTELLIGENCE (Milestones 21+)
+
+### Milestone 21: Universal Quote Comparison Engine
+- Broker can float multi-line RFQ to multiple insurers from Qoutely
+- Side-by-side comparison view across insurer quotations
+
+### Milestone 22: AI Claims Assistance Module
+- Claim registration flow with document checklist per insurance line
+- AI-powered claim narrative generator for broker submission
+- Claim status tracker linked to policies
+
+### Milestone 23: Regulatory Intelligence Engine
+- Auto-pull IRDAI circulars, master circulars, product regulation updates
+- Push alerts to brokers for lines they actively quote
+- Compliance calendar: broker PI renewal, IRDAI COR renewal, VAPT audit reminders

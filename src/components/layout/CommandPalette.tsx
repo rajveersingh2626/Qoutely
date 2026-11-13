@@ -47,7 +47,9 @@ export const CommandPalette: React.FC = () => {
     (q) =>
       q.client_name.toLowerCase().includes(cleanQuery) ||
       q.quote_number.toLowerCase().includes(cleanQuery) ||
-      q.occupation_code.includes(cleanQuery)
+      (q.occupation_code || '').includes(cleanQuery) ||
+      (q.lob_category || '').toLowerCase().includes(cleanQuery) ||
+      (q.insurance_line || '').toLowerCase().includes(cleanQuery)
   );
 
   const matchingClients = clients.filter(

@@ -24,48 +24,54 @@ export const Navbar: React.FC<NavbarProps> = ({ onBookDemo, onNavigate }) => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-[80] pointer-events-auto bg-[#FBF9F5]/80 backdrop-blur-xl border-b border-[#121316]/8 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.04)] py-3.5 transition-all">
+    <header className="fixed top-0 left-0 right-0 z-[80] pointer-events-auto bg-[#FBF9F5]/85 backdrop-blur-xl border-b border-[#121316]/8 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.04)] py-3.5 transition-all">
       <div className="max-w-7xl mx-auto px-6 sm:px-8 flex items-center justify-between">
         {/* Left: Authentic Brand Mark + Qoutely Wordmark with Emerald Status Dot */}
-        <Link href="/" className="flex items-center gap-2.5 group">
+        <Link href="/" className="flex items-center gap-2.5 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0F5132] rounded-xl p-0.5">
           <div className="w-9 h-9 rounded-xl bg-white/90 border border-[#0F5132]/20 p-1 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
-            <img src="/qoutely_logo.png" alt="Qoutely" className="w-full h-full object-contain" />
+            <img
+              src="/qoutely_logo.png"
+              alt="Qoutely"
+              width={32}
+              height={32}
+              className="w-full h-full object-contain"
+            />
           </div>
           <span className="text-xl font-extrabold tracking-tight text-[#121316]">
             Qoutely
           </span>
-          <span className="inline-block w-2 h-2 rounded-full bg-[#00C853] shadow-[0_0_8px_rgba(0,200,83,0.5)]" />
+          <span className="inline-block w-2 h-2 rounded-full bg-[#15803d] shadow-[0_0_8px_rgba(21,128,61,0.5)]" />
         </Link>
 
-        {/* Center: Navigation Links */}
-        <nav className="hidden md:flex items-center gap-8">
+        {/* Center: Navigation Links with WAI-ARIA label */}
+        <nav aria-label="Main Navigation" className="hidden md:flex items-center gap-8">
           <button
             onClick={() => handleNavClick(0)}
-            className="text-sm font-semibold text-[#5A6065] hover:text-[#121316] transition-colors cursor-pointer"
+            className="text-sm font-semibold text-[#4B5563] hover:text-[#121316] transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0F5132] rounded-md px-1"
           >
             Platform
           </button>
           <button
             onClick={() => handleNavClick(1)}
-            className="text-sm font-semibold text-[#5A6065] hover:text-[#121316] transition-colors cursor-pointer"
+            className="text-sm font-semibold text-[#4B5563] hover:text-[#121316] transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0F5132] rounded-md px-1"
           >
             Workflows
           </button>
           <button
             onClick={() => handleNavClick(2)}
-            className="text-sm font-semibold text-[#5A6065] hover:text-[#121316] transition-colors cursor-pointer"
+            className="text-sm font-semibold text-[#4B5563] hover:text-[#121316] transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0F5132] rounded-md px-1"
           >
             Carrier Appetite
           </button>
           <button
             onClick={() => handleNavClick(3)}
-            className="text-sm font-semibold text-[#5A6065] hover:text-[#121316] transition-colors cursor-pointer"
+            className="text-sm font-semibold text-[#4B5563] hover:text-[#121316] transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0F5132] rounded-md px-1"
           >
             Pricing
           </button>
           <Link
             href="/login"
-            className="text-sm font-semibold text-[#5A6065] hover:text-[#121316] transition-colors"
+            className="text-sm font-semibold text-[#4B5563] hover:text-[#121316] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0F5132] rounded-md px-1"
           >
             Sign In
           </Link>
@@ -75,10 +81,10 @@ export const Navbar: React.FC<NavbarProps> = ({ onBookDemo, onNavigate }) => {
         <div className="flex items-center gap-3">
           <button
             onClick={onBookDemo}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#0F5132] hover:bg-[#146c43] active:scale-[0.98] text-white text-sm font-semibold tracking-tight shadow-[0_4px_16px_rgba(15,81,50,0.2)] hover:shadow-[0_6px_20px_rgba(0,200,83,0.3)] transition-all duration-200 cursor-pointer"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#0F5132] hover:bg-[#146c43] active:scale-[0.98] text-white text-sm font-semibold tracking-tight shadow-[0_4px_16px_rgba(15,81,50,0.2)] hover:shadow-[0_6px_20px_rgba(15,81,50,0.3)] transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0F5132]"
           >
             <span>Book Demo</span>
-            <ArrowRight className="w-3.5 h-3.5" />
+            <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
           </button>
         </div>
       </div>

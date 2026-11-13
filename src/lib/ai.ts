@@ -70,16 +70,16 @@ export function getAIRequestLogs(): AIRequestLog[] {
   return [...requestLogsCache];
 }
 
-export const PRIMARY_GEMINI_MODEL = 'gemini-3.5-flash';
-export const FALLBACK_GEMINI_MODELS = ['gemini-3.8-flash', 'gemini-3.7-flash'];
-export const FALLBACK_GEMINI_MODEL = 'gemini-3.8-flash';
+export const PRIMARY_GEMINI_MODEL = 'gemini-2.5-flash';
+export const FALLBACK_GEMINI_MODELS = ['gemini-2.0-flash', 'gemini-1.5-flash'];
+export const FALLBACK_GEMINI_MODEL = 'gemini-2.0-flash';
 
 
 /**
  * Initializes Google GenAI client with environment key
  */
 export function getGeminiClient(): { client: GoogleGenAI | null; hasKey: boolean } {
-  const apiKey = process.env.GEMINI_API_KEY || process.env.NEXT_PUBLIC_GEMINI_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY_PRIMARY || process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY_FALLBACK;
   if (!apiKey || apiKey.trim() === '' || apiKey === 'YOUR_GEMINI_API_KEY') {
     return { client: null, hasKey: false };
   }

@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { testAIConnection, getAIRequestLogs, calculateAICost } from '@/lib/ai';
+import { getAuthenticatedUser, unauthorizedResponse } from '@/lib/api-auth';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const auth = await getAuthenticatedUser(req);
+  if (!auth) return unauthorizedResponse();
   const health = await testAIConnection();
   const logs = getAIRequestLogs();
 
@@ -28,7 +31,10 @@ export async function GET() {
   });
 }
 
-export async function POST() {
+export async function POST(req: NextRequest) {
+  const auth = await getAuthenticatedUser(req);
+  if (!auth) return unauthorizedResponse();
+
   // Test connection trigger
   const testResult = await testAIConnection();
   return NextResponse.json(testResult);

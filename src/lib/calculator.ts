@@ -137,9 +137,9 @@ export function calculateCommercialPremium(
   // Normalize zone name
   let normalizedZone = input.eq_zone || 'Zone 2';
   if (normalizedZone === 'Zone V' || normalizedZone === 'Zone 5' || normalizedZone === '5' || normalizedZone === 'V') normalizedZone = 'Zone 1';
-  if (normalizedZone === 'Zone IV') normalizedZone = 'Zone 2';
-  if (normalizedZone === 'Zone III') normalizedZone = 'Zone 3';
-  if (normalizedZone === 'Zone II') normalizedZone = 'Zone 4';
+  if (normalizedZone === 'Zone IV' || normalizedZone === 'IV') normalizedZone = 'Zone 2';
+  if (normalizedZone === 'Zone III' || normalizedZone === 'III') normalizedZone = 'Zone 3';
+  if (normalizedZone === 'Zone II' || normalizedZone === 'II' || normalizedZone === 'Zone I' || normalizedZone === 'I') normalizedZone = 'Zone 4';
 
   const customOverride = input.custom_override;
   const hasCustomFlexa =
@@ -442,9 +442,9 @@ export function calculatePremium(data: PremiumCalculationInput): PremiumCalculat
   const rawDiscounts = Math.max(0, Number(data.discounts) || 0);
   const rawLoadings = Math.max(0, Number(data.loadings) || 0);
 
-  // Normalize percentage vs decimal (e.g., 10 => 0.10, or 0.10 => 0.10)
-  const discountDecimal = rawDiscounts > 1 ? rawDiscounts / 100 : rawDiscounts;
-  const loadingDecimal = rawLoadings > 1 ? rawLoadings / 100 : rawLoadings;
+  // Normalize percentage vs decimal (e.g., 10 => 0.10, 1 => 0.01, 0.05 => 0.05)
+  const discountDecimal = rawDiscounts >= 1 ? rawDiscounts / 100 : rawDiscounts;
+  const loadingDecimal = rawLoadings >= 1 ? rawLoadings / 100 : rawLoadings;
 
   // 1. Base Rate per mille = (Flexa + STFI + EQ)
   const baseRate = Number((flexaRate + stfiRate + eqRate).toFixed(4));
