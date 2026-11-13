@@ -57,3 +57,12 @@ __pycache__/
 *.py[cod]
 *$py.class
 .pytest_cache/
+
+# Video outputs & heavy media (never commit to git)
+*.mp4
+*.webm
+*.mov
+*.avi
+/promo-video/out/
+/promo-video/public/*.mp4
+promo-video/out/
