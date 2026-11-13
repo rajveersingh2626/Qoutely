@@ -57,6 +57,21 @@ function LoginFormContent() {
     }
   };
 
+  const handleAutoFill = (fillEmail: string, fillPass: string) => {
+    setEmail(fillEmail);
+    setPassword(fillPass);
+    const emailEl = document.querySelector('input[type="text"]') as HTMLInputElement | null;
+    const passEl = document.querySelector('input[type="password"]') as HTMLInputElement | null;
+    if (emailEl) {
+      emailEl.value = fillEmail;
+      emailEl.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+    if (passEl) {
+      passEl.value = fillPass;
+      passEl.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     await executeLogin(email, password);
@@ -150,7 +165,41 @@ function LoginFormContent() {
           </button>
         </form>
 
-        <div className="mt-8 text-center text-[11px] text-slate-400 dark:text-slate-500">
+        {/* Quick Test Credentials Box */}
+        <div className="mt-6 pt-5 border-t border-slate-100 dark:border-slate-800">
+          <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2.5 text-center">
+            Test Accounts (1-Click Auto Fill)
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={() => handleAutoFill('dinesh@capitalbrokers.in', 'Password@123')}
+              className="p-2.5 rounded-xl border border-emerald-200 dark:border-emerald-800/60 bg-emerald-50/50 dark:bg-emerald-950/20 text-left hover:bg-emerald-100/50 transition-colors cursor-pointer"
+            >
+              <div className="text-[11px] font-bold text-emerald-800 dark:text-emerald-300">
+                Dinesh Uncle
+              </div>
+              <div className="text-[9px] text-slate-500 font-mono mt-0.5">
+                VIP Broker (Unlimited)
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleAutoFill('rajveer@capitalbrokers.in', 'Password@123')}
+              className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 text-left hover:bg-slate-100 transition-colors cursor-pointer"
+            >
+              <div className="text-[11px] font-bold text-slate-800 dark:text-slate-200">
+                Rajveer
+              </div>
+              <div className="text-[9px] text-slate-500 font-mono mt-0.5">
+                Super Admin Access
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-6 text-center text-[11px] text-slate-400 dark:text-slate-500">
           Quotely Multi-Tenant Operating System
         </div>
       </div>
