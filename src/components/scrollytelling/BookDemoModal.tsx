@@ -84,16 +84,45 @@ export const BookDemoModal: React.FC<BookDemoModalProps> = ({ isOpen, onClose })
                 <div className="flex items-center gap-2 mb-3">
                   <div className="w-2.5 h-2.5 rounded-full bg-[#15803d] animate-pulse" />
                   <span className="text-xs font-bold uppercase tracking-wider text-[#0F5132]">
-                    Priority Broker Access
+                    Exclusive Founder&apos;s Beta • Limited to 15 Brokerages
                   </span>
                 </div>
 
-                <h3 id="demo-modal-title" className="text-2xl sm:text-3xl font-black tracking-tight text-[#121316] mb-3">
-                  Experience Qoutely in Action.
+                <h3 id="demo-modal-title" className="text-2xl sm:text-3xl font-black tracking-tight text-[#121316] mb-2">
+                  Get 30 Days Free Founder Access
                 </h3>
-                <p id="demo-modal-desc" className="text-sm text-[#4B5563] leading-relaxed mb-6">
-                  Schedule a 15-minute personalized walkthrough for your commercial brokerage team.
+                <p id="demo-modal-desc" className="text-xs sm:text-sm text-[#4B5563] leading-relaxed mb-4">
+                  We are offering 10–15 commercial brokerages 30 days of full unrestricted access to run live Fire, Fleet, Marine, and Health quote slips.
                 </p>
+
+                {/* Direct WhatsApp & Call Ribbon */}
+                <div className="mb-5 p-3 rounded-2xl bg-emerald-50 border border-emerald-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                  <div className="text-left">
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-800">
+                      Direct Founder Hotline
+                    </div>
+                    <div className="text-xs font-extrabold text-[#121316]">
+                      +91 9315218284
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 w-full sm:w-auto">
+                    <a
+                      href="https://wa.me/919315218284?text=Hi%20Qoutely%20Team%2C%20I%20am%20interested%20in%20the%20Exclusive%20Founder's%20Beta%20access%20for%20my%20brokerage."
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#0F5132] hover:bg-[#146c43] text-white text-xs font-bold shadow-xs transition-colors"
+                    >
+                      <span>WhatsApp Us</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </a>
+                    <a
+                      href="tel:+919315218284"
+                      className="inline-flex items-center justify-center px-3 py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-emerald-300 text-emerald-800 text-xs font-bold transition-colors"
+                    >
+                      Call
+                    </a>
+                  </div>
+                </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
@@ -193,9 +222,21 @@ export const BookDemoModal: React.FC<BookDemoModalProps> = ({ isOpen, onClose })
                 <p className="text-sm text-[#4B5563] max-w-sm mb-4">
                   We have allocated your brokerage slot. Our enterprise specialist will reach out within 2 hours.
                 </p>
-                <span className="text-xs font-mono text-[#0F5132] font-semibold bg-[#0F5132]/10 px-3 py-1 rounded-full border border-[#0F5132]/20">
+                <span className="text-xs font-mono text-[#0F5132] font-semibold bg-[#0F5132]/10 px-3 py-1 rounded-full border border-[#0F5132]/20 mb-4 inline-block">
                   Confirmation sent to {formData.email}
                 </span>
+
+                <div className="pt-2">
+                  <a
+                    href="https://wa.me/919315218284?text=Hi%20Qoutely%20Team%2C%20I%20just%20submitted%20the%20Founder's%20Beta%20form%20for%20my%20brokerage."
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#0F5132] text-white text-xs font-bold hover:bg-[#146c43] transition-colors"
+                  >
+                    <span>Connect with Founder on WhatsApp (+91 9315218284)</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </a>
+                </div>
               </motion.div>
             )}
           </motion.div>

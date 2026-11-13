@@ -16,6 +16,7 @@ build
 dist
 tsconfig.tsbuildinfo
 powershell.cmd
+powershell.exe
 
 # Debug logs
 npm-debug.log*

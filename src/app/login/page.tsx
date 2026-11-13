@@ -150,7 +150,30 @@ function LoginFormContent() {
           </button>
         </form>
 
-        <div className="mt-8 text-center text-[11px] text-slate-400 dark:text-slate-500">
+        <div className="mt-6 pt-5 border-t border-slate-200/60 dark:border-slate-800 text-center">
+          <p className="text-xs text-slate-500 mb-2">
+            Need an authorized broker account or Founder&apos;s Beta access?
+          </p>
+          <div className="flex items-center justify-center gap-3 text-xs">
+            <a
+              href="https://wa.me/919315218284?text=Hi%2C%20I%20would%20like%20to%20request%20broker%20credentials%20for%20Qoutely%20Underwriting%20Desk."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-bold text-emerald-600 hover:text-emerald-700 underline"
+            >
+              WhatsApp Founder (+91 9315218284)
+            </a>
+            <span className="text-slate-300">•</span>
+            <a
+              href="tel:+919315218284"
+              className="text-slate-600 hover:text-slate-800 dark:text-slate-400 font-medium"
+            >
+              Call Desk
+            </a>
+          </div>
+        </div>
+
+        <div className="mt-6 text-center text-[11px] text-slate-400 dark:text-slate-500">
           Qoutely Multi-Tenant Operating System • Authorized Intermediary Access Only
         </div>
       </div>

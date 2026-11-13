@@ -260,12 +260,20 @@ export default function SimpleStorytellingLandingPage() {
 
           {/* Header Action CTAs */}
           <div className="flex items-center gap-3">
+            <a
+              href="https://wa.me/919315218284?text=Hi%20Qoutely%20Team%2C%20I%20am%20interested%20in%20the%20Founder's%20Beta%20access."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden lg:inline-flex items-center gap-1.5 text-xs font-bold text-[#0F5132] bg-[#0F5132]/5 hover:bg-[#0F5132]/10 border border-[#0F5132]/20 px-3 py-1.5 rounded-xl transition-colors"
+            >
+              <span>WhatsApp Founder (+91 9315218284)</span>
+            </a>
             <button
               type="button"
               onClick={() => setDemoModalOpen(true)}
               className="text-xs font-bold text-[#0F5132] hover:bg-[#0F5132]/5 px-3 py-2 rounded-xl transition-colors cursor-pointer"
             >
-              Book Demo
+              Founder Beta Access
             </button>
             <Link
               href="/login"
@@ -334,7 +342,7 @@ export default function SimpleStorytellingLandingPage() {
               
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0F5132]/10 border border-[#0F5132]/20 text-[#0F5132] text-xs font-bold uppercase tracking-wider mb-5">
                 <Sparkles className="w-3.5 h-3.5" aria-hidden="true" />
-                <span>BUSINESS INSURANCE MADE EFFORTLESS</span>
+                <span>EXCLUSIVE FOUNDER&apos;S BETA • 30-DAY FREE ACCESS FOR 15 BROKERAGES</span>
               </div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-[-0.03em] text-[#121316] leading-[1.08] mb-5">
@@ -812,16 +820,42 @@ export default function SimpleStorytellingLandingPage() {
 
             </div>
 
-            {/* Book Demo Callout */}
-            <div className="mb-10 text-center">
-              <button
-                type="button"
-                onClick={() => setDemoModalOpen(true)}
-                className="inline-flex items-center gap-2 text-xs font-bold text-[#0F5132] hover:text-[#146c43] bg-[#0F5132]/5 hover:bg-[#0F5132]/10 border border-[#0F5132]/15 px-4 py-2.5 rounded-full transition-all cursor-pointer"
-              >
-                <span>Want an enterprise walkthrough for your brokerage?</span>
-                <span className="underline decoration-dotted font-extrabold">Schedule a 15-min Live Demo &rarr;</span>
-              </button>
+            {/* Exclusive Founder's Beta & Direct Contact */}
+            <div className="mb-10 max-w-xl mx-auto p-6 rounded-3xl bg-white border border-[#0F5132]/20 shadow-md text-center">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0F5132]/10 text-[#0F5132] text-[11px] font-bold uppercase tracking-wider mb-2.5">
+                <Sparkles className="w-3 h-3" />
+                <span>Founder&apos;s Beta Allocation</span>
+              </div>
+              <h4 className="text-lg font-black text-[#121316] mb-1.5">
+                30 Days Free Full Access for 10–15 Brokerages
+              </h4>
+              <p className="text-xs text-[#4B5563] leading-relaxed mb-4">
+                Test Qoutely on your live commercial RFQs with zero subscription cost. Direct underwriting support from our founding engineering desk.
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-3">
+                <a
+                  href="https://wa.me/919315218284?text=Hi%20Qoutely%20Team%2C%20I%20am%20interested%20in%20the%20Founder's%20Beta%20access%20for%20my%20brokerage."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#0F5132] hover:bg-[#146c43] text-white text-xs font-bold shadow-xs transition-all hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  <span>WhatsApp Founder (+91 9315218284)</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </a>
+                <a
+                  href="tel:+919315218284"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-[#121316] text-xs font-bold transition-all"
+                >
+                  <span>Call Us</span>
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setDemoModalOpen(true)}
+                  className="text-xs font-bold text-[#0F5132] underline hover:text-[#146c43] cursor-pointer ml-1"
+                >
+                  Schedule Walkthrough
+                </button>
+              </div>
             </div>
 
             {/* Trust and Compliance Ribbon */}
