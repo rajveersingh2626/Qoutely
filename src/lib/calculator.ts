@@ -442,9 +442,9 @@ export function calculatePremium(data: PremiumCalculationInput): PremiumCalculat
   const rawDiscounts = Math.max(0, Number(data.discounts) || 0);
   const rawLoadings = Math.max(0, Number(data.loadings) || 0);
 
-  // Normalize percentage vs decimal (e.g., 10 => 0.10, 1 => 0.01, 0.05 => 0.05)
-  const discountDecimal = rawDiscounts >= 1 ? rawDiscounts / 100 : rawDiscounts;
-  const loadingDecimal = rawLoadings >= 1 ? rawLoadings / 100 : rawLoadings;
+  // Normalize percentages (e.g., 10 => 0.10, 0.5 => 0.005)
+  const discountDecimal = rawDiscounts / 100;
+  const loadingDecimal = rawLoadings / 100;
 
   // 1. Base Rate per mille = (Flexa + STFI + EQ)
   const baseRate = Number((flexaRate + stfiRate + eqRate).toFixed(4));

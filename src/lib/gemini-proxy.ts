@@ -96,7 +96,7 @@ export interface ProxyCallResult {
 export async function callGeminiWithFailover(
   params: ProxyCallParams
 ): Promise<ProxyCallResult> {
-  const model = params.model || 'gemini-2.5-flash';
+  const model = params.model || 'gemini-2.0-flash';
   const startTime = Date.now();
   const now = Date.now();
 

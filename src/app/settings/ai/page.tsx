@@ -15,7 +15,8 @@ import {
   Database,
   ArrowRight,
   ShieldAlert,
-  Server
+  Server,
+  Lock
 } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
 import { useWorkspace } from '@/context/WorkspaceContext';
@@ -42,7 +43,7 @@ interface AIHealthData {
 }
 
 export default function AIHealthPage() {
-  const { currentWorkspace } = useWorkspace();
+  const { currentWorkspace, userRole } = useWorkspace();
   const [data, setData] = useState<AIHealthData | null>(null);
   const [loading, setLoading] = useState(true);
   const [testing, setTesting] = useState(false);
@@ -80,6 +81,40 @@ export default function AIHealthPage() {
   };
 
   const isLive = data?.health?.connected && !data?.health?.is_mocked;
+
+  if (userRole !== 'super_admin') {
+    return (
+      <div className="flex-1 flex flex-col h-full overflow-y-auto bg-slate-50 dark:bg-slate-950 font-sans">
+        <Header
+          title="AI Underwriting Engine"
+          subtitle="System health and platform intelligence status"
+          breadcrumbs={[
+            { label: 'Firm Settings', href: '/app/settings' },
+            { label: 'AI Engine' }
+          ]}
+        />
+        <div className="p-8 max-w-xl mx-auto w-full my-auto text-center space-y-4">
+          <div className="w-16 h-16 rounded-3xl bg-slate-100 dark:bg-slate-800 text-slate-500 mx-auto flex items-center justify-center">
+            <Lock className="w-8 h-8 text-slate-400" />
+          </div>
+          <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+            Telemetry Restricted
+          </h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+            AI token telemetry, cloud latency, and backend model observability logs are reserved for Platform Super Administrators.
+          </p>
+          <div className="pt-2">
+            <Link
+              href="/app/settings"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 transition-colors"
+            >
+              Back to Firm Settings
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 flex flex-col h-full overflow-y-auto bg-slate-50 dark:bg-slate-950 font-sans">
@@ -195,7 +230,7 @@ export default function AIHealthPage() {
               <Zap className="w-4 h-4 text-emerald-500" />
             </div>
             <div className="text-2xl font-extrabold text-slate-900 dark:text-white">
-              {data?.stats?.total_requests_today || 18}
+              {data?.stats?.total_requests_today ?? 0}
             </div>
             <p className="text-[11px] text-slate-500 mt-1">Across extract, classify & explain</p>
           </div>
@@ -207,10 +242,10 @@ export default function AIHealthPage() {
               <Database className="w-4 h-4 text-blue-500" />
             </div>
             <div className="text-2xl font-extrabold text-slate-900 dark:text-white">
-              {((data?.stats?.total_input_tokens || 12450) + (data?.stats?.total_output_tokens || 3820)).toLocaleString()}
+              {((data?.stats?.total_input_tokens ?? 0) + (data?.stats?.total_output_tokens ?? 0)).toLocaleString()}
             </div>
             <p className="text-[11px] text-slate-500 mt-1">
-              Input: {(data?.stats?.total_input_tokens || 12450).toLocaleString()} • Output: {(data?.stats?.total_output_tokens || 3820).toLocaleString()}
+              Input: {(data?.stats?.total_input_tokens ?? 0).toLocaleString()} • Output: {(data?.stats?.total_output_tokens ?? 0).toLocaleString()}
             </p>
           </div>
 
@@ -221,10 +256,10 @@ export default function AIHealthPage() {
               <DollarSign className="w-4 h-4 text-teal-500" />
             </div>
             <div className="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400">
-              ${(data?.stats?.total_cost_usd || 0.0021).toFixed(4)}
+              ${(data?.stats?.total_cost_usd ?? 0).toFixed(4)}
             </div>
             <p className="text-[11px] text-slate-500 mt-1">
-              ≈ ₹{((data?.stats?.total_cost_usd || 0.0021) * 87).toFixed(2)} INR
+              ≈ ₹{((data?.stats?.total_cost_usd ?? 0) * 87).toFixed(2)} INR
             </p>
           </div>
 
@@ -235,9 +270,9 @@ export default function AIHealthPage() {
               <Clock className="w-4 h-4 text-amber-500" />
             </div>
             <div className="text-2xl font-extrabold text-slate-900 dark:text-white">
-              {data?.stats?.avg_latency_ms || 412} ms
+              {data?.stats?.avg_latency_ms ?? 0} ms
             </div>
-            <p className="text-[11px] text-slate-500 mt-1">Gemini 2.5 Flash TTFT: &lt; 300ms</p>
+            <p className="text-[11px] text-slate-500 mt-1">Gemini Flash TTFT: &lt; 300ms</p>
           </div>
         </div>
 
@@ -248,25 +283,25 @@ export default function AIHealthPage() {
             <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60">
               <span className="text-xs text-slate-500 dark:text-slate-400 block font-medium">Average Cost Per Quote</span>
               <span className="text-xl font-bold text-slate-900 dark:text-white block mt-1">
-                ${(data?.stats?.avg_cost_per_quote_usd || 0.00015).toFixed(5)}
+                ${(data?.stats?.avg_cost_per_quote_usd ?? 0).toFixed(5)}
               </span>
               <span className="text-[10px] text-emerald-600 dark:text-emerald-400 mt-1 block">
-                ≈ ₹0.013 per proposal OCR + tariff classification
+                ≈ ₹{((data?.stats?.avg_cost_per_quote_usd ?? 0) * 87).toFixed(3)} per proposal extraction
               </span>
             </div>
 
             <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60">
               <span className="text-xs text-slate-500 dark:text-slate-400 block font-medium">Projected Monthly Spend</span>
               <span className="text-xl font-bold text-slate-900 dark:text-white block mt-1">
-                ${(data?.stats?.projected_monthly_spend_usd || 0.063).toFixed(3)}
+                ${(data?.stats?.projected_monthly_spend_usd ?? 0).toFixed(3)}
               </span>
               <span className="text-[10px] text-slate-500 mt-1 block">
-                Based on current 30-day velocity of 500 quotes
+                Based on current 30-day velocity
               </span>
             </div>
 
             <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60">
-              <span className="text-xs text-slate-500 dark:text-slate-400 block font-medium">Gemini 2.5 Flash Tier</span>
+              <span className="text-xs text-slate-500 dark:text-slate-400 block font-medium">Gemini Flash Tier</span>
               <span className="text-xl font-bold text-emerald-600 dark:text-emerald-400 block mt-1">
                 Pay-As-You-Go
               </span>
@@ -285,7 +320,7 @@ export default function AIHealthPage() {
               <p className="text-xs text-slate-500">Live telemetric trace from Supabase `ai_requests` table.</p>
             </div>
             <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
-              {data?.recent_requests?.length || 4} requests recorded
+              {data?.recent_requests?.length ?? 0} requests recorded
             </span>
           </div>
 
@@ -316,24 +351,16 @@ export default function AIHealthPage() {
                     </tr>
                   ))
                 ) : (
-                  [
-                    { endpoint: '/api/extract', model: 'gemini-2.5-flash', input_tokens: 820, output_tokens: 310, latency_ms: 382, cost_usd: 0.00015, created_at: new Date().toISOString() },
-                    { endpoint: '/api/classify', model: 'gemini-2.5-flash', input_tokens: 650, output_tokens: 280, latency_ms: 310, cost_usd: 0.00013, created_at: new Date().toISOString() },
-                    { endpoint: '/api/explain', model: 'gemini-2.5-flash', input_tokens: 420, output_tokens: 240, latency_ms: 275, cost_usd: 0.00010, created_at: new Date().toISOString() },
-                    { endpoint: '/api/summarize', model: 'gemini-2.5-flash', input_tokens: 580, output_tokens: 190, latency_ms: 290, cost_usd: 0.00010, created_at: new Date().toISOString() },
-                  ].map((r, i) => (
-                    <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-800/40">
-                      <td className="py-2.5 px-3 font-semibold text-slate-800 dark:text-slate-200">{r.endpoint}</td>
-                      <td className="py-2.5 px-3 text-slate-500">{r.model}</td>
-                      <td className="py-2.5 px-3 text-slate-600 dark:text-slate-400">{r.input_tokens} in / {r.output_tokens} out</td>
-                      <td className="py-2.5 px-3 text-emerald-600 dark:text-emerald-400">{r.latency_ms} ms</td>
-                      <td className="py-2.5 px-3 text-slate-500">${r.cost_usd.toFixed(5)}</td>
-                      <td className="py-2.5 px-3 text-slate-400 text-[10px]">
-                        {new Date(r.created_at).toLocaleTimeString()}
-                      </td>
-                    </tr>
-                  ))
+                  <tr>
+                    <td colSpan={6} className="py-8 text-center text-slate-400 dark:text-slate-500 font-sans text-xs">
+                      No live AI requests recorded yet. Upload a commercial proposal or run an underwrite analysis to populate telemetry.
+                    </td>
+                  </tr>
                 )}
+              </tbody>
+            </table>
+          </div>
+        </div>
               </tbody>
             </table>
           </div>

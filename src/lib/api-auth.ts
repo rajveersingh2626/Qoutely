@@ -14,6 +14,10 @@ export async function getAuthenticatedUser(req: NextRequest) {
     !supabaseUrl || !supabaseAnonKey ||
     supabaseUrl.includes('placeholder') || supabaseAnonKey.includes('placeholder')
   ) {
+    // Only permit demo mode fallback in local non-production environments
+    if (process.env.NODE_ENV === 'production') {
+      return null;
+    }
     // Dev/demo mode: return a valid UUID user matching seeded Supabase profiles
     return {
       user: { id: '10000000-0000-0000-0000-000000000004', email: 'arjun.k@capitalinsurance.co.in' },
@@ -23,28 +27,20 @@ export async function getAuthenticatedUser(req: NextRequest) {
   }
 
   try {
-    // Extract auth token from Authorization header (Bearer token) or cookies
+    // Extract auth token from Authorization header (Bearer token) or let SSR read cookies
     const authHeader = req.headers.get('authorization');
-    let accessToken = authHeader ? authHeader.replace(/^Bearer\s+/i, '').trim() : undefined;
+    const bearerToken = authHeader ? authHeader.replace(/^Bearer\s+/i, '').trim() : undefined;
 
-    if (!accessToken) {
-      accessToken = req.cookies.get('sb-access-token')?.value;
-    }
-
-    if (!accessToken) {
-      return null;
-    }
-
-    // Build a minimal Supabase client for server-side token validation
+    // Build Supabase client with request cookie support for SSR session chunking
     const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
       cookies: {
-        getAll: () => [],
+        getAll: () => req.cookies.getAll(),
         setAll: () => {},
       },
-      global: { headers: { Authorization: `Bearer ${accessToken}` } },
+      global: bearerToken ? { headers: { Authorization: `Bearer ${bearerToken}` } } : undefined,
     });
 
-    const { data: { user }, error } = await supabase.auth.getUser(accessToken);
+    const { data: { user }, error } = await supabase.auth.getUser(bearerToken);
 
     if (error || !user) {
       return null;

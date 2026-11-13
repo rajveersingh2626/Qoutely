@@ -70,9 +70,9 @@ export function getAIRequestLogs(): AIRequestLog[] {
   return [...requestLogsCache];
 }
 
-export const PRIMARY_GEMINI_MODEL = 'gemini-2.5-flash';
+export const PRIMARY_GEMINI_MODEL = 'gemini-2.0-flash';
 export const FALLBACK_GEMINI_MODELS = ['gemini-2.0-flash', 'gemini-1.5-flash'];
-export const FALLBACK_GEMINI_MODEL = 'gemini-2.0-flash';
+export const FALLBACK_GEMINI_MODEL = 'gemini-1.5-flash';
 
 
 /**

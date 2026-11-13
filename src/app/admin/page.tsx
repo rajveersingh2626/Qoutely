@@ -61,16 +61,16 @@ export default function PlatformSuperAdminPage() {
   const aiLogs = getAIRequestLogs();
   const totalAITokens = aiLogs.reduce(
     (acc, l) => acc + (l.input_tokens + l.output_tokens),
-    148520 // Base baseline
+    0
   );
   const totalAICostUSD = Number(
     (
-      aiLogs.reduce((acc, l) => acc + (l.cost_usd || 0), 0.042)
+      aiLogs.reduce((acc, l) => acc + (l.cost_usd || 0), 0)
     ).toFixed(5)
   );
   const avgLatency = aiLogs.length > 0
     ? Math.round(aiLogs.reduce((acc, l) => acc + l.latency_ms, 0) / aiLogs.length)
-    : 420;
+    : 0;
 
   const filteredWorkspaces = workspaces.filter(
     (ws) =>

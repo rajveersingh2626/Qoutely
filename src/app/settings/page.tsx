@@ -210,13 +210,15 @@ export default function SettingsPage() {
                     AI Underwriting Engine (Gemini 2.5 Flash)
                   </h3>
                 </div>
-                <Link
-                  href="/app/settings/ai"
-                  className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold hover:underline flex items-center gap-1"
-                >
-                  <span>Open AI Observability Dashboard</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
+                {userRole === 'super_admin' && (
+                  <Link
+                    href="/app/settings/ai"
+                    className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold hover:underline flex items-center gap-1"
+                  >
+                    <span>Open AI Observability Dashboard</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                )}
               </div>
               <p className="text-xs text-slate-500 mb-4">
                 Configured via single service layer in <code className="font-mono text-emerald-600 dark:text-emerald-400">src/lib/ai.ts</code>.

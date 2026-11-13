@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
       total_cost_usd: totalCost,
       avg_latency_ms: avgLatency,
       projected_monthly_spend_usd: Number((totalCost * 30).toFixed(4)),
-      avg_cost_per_quote_usd: totalRequests > 0 ? Number((totalCost / totalRequests).toFixed(5)) : 0.00015
+      avg_cost_per_quote_usd: totalRequests > 0 ? Number((totalCost / totalRequests).toFixed(5)) : 0
     },
     recent_requests: logs.slice(0, 50)
   });

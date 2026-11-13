@@ -30,8 +30,8 @@ export interface PlanLimits {
 export const TIER_DEFINITIONS: Record<SubscriptionTier, PlanLimits> = {
   starter: {
     tier: 'starter',
-    planName: 'Starter Tier',
-    monthlyFeeINR: 549,
+    planName: 'Starter Plan (1 User)',
+    monthlyFeeINR: 499,
     maxReminders: 500,
     max_reminders_per_month: 500,
     unlimitedQuota: false,
@@ -48,8 +48,8 @@ export const TIER_DEFINITIONS: Record<SubscriptionTier, PlanLimits> = {
   },
   professional: {
     tier: 'professional',
-    planName: 'Professional Tier',
-    monthlyFeeINR: 1499,
+    planName: 'Premium Plan',
+    monthlyFeeINR: 1599,
     maxReminders: 3000,
     max_reminders_per_month: 3000,
     unlimitedQuota: false,
@@ -66,7 +66,7 @@ export const TIER_DEFINITIONS: Record<SubscriptionTier, PlanLimits> = {
   },
   enterprise: {
     tier: 'enterprise',
-    planName: 'Enterprise Tier',
+    planName: 'Enterprise Plan',
     monthlyFeeINR: 4999,
     maxReminders: 999999,
     max_reminders_per_month: 999999,
@@ -90,7 +90,6 @@ export const DINESH_UNCLE_IDENTIFIERS = {
     '664e9b3c-1f0b-4fcb-ae7f-1fbb156bbc3f', // Supabase primary seed ID
     '10000000-0000-0000-0000-000000000002', // Seed workspace member ID
   ],
-  nameFragments: ['dinesh gupta', 'dinesh uncle'],
 };
 
 /**
@@ -113,7 +112,6 @@ export function isDineshUncle(
     const raw = user.trim().toLowerCase();
     if (DINESH_UNCLE_IDENTIFIERS.emails.includes(raw)) return true;
     if (DINESH_UNCLE_IDENTIFIERS.ids.includes(raw)) return true;
-    if (DINESH_UNCLE_IDENTIFIERS.nameFragments.some((frag) => raw.includes(frag))) return true;
     return false;
   }
 
@@ -124,11 +122,6 @@ export function isDineshUncle(
 
   const idLower = (user.id || '').trim().toLowerCase();
   if (DINESH_UNCLE_IDENTIFIERS.ids.includes(idLower)) {
-    return true;
-  }
-
-  const nameLower = (user.full_name || user.name || '').trim().toLowerCase();
-  if (DINESH_UNCLE_IDENTIFIERS.nameFragments.some((frag) => nameLower.includes(frag))) {
     return true;
   }
 

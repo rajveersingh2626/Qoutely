@@ -1939,7 +1939,7 @@ Total Final Premium: ₹ ${formatINRWithDecimals(calculation.totalFinalPremium)}
             {/* Modal Actions */}
             <div className="p-4 bg-slate-50 dark:bg-slate-800/80 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between gap-3">
               <Link
-                href="/app/quotes"
+                href="/quotes"
                 className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-xs transition-colors flex items-center gap-1.5"
               >
                 <span>View in Quotes Register</span>

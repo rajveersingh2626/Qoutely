@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   Building2,
   Car,
@@ -178,16 +179,23 @@ export default function SimpleStorytellingLandingPage() {
     { id: 'get-started', title: 'Get Started' },
   ];
 
-  // Track active section on scroll
+  // Track active section on scroll with requestAnimationFrame throttling
   useEffect(() => {
     const container = document.getElementById('snap-container');
     if (!container) return;
 
+    let ticking = false;
     const handleScroll = () => {
-      const scrollPos = container.scrollTop;
-      const height = window.innerHeight;
-      const index = Math.round(scrollPos / height);
-      setActiveSection(Math.min(sections.length - 1, Math.max(0, index)));
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollPos = container.scrollTop;
+          const height = window.innerHeight || 800;
+          const index = Math.round(scrollPos / height);
+          setActiveSection(Math.min(sections.length - 1, Math.max(0, index)));
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
     container.addEventListener('scroll', handleScroll, { passive: true });
@@ -215,12 +223,13 @@ export default function SimpleStorytellingLandingPage() {
           {/* Logo & Simple Brand */}
           <Link href="/" className="flex items-center gap-2.5 group">
             <div className="w-9 h-9 rounded-xl bg-white border border-[#0F5132]/20 p-1 flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
-              <img
+              <Image
                 src="/qoutely_logo.png"
                 alt="Qoutely"
                 width={32}
                 height={32}
                 className="w-full h-full object-contain"
+                priority
               />
             </div>
             <div className="flex flex-col">
@@ -251,6 +260,13 @@ export default function SimpleStorytellingLandingPage() {
 
           {/* Header Action CTAs */}
           <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setDemoModalOpen(true)}
+              className="text-xs font-bold text-[#0F5132] hover:bg-[#0F5132]/5 px-3 py-2 rounded-xl transition-colors cursor-pointer"
+            >
+              Book Demo
+            </button>
             <Link
               href="/login"
               className="text-xs font-bold text-[#121316] hover:text-[#0F5132] px-3.5 py-2 rounded-xl transition-colors border border-[#121316]/10 hover:border-[#0F5132]"
@@ -794,6 +810,18 @@ export default function SimpleStorytellingLandingPage() {
                 </div>
               </Link>
 
+            </div>
+
+            {/* Book Demo Callout */}
+            <div className="mb-10 text-center">
+              <button
+                type="button"
+                onClick={() => setDemoModalOpen(true)}
+                className="inline-flex items-center gap-2 text-xs font-bold text-[#0F5132] hover:text-[#146c43] bg-[#0F5132]/5 hover:bg-[#0F5132]/10 border border-[#0F5132]/15 px-4 py-2.5 rounded-full transition-all cursor-pointer"
+              >
+                <span>Want an enterprise walkthrough for your brokerage?</span>
+                <span className="underline decoration-dotted font-extrabold">Schedule a 15-min Live Demo &rarr;</span>
+              </button>
             </div>
 
             {/* Trust and Compliance Ribbon */}

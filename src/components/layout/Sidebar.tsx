@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   Activity,
@@ -103,7 +104,7 @@ export const Sidebar: React.FC = () => {
 
   const adminItems = [
     { label: 'Firm Settings', href: '/settings', icon: Settings },
-    { label: 'AI Health & Telemetry', href: '/settings/ai', icon: Cpu },
+    ...(userRole === 'super_admin' ? [{ label: 'AI Health & Telemetry', href: '/settings/ai', icon: Cpu }] : []),
     { label: 'Workspace Team', href: '/settings/team', icon: Users },
     { label: 'Audit Trail', href: '/audit-logs', icon: Activity },
   ];
@@ -143,7 +144,7 @@ export const Sidebar: React.FC = () => {
                 className="flex items-center gap-2.5 group"
               >
                 <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center p-1 border border-emerald-500/20 group-hover:scale-105 transition-transform">
-                  <img src="/qoutely_logo.png" alt="Quotely" className="h-6 w-auto object-contain" />
+                  <Image src="/qoutely_logo.png" alt="Quotely" width={24} height={24} className="h-6 w-auto object-contain" priority />
                 </div>
                 <div className="flex items-baseline gap-1">
                   <span className="text-base font-bold tracking-tight text-slate-900 dark:text-white">

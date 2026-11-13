@@ -15,6 +15,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
     pathname === '/security' ||
     pathname === '/login' ||
     pathname === '/register' ||
+    pathname === '/maintenance' ||
     pathname === '/forgot-password' ||
     pathname === '/reset-password' ||
     pathname.startsWith('/accept-invitation') ||
