@@ -169,14 +169,13 @@ const SAMPLE_CARRIER_QUOTES: SimpleCarrierQuote[] = [
 export default function SimpleStorytellingLandingPage() {
   const [activeSection, setActiveSection] = useState(0);
   const [demoModalOpen, setDemoModalOpen] = useState(false);
-  const [copiedAccount, setCopiedAccount] = useState<string | null>(null);
 
   const sections = [
     { id: 'hero', title: 'Home' },
     { id: 'how-it-works', title: 'How It Works' },
     { id: 'coverage', title: 'What We Cover' },
     { id: 'why-qoutely', title: 'Why Qoutely' },
-    { id: 'get-started', title: 'Test & Login' },
+    { id: 'get-started', title: 'Get Started' },
   ];
 
   // Track active section on scroll
@@ -202,12 +201,6 @@ export default function SimpleStorytellingLandingPage() {
       top: index * window.innerHeight,
       behavior: 'smooth',
     });
-  };
-
-  const copyCreds = (text: string, label: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedAccount(label);
-    setTimeout(() => setCopiedAccount(null), 2500);
   };
 
   return (
@@ -727,7 +720,7 @@ export default function SimpleStorytellingLandingPage() {
               onClick={() => scrollToSection(4)}
               className="inline-flex items-center gap-1.5 text-xs text-[#4B5563] hover:text-[#0F5132] transition-colors cursor-pointer"
             >
-              <span>Get your test credentials &amp; login</span>
+              <span>Ready to transform your brokerage?</span>
               <ArrowDown className="w-3.5 h-3.5 animate-bounce" />
             </button>
           </div>
@@ -735,149 +728,97 @@ export default function SimpleStorytellingLandingPage() {
 
 
         {/* ═════════════════════════════════════════════════════════
-            SECTION 5: TEST CREDENTIALS & QUICK SIGN IN
+            SECTION 5: READY TO GET STARTED / CTA
         ═════════════════════════════════════════════════════════ */}
         <section
           id="get-started"
           className="snap-start min-h-screen w-full flex flex-col justify-center py-20 px-6 sm:px-10 lg:px-16 max-w-7xl mx-auto"
         >
-          <div className="my-auto max-w-4xl mx-auto w-full">
+          <div className="my-auto max-w-4xl mx-auto w-full text-center">
             
-            <div className="text-center mb-10">
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0F5132]/10 border border-[#0F5132]/20 text-[#0F5132] text-xs font-bold uppercase tracking-wider mb-3">
-                <Sparkles className="w-3.5 h-3.5" aria-hidden="true" />
-                <span>YOUR TEST CREDENTIALS</span>
-              </div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-[-0.03em] text-[#121316] leading-tight mb-3">
-                Try Qoutely right now.
-              </h2>
-              <p className="text-xs sm:text-sm text-[#4B5563]">
-                Use either of these pre-configured test accounts to log in and test the entire platform:
-              </p>
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0F5132]/10 border border-[#0F5132]/20 text-[#0F5132] text-xs font-bold uppercase tracking-wider mb-4">
+              <Sparkles className="w-3.5 h-3.5" aria-hidden="true" />
+              <span>THE FUTURE OF COMMERCIAL BROKING</span>
             </div>
 
-            {/* Test Credentials Display Box */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-[-0.03em] text-[#121316] leading-tight mb-4">
+              Ready to close enterprise accounts 10x faster?
+            </h2>
+
+            <p className="text-sm sm:text-base text-[#4B5563] max-w-2xl mx-auto mb-10 leading-relaxed">
+              No more waiting 3 days for underwriter replies or fighting broken spreadsheets. Generate multi-insurer rate comparisons and client-ready proposals in 60 seconds.
+            </p>
+
+            {/* Main Action Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto mb-10 text-left">
               
-              {/* Account 1: Dinesh Uncle */}
-              <div className="bg-white rounded-3xl p-6 border-2 border-[#0F5132]/40 shadow-md relative">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-bold text-[#0F5132] bg-[#0F5132]/10 px-2.5 py-0.5 rounded-full">
-                    PRIMARY TEST ACCOUNT
-                  </span>
-                  <span className="text-[10px] text-gray-500 font-mono">Enterprise VIP</span>
-                </div>
-                <h3 className="text-lg font-black text-[#121316] mb-1">
-                  Dinesh Uncle (Senior Broker)
-                </h3>
-                <p className="text-xs text-[#4B5563] mb-4">
-                  Full unlimited access to all 7 commercial studios, document parsers, and PDF downloads.
-                </p>
-
-                <div className="bg-[#FBF9F5] rounded-xl p-3 border border-[#121316]/8 space-y-1.5 mb-4 font-mono text-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[#4B5563]">Email:</span>
-                    <span className="font-bold text-[#121316]">dinesh@capitalbrokers.in</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[#4B5563]">Password:</span>
-                    <span className="font-bold text-[#121316]">Password@123</span>
-                  </div>
-                </div>
-
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => copyCreds('dinesh@capitalbrokers.in\nPassword@123', 'dinesh')}
-                    className="flex-1 py-2 px-3 rounded-xl border border-[#121316]/12 hover:bg-slate-50 text-xs font-bold text-[#121316] transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-                  >
-                    <Copy className="w-3.5 h-3.5" />
-                    <span>{copiedAccount === 'dinesh' ? 'Copied!' : 'Copy Login'}</span>
-                  </button>
-                  <Link
-                    href="/login"
-                    className="flex-1 py-2 px-3 rounded-xl bg-[#0F5132] hover:bg-[#146c43] text-white text-xs font-bold text-center transition-colors flex items-center justify-center gap-1.5"
-                  >
-                    <span>Sign In Now</span>
-                    <ArrowRight className="w-3 h-3" />
-                  </Link>
-                </div>
-              </div>
-
-              {/* Account 2: Rajveer */}
-              <div className="bg-white rounded-3xl p-6 border border-[#121316]/10 shadow-xs">
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-full">
-                    SUPER ADMIN ACCOUNT
-                  </span>
-                  <span className="text-[10px] text-gray-500 font-mono">Platform Admin</span>
-                </div>
-                <h3 className="text-lg font-black text-[#121316] mb-1">
-                  Rajveer (Admin Desk)
-                </h3>
-                <p className="text-xs text-[#4B5563] mb-4">
-                  Full super admin privileges: manage team members, audit logs, and brokerage settings.
-                </p>
-
-                <div className="bg-[#FBF9F5] rounded-xl p-3 border border-[#121316]/8 space-y-1.5 mb-4 font-mono text-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[#4B5563]">Email:</span>
-                    <span className="font-bold text-[#121316]">rajveer@capitalbrokers.in</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-[#4B5563]">Password:</span>
-                    <span className="font-bold text-[#121316]">Password@123</span>
-                  </div>
-                </div>
-
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => copyCreds('rajveer@capitalbrokers.in\nPassword@123', 'rajveer')}
-                    className="flex-1 py-2 px-3 rounded-xl border border-[#121316]/12 hover:bg-slate-50 text-xs font-bold text-[#121316] transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-                  >
-                    <Copy className="w-3.5 h-3.5" />
-                    <span>{copiedAccount === 'rajveer' ? 'Copied!' : 'Copy Login'}</span>
-                  </button>
-                  <Link
-                    href="/login"
-                    className="flex-1 py-2 px-3 rounded-xl bg-slate-900 hover:bg-black text-white text-xs font-bold text-center transition-colors flex items-center justify-center gap-1.5"
-                  >
-                    <span>Sign In Now</span>
-                    <ArrowRight className="w-3 h-3" />
-                  </Link>
-                </div>
-              </div>
-
-            </div>
-
-            {/* Direct Studio Link Without Login */}
-            <div className="p-4 rounded-2xl bg-[#0F5132]/5 border border-[#0F5132]/20 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left mb-6">
-              <div>
-                <span className="text-xs font-bold text-[#121316] block">
-                  Want to test quote generation without logging in first?
-                </span>
-                <span className="text-[11px] text-[#4B5563]">
-                  You can jump straight into the Interactive Underwriting Studio:
-                </span>
-              </div>
               <Link
                 href="/quotes/new"
-                className="py-2 px-4 rounded-xl bg-[#0F5132] hover:bg-[#146c43] text-white text-xs font-bold transition-all shrink-0"
+                className="group p-6 rounded-3xl bg-[#0F5132] hover:bg-[#146c43] text-white transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex flex-col justify-between"
               >
-                Launch Studio Direct →
+                <div>
+                  <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center mb-4 text-emerald-300">
+                    <Zap className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-lg font-black tracking-tight mb-1">
+                    Launch Underwriting Studio
+                  </h3>
+                  <p className="text-xs text-emerald-100/80 leading-relaxed">
+                    Compare instant rates across Fire, Motor Fleet, Marine, and Group Health right now.
+                  </p>
+                </div>
+                <div className="mt-6 flex items-center gap-1.5 text-xs font-bold text-white group-hover:gap-2.5 transition-all">
+                  <span>Start a New Quote</span>
+                  <ArrowRight className="w-4 h-4" />
+                </div>
               </Link>
+
+              <Link
+                href="/login"
+                className="group p-6 rounded-3xl bg-white hover:bg-slate-50 border border-[#121316]/10 text-[#121316] transition-all shadow-sm hover:shadow-md hover:-translate-y-0.5 flex flex-col justify-between"
+              >
+                <div>
+                  <div className="w-10 h-10 rounded-2xl bg-[#121316]/5 flex items-center justify-center mb-4 text-[#121316]">
+                    <Lock className="w-5 h-5" />
+                  </div>
+                  <h3 className="text-lg font-black tracking-tight mb-1">
+                    Broker Portal Sign In
+                  </h3>
+                  <p className="text-xs text-[#4B5563] leading-relaxed">
+                    Access your active proposals, team pipeline, document repository, and client quote slips.
+                  </p>
+                </div>
+                <div className="mt-6 flex items-center gap-1.5 text-xs font-bold text-[#0F5132] group-hover:gap-2.5 transition-all">
+                  <span>Sign In to Underwriting Desk</span>
+                  <ArrowRight className="w-4 h-4" />
+                </div>
+              </Link>
+
+            </div>
+
+            {/* Trust and Compliance Ribbon */}
+            <div className="pt-6 border-t border-[#121316]/8 flex flex-wrap items-center justify-center gap-6 text-xs text-[#4B5563]">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-[#0F5132]" />
+                <span className="font-semibold">IRDAI-Compliant Rating Math</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Lock className="w-4 h-4 text-[#0F5132]" />
+                <span className="font-semibold">Bank-Grade 256-Bit SSL</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Building2 className="w-4 h-4 text-[#0F5132]" />
+                <span className="font-semibold">AWS Mumbai Sovereign Cloud</span>
+              </div>
             </div>
 
             {/* Simple Footer */}
-            <footer className="text-center text-xs text-[#4B5563] pt-4 border-t border-[#121316]/8">
+            <footer className="text-center text-xs text-[#4B5563] mt-10 pt-6 border-t border-[#121316]/8">
               <div>
                 &copy; {new Date().getFullYear()} Qoutely Technologies Private Limited. All rights reserved.
               </div>
               <div className="flex justify-center gap-4 text-[11px] mt-1 text-gray-400">
-                <span>IRDAI Registered Intermediary OS</span>
-                <span>•</span>
-                <span>Mumbai Sovereign Cloud</span>
+                <span>Commercial Insurance Underwriting Infrastructure</span>
                 <span>•</span>
                 <span>DPDP Act 2023 Compliant</span>
               </div>
